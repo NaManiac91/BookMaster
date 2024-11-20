@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example.book</groupId>
+	<artifactId>Book-Master</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Book-Master</name>
+	<description>Book Master a tool to book easy</description>
+	<properties>
+		<java.version>22</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-rest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+			    <groupId>cz.habarta.typescript-generator</groupId>
+			    <artifactId>typescript-generator-maven-plugin</artifactId>
+			    <version>2.22.595</version>
+			    <executions>
+			        <execution>
+			            <id>generate</id>
+			            <goals>
+			                <goal>generate</goal>
+			            </goals>
+			            <phase>process-classes</phase>
+			        </execution>
+			    </executions>
+			    <configuration>
+			        <jsonLibrary>jackson2</jsonLibrary>
+			        <classesWithAnnotations>Entity</classesWithAnnotations>
+			        <outputKind>module</outputKind>
+			        <outputFile>/ionic/book-master/src/app/modules/shared/rest-api-client.ts</outputFile>
+					<outputFileType>implementationFile </outputFileType>
+			    </configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
