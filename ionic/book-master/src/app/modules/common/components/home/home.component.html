@@ -1,0 +1,22 @@
+<ion-card>
+  <ion-card-header class="header">
+    <ion-avatar>
+      <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+    </ion-avatar>
+    <ion-label class="title-avatar">
+      <h1>Welcome {{user.username}}</h1>
+    </ion-label>
+  </ion-card-header>
+</ion-card>
+
+<div class="content">
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Reservations</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let reservation of user.reservations">
+      <ion-label>{{reservation.date | date : 'shortDate'}} - {{reservation.service.provider.name}} - {{reservation.service.name}} </ion-label>
+      <ion-icon name="eye-outline" (click)="showServiceInfo(reservation.service)"></ion-icon>
+    </ion-item>
+  </ion-list>
+</div>

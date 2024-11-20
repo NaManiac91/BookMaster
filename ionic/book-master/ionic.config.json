@@ -1,0 +1,7 @@
+{
+  "name": "BookMaster",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

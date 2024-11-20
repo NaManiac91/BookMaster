@@ -1,0 +1,27 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Services</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-list>
+      <ion-item *ngFor="let service of services">
+        <span>{{service.name}}</span>
+      </ion-item>
+    </ion-list>  
+  </ion-card-content>
+</ion-card>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Providers</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-list>
+      <ion-item *ngFor="let provider of providers">
+        <span>{{provider.name}}</span>
+      </ion-item>
+    </ion-list>  
+  </ion-card-content>
+</ion-card>
