@@ -8,12 +8,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class AppComponent {
   public appPages = [
-    { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Create', url: '/create', icon: 'create' },
-    { title: 'Favorites', url: '/favorites', icon: 'heart' },
-    { title: 'Archived', url: '/archived', icon: 'archive' },
-    { title: 'Trash', url: '/trash', icon: 'trash' },
-    { title: 'Spam', url: '/spam', icon: 'warning' },
+    { title: 'Home', url: '/Home', icon: 'home' },
+    { title: 'Create', url: '/Create', icon: 'create' },
+    { title: 'Favorites', url: '/Favorites', icon: 'heart' },
+    { title: 'Archived', url: '/Archived', icon: 'archive' },
+    { title: 'Trash', url: '/Trash', icon: 'trash' },
+    { title: 'Spam', url: '/Spam', icon: 'warning' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   

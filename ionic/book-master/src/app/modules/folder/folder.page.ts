@@ -8,7 +8,7 @@ import { SecurityService } from '../shared/services/security.service';
   styleUrls: ['./folder.page.scss'],
 })
 export class FolderPage implements OnInit {
-  public folder: string = 'home';
+  public folder: string = 'Home';
   private activatedRoute = inject(ActivatedRoute);
 
   constructor() {}
