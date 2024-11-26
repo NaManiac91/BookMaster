@@ -27,7 +27,7 @@ public class ProviderController {
 	
 	@PostMapping()
 	@RequestMapping(path = "/addService")
-	public ResponseEntity<String> createTour(@RequestBody @Validated AddServiceDTO request) {
+	public ResponseEntity<String> addService(@RequestBody @Validated AddServiceDTO request) {
 		try {
 		 this.adminService.addService(UUID.fromString(request.providerId), UUID.fromString(request.serviceId));
 		} catch (Exception e) {
@@ -35,4 +35,15 @@ public class ProviderController {
 		}
         return new ResponseEntity<String>("Service added to provider", HttpStatus.OK);
 	}
+	
+	/*@PostMapping()
+	@RequestMapping(path = "/createService")
+	public ResponseEntity<String> createService(@RequestBody @Validated AddServiceDTO request) {
+		try {
+		 this.adminService.createService(UUID.fromString(request.providerId), UUID.fromString(request.serviceId));
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        return new ResponseEntity<String>("Service added to provider", HttpStatus.OK);
+	}*/
 }

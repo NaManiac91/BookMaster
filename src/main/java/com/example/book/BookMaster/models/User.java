@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -44,6 +45,9 @@ public class User implements Serializable, IModel {
 	@OneToMany(targetEntity = Reservation.class, cascade =CascadeType.ALL)
 	private List<Reservation> reservations = new ArrayList<Reservation>();
 	
+	@OneToOne
+	private Provider provider;
+	
 	protected User() {
 		// TODO Auto-generated constructor stub
 	}
@@ -58,6 +62,14 @@ public class User implements Serializable, IModel {
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.email = email;
+	}
+	
+	public User(String username, String lastName, String firstName, String email, Provider provider) {
+		this.username = username;
+		this.lastName = lastName;
+		this.firstName = firstName;
+		this.email = email;
+		this.provider = provider;
 	}
 
 	public String getUsername() {
@@ -102,6 +114,14 @@ public class User implements Serializable, IModel {
 	
 	public void addReservation(Reservation reservation) {
 		this.reservations.add(reservation);
+	}
+
+	public Provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
 	}
 
 	@Override

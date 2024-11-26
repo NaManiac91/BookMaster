@@ -1,18 +1,4 @@
-<ion-list>
-  <ion-item>
-    <ion-select label="entityToCreate" placeholder="Chose Entity" [(ngModel)]="entityToCreate">
-      <!--ion-select-option [value]="service">Service</ion-select-option>
-      <ion-select-option [value]="provider">Provider</ion-select-option>
-      <ion-select-option [value]="user">User</ion-select-option-->
-    </ion-select>
-  </ion-item>
-</ion-list>
+<ng-container *ngComponentOutlet="getCreateComponent()"></ng-container>
 
 
-<app-object-profile [type]="entityToCreate"></app-object-profile>
-
-
-<app-object-profile *ngIf="user" [object]="user" [type]="entityToCreate"></app-object-profile>
-
-
-<ion-button [disabled]="!entityToCreate" (click)="create()">Create</ion-button>
+<ion-button (click)="create()">Create</ion-button>

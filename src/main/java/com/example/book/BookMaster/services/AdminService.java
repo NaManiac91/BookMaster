@@ -65,13 +65,14 @@ public class AdminService {
 	
 	public void randomReservation(User user) {
 		Service service = ((List<Service>) this.serviceRepo.findAll()).get(0);
-		Provider provide = ((List<Provider>) this.providerRepo.findAll()).get(0);
+		Provider provider = ((List<Provider>) this.providerRepo.findAll()).get(0);
 		
-		addService(provide.getProviderId(), service.getServiceId());
+		addService(provider.getProviderId(), service.getServiceId());
 		
 		Reservation reservation = new Reservation(new Date(), user, service, "Book -> " + service.getName());
 		user.addReservation(reservation);
-
+		user.setProvider(provider);
+		
 		this.userRepo.save(user);
 	}
 	

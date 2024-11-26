@@ -1,0 +1,9 @@
+<ion-list>
+  <ion-list-header>
+    <ion-label>Reservations</ion-label>
+  </ion-list-header>
+  <ion-item *ngFor="let reservation of list">
+    <ion-label>{{reservation.date | date : 'd/M/yy'}} - {{reservation.service.provider.name}} - {{reservation.service.name}} </ion-label>
+    <ion-icon name="eye-outline" (click)="showServiceInfo(reservation.service)"></ion-icon>
+  </ion-item>
+</ion-list>

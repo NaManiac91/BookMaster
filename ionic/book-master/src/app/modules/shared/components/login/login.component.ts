@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Output } from '@angular/core';
-import { SecurityService } from '../../shared/services/security.service';
-import { User } from '../../shared/rest-api-client';
+import { SecurityService } from '../../services/security.service';
+import { User } from '../../rest-api-client';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 

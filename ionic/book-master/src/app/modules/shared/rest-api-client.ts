@@ -35,6 +35,7 @@ export interface User extends Serializable, IModel {
     email: string;
     firstName: string;
     lastName: string;
+    provider: Provider;
     reservations: Reservation[];
     userId: string;
     username: string;
