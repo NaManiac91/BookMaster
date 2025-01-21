@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from 'src/app/modules/shared/rest-api-client';
+import {Service, User} from 'src/app/modules/shared/rest-api-client';
 import { SecurityService } from 'src/app/modules/shared/services/security.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class HomeComponent  implements OnInit {
 
   createService() {
     this.router.navigate(['Create'], {queryParams: {
-      type: 'service'
+      type: Service.name
     }});
   }
 }

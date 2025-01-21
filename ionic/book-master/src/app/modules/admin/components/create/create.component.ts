@@ -1,10 +1,10 @@
-import { Component, inject, OnInit, Type } from '@angular/core';
-import { AdminService } from '../../services/admin.service';
-import { IModel, User } from 'src/app/modules/shared/rest-api-client';
-import { SecurityService } from 'src/app/modules/shared/services/security.service';
-import { ActivatedRoute } from '@angular/router';
-import { ProviderCreateComponent } from 'src/app/modules/shared/components/provider/provider-create/provider-create.component';
-import { ServiceCreateComponent } from 'src/app/modules/shared/components/service/service-create/service-create.component';
+import {Component, inject, OnInit, Type, ViewChild} from '@angular/core';
+import {AdminService} from '../../services/admin.service';
+import {IModel, Service, User} from 'src/app/modules/shared/rest-api-client';
+import {SecurityService} from 'src/app/modules/shared/services/security.service';
+import {ActivatedRoute} from '@angular/router';
+import {ObjectProfileView} from "../../../common/object-profile/services/object-profile.service";
+import {ObjectProfileComponent} from "../../../common/object-profile/components/object-profile.component";
 
 @Component({
   selector: 'app-create',
@@ -12,27 +12,30 @@ import { ServiceCreateComponent } from 'src/app/modules/shared/components/servic
   styleUrls: ['./create.component.scss'],
 })
 export class CreateComponent  implements OnInit {
-  entityToCreate!: Type<IModel>;
-  users: User[] = [];
   user!: User;
   private activatedRoute = inject(ActivatedRoute);
-  private type!: string;
+  type!: string;
+  view: ObjectProfileView = ObjectProfileView.Create;
+  private object!: IModel;
 
-  object: any = null;
+  @ViewChild(ObjectProfileComponent) profileComponent!: ObjectProfileComponent;
+
   constructor(private adminService: AdminService,
               private securityService: SecurityService
   ) { }
 
   ngOnInit() {
     this.user = this.securityService.loggedUser;
-    this.type = this.activatedRoute.snapshot.paramMap.get('type') as string;
+    this.type = this.activatedRoute.snapshot.queryParams['type'];
   }
 
-  getCreateComponent(): Type<any> {
-    return this.type == 'provider' ? ProviderCreateComponent : ServiceCreateComponent;
+  onChangeInstance(object: IModel) {
+    this.object = object;
   }
 
   create() {
-
+    this.adminService.createService(<Service>this.object).subscribe(() => {
+      console.log('Service created');
+    });
   }
 }

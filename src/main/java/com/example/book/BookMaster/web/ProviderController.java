@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.services.AdminService;
 
 @RestController
@@ -36,14 +37,14 @@ public class ProviderController {
         return new ResponseEntity<String>("Service added to provider", HttpStatus.OK);
 	}
 	
-	/*@PostMapping()
+	@PostMapping()
 	@RequestMapping(path = "/createService")
-	public ResponseEntity<String> createService(@RequestBody @Validated AddServiceDTO request) {
+	public ResponseEntity<String> createService(@RequestBody @Validated CreateServiceDTO request) {
 		try {
-		 this.adminService.createService(UUID.fromString(request.providerId), UUID.fromString(request.serviceId));
+		 this.adminService.createService(new Service(request.name, request.description, request.tags, request.price, request.time), request.providerId);
 		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-        return new ResponseEntity<String>("Service added to provider", HttpStatus.OK);
-	}*/
+        return new ResponseEntity<String>("Service Created", HttpStatus.OK);
+	}
 }

@@ -43,6 +43,11 @@ public class AdminService {
 		return this.serviceRepo.save(new Service(name));
 	}
 	
+	public Service createService(Service service, UUID providerId) {
+		service.setProvider(this.providerRepo.findById(providerId).get());
+		return this.serviceRepo.save(service);
+	}
+	
 	public Provider createProvider(String name) {
 		return this.providerRepo.save(new Provider(name));
 	}
