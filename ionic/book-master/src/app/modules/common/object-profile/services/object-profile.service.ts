@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {IModel} from "../../../shared/rest-api-client";
 
 export enum ObjectProfileView {
@@ -50,6 +50,7 @@ export class ObjectProfileService {
         cached = this.cache[type] = profile;
       }
     }
+
     return cached.component;
   }
 }

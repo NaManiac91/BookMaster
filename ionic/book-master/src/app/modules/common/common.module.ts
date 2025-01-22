@@ -6,12 +6,14 @@ import { HomeComponent } from './components/home/home.component';
 import { ModalInfoComponent } from './components/modal-info/modal-info.component';
 import { ReservationsListComponent } from './components/reservations-list/reservations-list.component';
 import {ObjectProfileService} from "./object-profile/services/object-profile.service";
+import {ComponentLoaderComponent} from "./object-profile/components/component-loader.component";
 
 const components = [
   ObjectProfileComponent,
   HomeComponent,
   ModalInfoComponent,
-  ReservationsListComponent
+  ReservationsListComponent,
+  ComponentLoaderComponent
 ];
 
 const services = [

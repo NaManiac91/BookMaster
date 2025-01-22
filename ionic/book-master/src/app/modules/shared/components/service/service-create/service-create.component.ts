@@ -16,9 +16,9 @@ import {
   styleUrls: ['./service-create.component.scss'],
 })
 export class ServiceCreateComponent implements OnInit, IProfileComponent {
-  object: Service = new Service();
+  object!: Service;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
 

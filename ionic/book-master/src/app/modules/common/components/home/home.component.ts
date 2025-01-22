@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {Service, User} from 'src/app/modules/shared/rest-api-client';
-import { SecurityService } from 'src/app/modules/shared/services/security.service';
+import { SecurityService } from 'src/app/modules/shared/services/security/security.service';
 
 @Component({
   selector: 'app-home',

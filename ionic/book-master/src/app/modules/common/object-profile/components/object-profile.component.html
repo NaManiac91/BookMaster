@@ -1,1 +1,1 @@
-<ng-container *ngComponentOutlet="profileComponent"></ng-container>
+<app-component-loader *ngIf="profileComponent" [component]="profileComponent" [object]="object" (instance)="instance.emit($event)"></app-component-loader>

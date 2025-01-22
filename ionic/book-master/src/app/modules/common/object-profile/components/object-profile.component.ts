@@ -1,6 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { IModel } from '../../../shared/rest-api-client';
-import {ObjectProfileService, ObjectProfileView} from "../services/object-profile.service";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  Type,
+} from '@angular/core';
+import {IModel} from '../../../shared/rest-api-client';
+import { ObjectProfileService, ObjectProfileView} from "../services/object-profile.service";
 
 @Component({
   selector: 'app-object-profile',
@@ -13,8 +20,14 @@ export class ObjectProfileComponent  implements OnInit {
 
   private _type!: string;
   private _object!: any;
-  @Input() set object(value: string | IModel) {
-    this._object = value;
+  @Input() set object(value: Type<IModel> | IModel) {
+    if (typeof this._object === 'object') {
+      this._object = value;
+    } else {
+      this._object = new(value as Type<IModel>);
+    }
+    this._type = typeof this._object === 'object' ? this._object.$t : this._object;
+
 
     this.updateProfile();
   }
@@ -25,12 +38,11 @@ export class ObjectProfileComponent  implements OnInit {
 
   @Output() instance = new EventEmitter();
 
-  constructor(private objectProfileService: ObjectProfileService) { }
+  constructor(private objectProfileService: ObjectProfileService){}
 
   ngOnInit() {}
 
   updateProfile() {
-    this._type = typeof this._object === 'object' ? this._object.$t : this._object;
     this.profileComponent = this.objectProfileService.getObjectProfile(this._type, ObjectProfileView.Create);
   }
 }
