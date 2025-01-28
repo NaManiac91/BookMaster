@@ -1,0 +1,13 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>{{ object.name }}</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-list>
+      <ion-item *ngFor="let service of object.services">
+        <span>{{service.name}} - {{service.description}}</span>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>
