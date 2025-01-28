@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SecurityService } from '../shared/services/security/security.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-folder',

@@ -30,10 +30,10 @@ public class BookMasterApplication implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception  {
-		this.initProviders();
-		this.initServices();
+		//this.initProviders();
+		//this.initServices();
 
-		this.initUsers();
+		//this.initUsers();
 	}
 	
 	private void initProviders() {

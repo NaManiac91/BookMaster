@@ -7,12 +7,12 @@ import java.util.UUID;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -30,9 +30,8 @@ public class Reservation implements Serializable, IModel {
 	@NonNull()
 	private Date date;
 	
-	@OneToOne
-	@NonNull()
-	@JsonIgnore
+	@ManyToOne
+	@JsonBackReference
 	private User user;
 	
 	@OneToOne

@@ -21,7 +21,7 @@ export class ObjectProfileComponent  implements OnInit {
   private _type!: string;
   private _object!: any;
   @Input() set object(value: Type<IModel> | IModel) {
-    if (typeof this._object === 'object') {
+    if (typeof value === 'object') {
       this._object = value;
     } else {
       this._object = new(value as Type<IModel>);
@@ -43,6 +43,6 @@ export class ObjectProfileComponent  implements OnInit {
   ngOnInit() {}
 
   updateProfile() {
-    this.profileComponent = this.objectProfileService.getObjectProfile(this._type, ObjectProfileView.Create);
+    this.profileComponent = this.objectProfileService.getObjectProfile(this._type, this.view);
   }
 }

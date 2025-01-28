@@ -2,7 +2,7 @@ import {Component, inject, OnInit, Type, ViewChild} from '@angular/core';
 import {AdminService} from '../../services/admin.service';
 import {IModel, Service, User} from 'src/app/modules/shared/rest-api-client';
 import {SecurityService} from 'src/app/modules/shared/services/security/security.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ObjectProfileView} from "../../../common/object-profile/services/object-profile.service";
 import {ObjectProfileComponent} from "../../../common/object-profile/components/object-profile.component";
 import {ModelInitializerService} from "../../../shared/services/model-initializer/model-initializer.service";
@@ -17,13 +17,14 @@ export class CreateComponent  implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   type!: Type<IModel>;
   view: ObjectProfileView = ObjectProfileView.Create;
-  private object!: IModel;
+  object!: IModel;
 
   @ViewChild(ObjectProfileComponent) profileComponent!: ObjectProfileComponent;
 
   constructor(private adminService: AdminService,
               private securityService: SecurityService,
-              private modelInitializerService: ModelInitializerService
+              private modelInitializerService: ModelInitializerService,
+              private router: Router
   ) { }
 
   ngOnInit() {
@@ -32,8 +33,9 @@ export class CreateComponent  implements OnInit {
   }
 
   create() {
-    this.adminService.createService(<Service>this.object).subscribe(() => {
-      console.log('Service created');
+    this.adminService.createService(<Service>this.object, this.user.provider.providerId).subscribe(provider => {
+      this.securityService.setProvider(provider);
+      this.router.navigate(['']);
     });
   }
 }

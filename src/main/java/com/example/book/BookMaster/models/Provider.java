@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -17,6 +16,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Provider implements Serializable, IModel {
@@ -48,9 +48,12 @@ public class Provider implements Serializable, IModel {
 	@Column
 	private String type;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
-	private Set<Service> services = new HashSet<Service>();
+	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
+	@JsonManagedReference
+    private Set<Service> services = new HashSet<>();
+
+	@OneToOne
+	private User user;
 
 	protected Provider() {
 		// TODO Auto-generated constructor stub
@@ -139,5 +142,13 @@ public class Provider implements Serializable, IModel {
 
 	public UUID getProviderId() {
 		return providerId;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

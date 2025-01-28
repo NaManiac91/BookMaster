@@ -10,7 +10,10 @@
 </ion-card>
 
 <div class="content">
-  <ion-button [disabled]="!user.provider" (click)="createService()">Create Service</ion-button>
+  <div *ngIf="provider">
+    <app-object-profile [object]="provider" [view]="view"></app-object-profile>
+    <ion-button (click)="createService()">Create Service</ion-button>
+  </div>
 
-  <app-reservations-list [list]="user.reservations"></app-reservations-list>  
+  <app-reservations-list [list]="user.reservations"></app-reservations-list>
 </div>

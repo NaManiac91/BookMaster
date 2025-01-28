@@ -9,11 +9,13 @@ import { ProviderCreateComponent } from "./components/provider/provider-create/p
 import { LoginComponent } from "./components/login/login.component";
 import { UserDetailComponent } from "./components/user/user-detail/user-detail.component";
 import {ModelInitializerService} from "./services/model-initializer/model-initializer.service";
+import {ProviderConsultComponent} from "./components/provider/provider-consult/provider-consult.component";
 
 const components = [
     LoginComponent,
     ServiceCreateComponent,
     ProviderCreateComponent,
+  ProviderConsultComponent,
     UserDetailComponent
 ];
 

@@ -43,6 +43,7 @@ public class Service implements Serializable, IModel {
 	private Float time;	// in hour
 	
 	@ManyToOne
+	@JsonBackReference
 	private Provider provider;
 	
 	public String getName() {
