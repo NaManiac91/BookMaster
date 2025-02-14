@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
 import {Provider} from "../../../rest-api-client";
 
@@ -11,10 +11,12 @@ import {Provider} from "../../../rest-api-client";
   templateUrl: './provider-consult.component.html',
   styleUrls: ['./provider-consult.component.scss'],
 })
-export class ProviderConsultComponent  implements OnInit {
+export class ProviderConsultComponent {
   object!: Provider;
+  closed = false;
   constructor() { }
 
-  ngOnInit() {}
-
+  open() {
+    this.closed = !this.closed;
+  }
 }

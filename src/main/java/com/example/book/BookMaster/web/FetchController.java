@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.book.BookMaster.models.Provider;
+import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.models.User;
 import com.example.book.BookMaster.services.FetchService;
@@ -49,6 +50,13 @@ public class FetchController {
 	public ResponseEntity<Optional<User>> getUserByUsername(@RequestParam @Validated String username) {
 		Optional<User> response = this.fetchService.getUserByUsername(username);
 
+		/* Fill the providerName (the serializer avoid the Provider from the service) */
+		if (response.isPresent()) {
+			for(Reservation r : response.get().getReservations()) {
+				r.fillProviderName();
+			}
+		}
+		
         return new ResponseEntity<Optional<User>>(response, HttpStatus.OK);
 	}
 	

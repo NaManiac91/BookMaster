@@ -81,4 +81,8 @@ public class AdminService {
 		this.userRepo.save(user);
 	}
 	
+	public void updateProvider(Provider provider) {
+		this.providerRepo.save(provider);
+	}
+	
 }

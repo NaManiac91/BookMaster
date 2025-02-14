@@ -3,7 +3,8 @@
     <ion-label>Reservations</ion-label>
   </ion-list-header>
   <ion-item *ngFor="let reservation of list">
-    <ion-label>{{reservation.date | date : 'd/M/yy'}} - {{reservation.service.name}} </ion-label>
+    <ion-label>{{reservation.date | date : 'd/M/yy'}} - {{reservation.providerName}} - {{reservation.service.name}}</ion-label>
     <ion-icon name="eye-outline" (click)="showServiceInfo(reservation.service)"></ion-icon>
   </ion-item>
+  <ion-item *ngIf="list.length === 0">Ancora Nessuna Prenotazione</ion-item>
 </ion-list>

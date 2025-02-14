@@ -51,4 +51,18 @@ public class AdminController {
 		}
         return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
 	}
+	
+	@PostMapping()
+	@RequestMapping(path = "/updateDescriptionProvider")
+	public ResponseEntity<Provider> updateDescriptionProvider(@RequestBody @Validated UpdateDescriptionProviderDTO request) {
+		UUID providerId = UUID.fromString(request.providerId);
+		try {
+			Provider p = this.fetchService.getProvider(providerId).get();
+			p.setDescription(request.description);
+			this.adminService.updateProvider(p);
+		} catch (Exception e) {
+			return new ResponseEntity<Provider>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        return new ResponseEntity<Provider>(this.fetchService.getProvider(providerId).get(), HttpStatus.OK);
+	}
 }

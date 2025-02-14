@@ -41,6 +41,8 @@ public class Reservation implements Serializable, IModel {
 	@Column
 	private String note;
 	
+	private String providerName;
+	
 	public Reservation() {
 		// TODO Auto-generated constructor stub
 	}
@@ -95,4 +97,15 @@ public class Reservation implements Serializable, IModel {
 	}
 	
 
+	public String getProviderName() {
+		return providerName;
+	}
+
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+
+	public void fillProviderName() {
+		this.providerName = this.getService().getProvider().getName();
+	}
 }

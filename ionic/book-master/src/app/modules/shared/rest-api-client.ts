@@ -44,6 +44,7 @@ export class Reservation extends IModel implements Serializable {
     reservationId!: string;
     service!: Service;
     user!: User;
+  providerName!: string;
   override readonly $t = 'Reservation';
 }
 

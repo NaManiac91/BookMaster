@@ -1,12 +1,12 @@
 <ion-card>
-  <ion-card-header>
+  <ion-card-header (click)="open()" color="tertiary">
     <ion-card-title>{{ object.name }}</ion-card-title>
   </ion-card-header>
 
-  <ion-card-content>
+  <ion-card-content *ngIf="closed">
     <ion-list>
       <ion-item *ngFor="let service of object.services">
-        <span>{{service.name}} - {{service.description}}</span>
+        <ion-label>{{service.name}} - {{service.description}}</ion-label>
       </ion-item>
     </ion-list>
   </ion-card-content>
