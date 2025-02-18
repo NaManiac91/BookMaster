@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Reservation, Service } from 'src/app/modules/shared/rest-api-client';
-import { ModalInfoComponent } from '../modal-info/modal-info.component';
+import { ModalInfoComponent } from '../../modal/modal-info/modal-info.component';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -15,18 +15,18 @@ export class ReservationsListComponent  implements OnInit {
 
   ngOnInit() {}
 
-  
+
   async showServiceInfo(service: Service) {
     const modal = await this.modalCtrl.create({
       component: ModalInfoComponent,
-      componentProps: {data : {title: 'Service Info', info: service.name}}
+      componentProps: {data : {title: 'Service Info', info: [service.name]}}
     });
-    modal.present();
+    await modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-      
+
     }
   }
 }

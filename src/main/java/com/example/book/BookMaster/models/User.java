@@ -1,8 +1,8 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
@@ -13,6 +13,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -27,7 +28,7 @@ public class User implements Serializable, IModel {
 	private static final long serialVersionUID = -8947498823029486036L;
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID userId;
 	
 	@Column
@@ -44,9 +45,9 @@ public class User implements Serializable, IModel {
 	@Column
 	private String firstName;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
 	@JsonManagedReference
-	private List<Reservation> reservations = new ArrayList<Reservation>();
+	private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	@OneToOne
 	private Provider provider;
@@ -107,11 +108,11 @@ public class User implements Serializable, IModel {
 		this.email = email;
 	}
 	
-	public List<Reservation> getReservations() {
+	public Set<Reservation> getReservations() {
 		return reservations;
 	}
 
-	public void setReservations(List<Reservation> reservations) {
+	public void setReservations(Set<Reservation> reservations) {
 		this.reservations = reservations;
 	}
 	

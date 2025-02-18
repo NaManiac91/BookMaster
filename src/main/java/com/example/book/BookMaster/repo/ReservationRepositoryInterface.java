@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.example.book.BookMaster.models.Reservation;
 
-@RestResource()
+@RestResource(exported = false)
 public interface ReservationRepositoryInterface extends CrudRepository<Reservation, UUID> {
 	
 }

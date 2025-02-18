@@ -3,11 +3,13 @@ import { FetchService } from './services/fetch-service/fetch.service';
 import { SharedModule } from '../shared/shared.module';
 import { ObjectProfileComponent } from './object-profile/components/object-profile.component';
 import { HomeComponent } from './components/home/home.component';
-import { ModalInfoComponent } from './components/modal-info/modal-info.component';
-import { ReservationsListComponent } from './components/reservations-list/reservations-list.component';
+import { ModalInfoComponent } from './components/modal/modal-info/modal-info.component';
+import { ReservationsListComponent } from './components/list/reservations-list/reservations-list.component';
 import {ObjectProfileService} from "./object-profile/services/object-profile.service";
 import {ComponentLoaderComponent} from "./object-profile/components/component-loader.component";
-import {ProvidersListComponent} from "./components/providers-list/providers-list.component";
+import {ProvidersListComponent} from "./components/list/providers-list/providers-list.component";
+import {ServicesListComponent} from "./components/list/services-list/services-list.component";
+import {ClientService} from "./services/client-service/client.service";
 
 const components = [
   ObjectProfileComponent,
@@ -15,12 +17,14 @@ const components = [
   ModalInfoComponent,
   ReservationsListComponent,
   ComponentLoaderComponent,
-  ProvidersListComponent
+  ProvidersListComponent,
+  ServicesListComponent
 ];
 
 const services = [
   FetchService,
-  ObjectProfileService
+  ObjectProfileService,
+  ClientService
 ];
 
 @NgModule({
