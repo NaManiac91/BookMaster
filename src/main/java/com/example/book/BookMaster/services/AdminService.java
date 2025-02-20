@@ -12,7 +12,6 @@ import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.models.User;
 import com.example.book.BookMaster.repo.ProviderRepositoryInterface;
-import com.example.book.BookMaster.repo.ReservationRepositoryInterface;
 import com.example.book.BookMaster.repo.ServiceRepositoryInterface;
 import com.example.book.BookMaster.repo.UserRepositoryInterface;
 
@@ -21,18 +20,15 @@ public class AdminService {
 	private UserRepositoryInterface userRepo;
 	private ServiceRepositoryInterface serviceRepo;
 	private ProviderRepositoryInterface providerRepo;
-	private ReservationRepositoryInterface reservationRepo;
 	
 	@Autowired
 	public AdminService(
 			UserRepositoryInterface userRepo, 
 			ServiceRepositoryInterface serviceRepo, 
-			ProviderRepositoryInterface providerRepo,
-			ReservationRepositoryInterface reservationRepo) {
+			ProviderRepositoryInterface providerRepo) {
 		this.userRepo = userRepo;
 		this.serviceRepo = serviceRepo;
 		this.providerRepo = providerRepo;
-		this.reservationRepo = reservationRepo;
 	}
 
 	public User createUser(String username, String email) {

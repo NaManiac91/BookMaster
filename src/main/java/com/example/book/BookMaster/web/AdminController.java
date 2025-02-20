@@ -30,8 +30,7 @@ public class AdminController {
 		this.fetchService = fetchService;
 	}
 	
-	@PostMapping()
-	@RequestMapping(path = "/addService")
+	@PostMapping(path = "/addService")
 	public ResponseEntity<String> addService(@RequestBody @Validated AddServiceDTO request) {
 		try {
 		 this.adminService.addService(UUID.fromString(request.providerId), UUID.fromString(request.serviceId));
@@ -41,8 +40,7 @@ public class AdminController {
         return new ResponseEntity<String>("Service added to provider", HttpStatus.OK);
 	}
 	
-	@PostMapping()
-	@RequestMapping(path = "/createService")
+	@PostMapping(path = "/createService")
 	public ResponseEntity<Provider> createService(@RequestBody @Validated CreateServiceDTO request) {
 		try {
 		 this.adminService.createService(new Service(request.name, request.description, request.tags, request.price, request.time), request.providerId);
@@ -52,8 +50,7 @@ public class AdminController {
         return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
 	}
 	
-	@PostMapping()
-	@RequestMapping(path = "/updateDescriptionProvider")
+	@PostMapping(path = "/updateDescriptionProvider")
 	public ResponseEntity<Provider> updateDescriptionProvider(@RequestBody @Validated UpdateDescriptionProviderDTO request) {
 		UUID providerId = UUID.fromString(request.providerId);
 		try {

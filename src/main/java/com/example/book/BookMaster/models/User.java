@@ -28,7 +28,7 @@ public class User implements Serializable, IModel {
 	private static final long serialVersionUID = -8947498823029486036L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private UUID userId;
 	
 	@Column
@@ -45,8 +45,8 @@ public class User implements Serializable, IModel {
 	@Column
 	private String firstName;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-	@JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	@JsonManagedReference("userId")
 	private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	@OneToOne

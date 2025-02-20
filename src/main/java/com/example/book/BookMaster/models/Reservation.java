@@ -15,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Reservation implements Serializable, IModel {
@@ -25,7 +24,7 @@ public class Reservation implements Serializable, IModel {
 	private static final long serialVersionUID = -2884993227154328339L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
 	private UUID reservationId;
 	
 	@Column
@@ -33,21 +32,28 @@ public class Reservation implements Serializable, IModel {
 	private Date date;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_user_id")
-	@JsonBackReference
+	@JoinColumn(name = "user_id")
+	@JsonBackReference("userId")
 	private User user;
 	
-	@OneToOne
-	@NonNull()
+	@ManyToOne
+	@JoinColumn(name = "service_id")
+	@JsonBackReference("serviceId")
 	private Service service;
 	
 	@Column
 	private String note;
 	
 	private String providerName;
+	private String serviceName;
 	
 	public Reservation() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Reservation(Date date, String note) {
+		this.date = date;
+		this.note = note;
 	}
 
 	public Reservation(Date date, User user, Service service, String note) {
@@ -107,8 +113,17 @@ public class Reservation implements Serializable, IModel {
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
 	}
+	
+	public String getServiceName() {
+		return serviceName;
+	}
 
-	public void fillProviderName() {
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public void fillReservationInfo() {
 		this.providerName = this.getService().getProvider().getName();
+		this.serviceName = this.getService().getName();
 	}
 }

@@ -9,24 +9,25 @@ import {SecurityService} from "../../../../shared/services/security/security.ser
   templateUrl: './providers-list.component.html',
   styleUrls: ['./providers-list.component.scss'],
 })
-export class ProvidersListComponent  implements OnInit {
+export class ProvidersListComponent implements OnInit {
   providers: Provider[] = [];
-  currentProvider! : Provider;
+  currentProvider!: Provider;
 
   hide: boolean = false;
 
 
   constructor(private fetchService: FetchService,
               private clientService: ClientService,
-              private securityService: SecurityService) { }
+              private securityService: SecurityService) {
+  }
 
   ngOnInit() {
     this.fetchService.getProviders().subscribe(providers => this.providers = providers);
   }
 
   showServices(provider: Provider) {
-      this.hide = true;
-      this.currentProvider = provider;
+    this.hide = true;
+    this.currentProvider = provider;
   }
 
   addReservation(service: Service) {
@@ -36,6 +37,6 @@ export class ProvidersListComponent  implements OnInit {
     reservation.user = this.securityService.loggedUser;
     reservation.note = 'Simple reservation';
 
-    this.clientService.createReservation(reservation).subscribe(() => console.log('Successfully added'));
+    this.clientService.createReservation(reservation).subscribe(reservation => this.securityService.loggedUser.reservations.push(reservation));
   }
 }

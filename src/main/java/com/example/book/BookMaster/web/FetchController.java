@@ -29,55 +29,49 @@ public class FetchController {
 		this.fetchService=  fetchService;
 	}
 
-	@GetMapping()
-	@RequestMapping(path = "/getProvider")
+	@GetMapping(path = "/getProvider")
 	public ResponseEntity<Optional<Provider>> getProvider(@RequestParam @Validated String providerId) {
 		Optional<Provider> response = this.fetchService.getProvider(UUID.fromString(providerId));
 
         return new ResponseEntity<Optional<Provider>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping()
-	@RequestMapping(path = "/getService")
+	@GetMapping(path = "/getService")
 	public ResponseEntity<Optional<Service>> getService(@RequestParam @Validated String serviceId) {
 		Optional<Service> response = this.fetchService.getService(UUID.fromString(serviceId));
 
         return new ResponseEntity<Optional<Service>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping()
-	@RequestMapping(path = "/getUserByUsername")
+	@GetMapping(path = "/getUserByUsername")
 	public ResponseEntity<Optional<User>> getUserByUsername(@RequestParam @Validated String username) {
 		Optional<User> response = this.fetchService.getUserByUsername(username);
 
 		/* Fill the providerName (the serializer avoid the Provider from the service) */
 		if (response.isPresent()) {
 			for(Reservation r : response.get().getReservations()) {
-				r.fillProviderName();
+				r.fillReservationInfo();
 			}
 		}
 		
         return new ResponseEntity<Optional<User>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping()
-	@RequestMapping(path = "/getServices")
+	@GetMapping(path = "/getServices")
 	public ResponseEntity<List<Service>> getService() {
 		List<Service> response = this.fetchService.getServices();
 
         return new ResponseEntity<List<Service>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping()
-	@RequestMapping(path = "/getProviders")
+	@GetMapping(path = "/getProviders")
 	public ResponseEntity<List<Provider>> getProviders() {
 		List<Provider> response = this.fetchService.getProviders();
 
         return new ResponseEntity<List<Provider>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping()
-	@RequestMapping(path = "/getUsers")
+	@GetMapping(path = "/getUsers")
 	public ResponseEntity<List<User>> getUsers() {
 		List<User> response = this.fetchService.getUsers();
 

@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Reservation} from "../../../shared/rest-api-client";
-import { Observable } from 'rxjs';
+import {Observable, map} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +9,11 @@ import { Observable } from 'rxjs';
 export class ClientService {
   private readonly api = 'api/client/';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+  }
 
   createReservation(reservation: Reservation): Observable<Reservation> {
     return <Observable<Reservation>>this.httpClient.post(this.api + '/createReservation', reservation)
+      .pipe(map(reservation => Object.assign(new Reservation(), reservation)));
   }
 }

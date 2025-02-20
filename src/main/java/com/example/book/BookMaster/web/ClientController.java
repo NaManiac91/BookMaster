@@ -1,7 +1,5 @@
 package com.example.book.BookMaster.web;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.http.HttpStatus;
@@ -29,13 +27,10 @@ public class ClientController {
 		this.fetchService = fetchService;
 	}
 	
-	@PostMapping()
-	@RequestMapping(path = "/createReservation")
-	public ResponseEntity<Reservation> createReservation(@RequestBody @Validated Reservation request) {
+	@PostMapping(path = "/createReservation")
+	public ResponseEntity<Reservation> createReservation(@RequestBody @Validated Reservation reservation) {
 		try {
-		  Reservation reservation = this.clientService.createReservation(request);
-
-		  return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+		  return new ResponseEntity<Reservation>(this.clientService.createReservation(reservation), HttpStatus.OK);
 
 		} catch (Exception e) {
 			return new ResponseEntity<Reservation>(HttpStatus.INTERNAL_SERVER_ERROR);
