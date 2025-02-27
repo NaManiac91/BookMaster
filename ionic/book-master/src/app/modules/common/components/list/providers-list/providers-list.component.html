@@ -1,4 +1,4 @@
-<ion-card *ngIf="!hide">
+<ion-card>
   <ion-card-header color="tertiary">
     <ion-card-title>I nostri partners</ion-card-title>
   </ion-card-header>
@@ -20,19 +20,4 @@
       </ion-item>
     </ion-list>
   </ion-card-content>
-</ion-card>
-
-
-<ion-card *ngIf="hide">
-  <ion-card-header color="tertiary">
-    <ion-card-title>
-      <span>{{ currentProvider.name }}</span>
-
-      <ion-button size="small" color="light" style="float: right" (click)="hide = false">
-        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
-      </ion-button>
-    </ion-card-title>
-  </ion-card-header>
-
-  <app-services-list [services]="currentProvider.services" [selectable]="true" (selected)="addReservation($event)"></app-services-list>
 </ion-card>

@@ -16,6 +16,9 @@ import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.services.AdminService;
 import com.example.book.BookMaster.services.FetchService;
+import com.example.book.BookMaster.web.DTO.AddServiceDTO;
+import com.example.book.BookMaster.web.DTO.CreateServiceDTO;
+import com.example.book.BookMaster.web.DTO.UpdateDescriptionProviderDTO;
 
 @RestController
 @RequestMapping(path = "/admin")

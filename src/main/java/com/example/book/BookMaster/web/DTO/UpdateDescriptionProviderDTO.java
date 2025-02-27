@@ -1,4 +1,4 @@
-package com.example.book.BookMaster.web;
+package com.example.book.BookMaster.web.DTO;
 
 public class UpdateDescriptionProviderDTO {
 	public String providerId;

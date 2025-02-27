@@ -1,4 +1,4 @@
-package com.example.book.BookMaster.web;
+package com.example.book.BookMaster.web.DTO;
 
 public class AddServiceDTO {
 	public String providerId;

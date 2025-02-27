@@ -1,9 +1,21 @@
-<ion-list>
-  <ion-item *ngFor="let service of services">
-    <ion-label>{{service.name}} - {{service.description}}</ion-label>
+<ion-card>
+  <ion-card-header *ngIf="provider" color="tertiary">
+    <ion-card-title>
+      <span>{{ provider.name }}</span>
 
-    <ion-button *ngIf="selectable" item-right (click)="selected.emit(service)">
-      <ion-icon name="add-circle-outline"></ion-icon>
-    </ion-button>
-  </ion-item>
-</ion-list>
+      <ion-button size="small" color="light" style="float: right" (click)="return()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-card-title>
+  </ion-card-header>
+
+  <ion-list>
+    <ion-item *ngFor="let service of services">
+      <ion-label>{{ service.name }} - {{ service.description }}</ion-label>
+
+      <ion-button *ngIf="selectable" item-right (click)="selectService(service)">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-card>

@@ -29,7 +29,7 @@ public class Service implements Serializable, IModel {
 	private static final long serialVersionUID = -7227006511893711900L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID serviceId;
 	
 	@Column

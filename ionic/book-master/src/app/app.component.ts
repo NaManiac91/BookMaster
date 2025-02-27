@@ -9,12 +9,8 @@ import { SecurityService } from './modules/shared/services/security/security.ser
 export class AppComponent implements OnInit {
   appPages = [
     { title: 'Home', url: '/Home', icon: 'home' },
-    { title: 'Providers', url: '/Providers', icon: 'storefront' },
-    { title: 'Archived', url: '/Archived', icon: 'archive' },
-    { title: 'Trash', url: '/Trash', icon: 'trash' },
-    { title: 'Spam', url: '/Spam', icon: 'warning' },
+    { title: 'Providers', url: '/Providers', icon: 'storefront' }
   ];
-  labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
   isLogged: boolean = false;
 

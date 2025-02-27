@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import {Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
 import { SecurityService } from 'src/app/modules/shared/services/security/security.service';
@@ -15,7 +15,8 @@ export class HomeComponent  implements OnInit {
   view: ObjectProfileView = ObjectProfileView.Consult;
 
   constructor(private securityService: SecurityService,
-              private router: Router
+              private router: Router,
+              private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -31,6 +32,8 @@ export class HomeComponent  implements OnInit {
       this.user.provider = Object.assign(new Provider(), this.user.provider);
       this.provider = this.user.provider;
     }
+
+    this.changeDetectorRef.detectChanges();
   }
 
   createService() {

@@ -3,6 +3,8 @@ import {FetchService} from "../../../services/fetch-service/fetch.service";
 import {Provider, Reservation, Service} from "../../../../shared/rest-api-client";
 import {ClientService} from "../../../services/client-service/client.service";
 import {SecurityService} from "../../../../shared/services/security/security.service";
+import {Router} from "@angular/router";
+import {NavController} from "@ionic/angular";
 
 @Component({
   selector: 'app-providers-list',
@@ -11,23 +13,32 @@ import {SecurityService} from "../../../../shared/services/security/security.ser
 })
 export class ProvidersListComponent implements OnInit {
   providers: Provider[] = [];
-  currentProvider!: Provider;
-
-  hide: boolean = false;
-
 
   constructor(private fetchService: FetchService,
               private clientService: ClientService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private navCtrl: NavController,
+              private router: Router) {
   }
 
   ngOnInit() {
     this.fetchService.getProviders().subscribe(providers => this.providers = providers);
+
+    const curretNavigation = this.router.getCurrentNavigation();
+
+    if (curretNavigation && curretNavigation.extras && curretNavigation.extras.state && curretNavigation.extras.state['service']) {
+      this.addReservation(curretNavigation.extras.state['service']);
+    }
   }
 
   showServices(provider: Provider) {
-    this.hide = true;
-    this.currentProvider = provider;
+    this.navCtrl.navigateRoot('Services', {
+      state: {
+        provider: provider,
+        selectable: true,
+        previousNavigation: 'Providers'
+      }
+    });
   }
 
   addReservation(service: Service) {
@@ -37,6 +48,9 @@ export class ProvidersListComponent implements OnInit {
     reservation.user = this.securityService.loggedUser;
     reservation.note = 'Simple reservation';
 
-    this.clientService.createReservation(reservation).subscribe(reservation => this.securityService.loggedUser.reservations.push(reservation));
+    this.clientService.createReservation(reservation).subscribe(reservation => {
+      this.securityService.loggedUser.reservations.push(reservation);
+      this.securityService.userChange$.next(this.securityService.loggedUser);
+    });
   }
 }

@@ -4,7 +4,6 @@ import {IModel, Service, User} from 'src/app/modules/shared/rest-api-client';
 import {SecurityService} from 'src/app/modules/shared/services/security/security.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ObjectProfileView} from "../../../common/object-profile/services/object-profile.service";
-import {ObjectProfileComponent} from "../../../common/object-profile/components/object-profile.component";
 import {ModelInitializerService} from "../../../shared/services/model-initializer/model-initializer.service";
 
 @Component({
@@ -18,8 +17,6 @@ export class CreateComponent  implements OnInit {
   type!: Type<IModel>;
   view: ObjectProfileView = ObjectProfileView.Create;
   object!: IModel;
-
-  @ViewChild(ObjectProfileComponent) profileComponent!: ObjectProfileComponent;
 
   constructor(private adminService: AdminService,
               private securityService: SecurityService,

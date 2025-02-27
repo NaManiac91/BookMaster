@@ -9,6 +9,7 @@
         <ion-button *ngFor="let p of appPages; let i = index" routerDirection="root" [routerLink]="[p.url]"
                     lines="none" detail="false" routerLinkActive="selected">
           <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon + '-sharp'"></ion-icon>
+          <ion-label>{{p.title}}</ion-label>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>

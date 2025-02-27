@@ -28,7 +28,7 @@ public class User implements Serializable, IModel {
 	private static final long serialVersionUID = -8947498823029486036L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID userId;
 	
 	@Column
