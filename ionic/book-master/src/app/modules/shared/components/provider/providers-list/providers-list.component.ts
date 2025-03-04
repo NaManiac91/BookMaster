@@ -1,11 +1,17 @@
 import {Component, OnInit} from '@angular/core';
-import {FetchService} from "../../../services/fetch-service/fetch.service";
-import {Provider, Reservation, Service} from "../../../../shared/rest-api-client";
-import {ClientService} from "../../../services/client-service/client.service";
-import {SecurityService} from "../../../../shared/services/security/security.service";
+import {FetchService} from "../../../../common/services/fetch-service/fetch.service";
+import {Provider, Reservation, Service} from "../../../rest-api-client";
+import {ClientService} from "../../../../common/services/client-service/client.service";
+import {SecurityService} from "../../../services/security/security.service";
 import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
+import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
 
+
+@ObjectProfile({
+  view: ObjectProfileView.List,
+  type: Provider
+})
 @Component({
   selector: 'app-providers-list',
   templateUrl: './providers-list.component.html',

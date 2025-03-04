@@ -1,7 +1,8 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import utils.DateUtil;
 
 @Entity
 public class Reservation implements Serializable, IModel {
@@ -29,8 +31,16 @@ public class Reservation implements Serializable, IModel {
 	
 	@Column
 	@NonNull()
-	private Date date;
+    private Integer timeBlockMinutes;
 	
+	@Column
+	@NonNull()
+    private LocalDateTime startDate;
+	
+	@Column
+	@NonNull()
+    private LocalDateTime endDate;
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@JsonBackReference("userId")
@@ -51,13 +61,17 @@ public class Reservation implements Serializable, IModel {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Reservation(Date date, String note) {
-		this.date = date;
+	public Reservation(LocalDateTime startDate, LocalDateTime endDate, int minutes, String note) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.timeBlockMinutes = minutes;
 		this.note = note;
 	}
 
-	public Reservation(Date date, User user, Service service, String note) {
-		this.date = date;
+	public Reservation(LocalDateTime startDate, LocalDateTime endDate, int minutes, User user, Service service, String note) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.timeBlockMinutes = minutes;
 		this.user = user;
 		this.service = service;
 		this.note = note;
@@ -69,14 +83,6 @@ public class Reservation implements Serializable, IModel {
 
 	public Service getService() {
 		return service;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public String getNote() {
@@ -97,8 +103,8 @@ public class Reservation implements Serializable, IModel {
 
 	@Override
 	public String toString() {
-		return "Reservation [reservationId=" + reservationId + ", date=" + date + ", user=" + user + ", service=" + service
-				+ ", note=" + note + "]";
+		return "Reservation [reservationId=" + reservationId + ", startDate=" + this.startDate + ", endDate=" + this.endDate +
+				", user=" + user + ", service=" + service + ", note=" + note + "]";
 	}
 
 	public UUID getReservationId() {
@@ -125,5 +131,33 @@ public class Reservation implements Serializable, IModel {
 	public void fillReservationInfo() {
 		this.providerName = this.getService().getProvider().getName();
 		this.serviceName = this.getService().getName();
+	}
+	
+	public LocalDateTime getStartDate() {
+		return startDate != null ? startDate : DateUtil.createLocalDateTime(LocalDate.now().toString(), "09:00");
+	}
+
+	public void setStartDate(LocalDateTime startDate) {
+		this.startDate = startDate;
+	}
+
+	public LocalDateTime getEndDate() {
+		return endDate != null ? endDate : DateUtil.createLocalDateTime(LocalDate.now().toString(), "10:00");
+	}
+
+	public void setEndDate(LocalDateTime endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getTimeBlockMinutes() {
+		return timeBlockMinutes;
+	}
+
+	public void setTimeBlockMinutes(Integer timeBlockMinutes) {
+		this.timeBlockMinutes = timeBlockMinutes;
+	}
+	
+	public LocalDate getDate() {
+		return this.getStartDate().toLocalDate();
 	}
 }

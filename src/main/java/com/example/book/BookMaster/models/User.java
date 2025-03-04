@@ -50,6 +50,7 @@ public class User implements Serializable, IModel {
 	private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	@OneToOne
+	@JsonManagedReference("userId")
 	private Provider provider;
 	
 	protected User() {

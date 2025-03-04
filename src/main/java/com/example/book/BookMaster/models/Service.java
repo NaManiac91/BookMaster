@@ -46,7 +46,7 @@ public class Service implements Serializable, IModel {
 	private Float price;
 	
 	@Column
-	private Float time;	// in hour
+	private Integer time;	// in minutes
 	
 	@ManyToOne
 	@JsonBackReference
@@ -89,11 +89,11 @@ public class Service implements Serializable, IModel {
 		this.price = price;
 	}
 
-	public Float getTime() {
+	public Integer getTime() {
 		return time;
 	}
 
-	public void setTime(Float time) {
+	public void setTime(Integer time) {
 		this.time = time;
 	}
 
@@ -105,7 +105,7 @@ public class Service implements Serializable, IModel {
 		this.name = name;
 	}
 	
-	public Service(String name, String description, String[] tags, Float price, Float time) {
+	public Service(String name, String description, String[] tags, Float price, int time) {
 		super();
 		this.name = name;
 		this.description = description;

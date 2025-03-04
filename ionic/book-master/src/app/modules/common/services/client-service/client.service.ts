@@ -9,11 +9,14 @@ import {Observable, map} from 'rxjs';
 export class ClientService {
   private readonly api = 'api/client/';
 
-  constructor(private httpClient: HttpClient) {
-  }
+  constructor(private httpClient: HttpClient) { }
 
   createReservation(reservation: Reservation): Observable<Reservation> {
-    return <Observable<Reservation>>this.httpClient.post(this.api + '/createReservation', reservation)
+    return <Observable<Reservation>>this.httpClient.post(this.api + 'createReservation', reservation)
       .pipe(map(reservation => Object.assign(new Reservation(), reservation)));
+  }
+
+  getAvailableTimeSlots(providerId: string): Observable<string[]> {
+    return <Observable<string[]>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId + '&date=2025-02-25');
   }
 }

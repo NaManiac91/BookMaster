@@ -1,12 +1,14 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -48,11 +50,21 @@ public class Provider implements Serializable, IModel {
 	@Column
 	private String type;
 	
+	@Column
+	private LocalTime startTime;
+	
+	@Column
+	private LocalTime endTime;
+	
+	@Column
+	private Integer timeBlockMinutes;	
+
 	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
 	@JsonManagedReference
     private Set<Service> services = new HashSet<>();
 
 	@OneToOne
+	@JsonBackReference
 	private User user;
 
 	protected Provider() {
@@ -63,8 +75,12 @@ public class Provider implements Serializable, IModel {
 		this.name = name;
 	}
 	
+	public Provider(String name, User user) {
+		this.name = name;
+		this.user = user;
+	}
+	
 	public Provider(String name, String description, String address, String email, String phone, String type) {
-		super();
 		this.name = name;
 		this.description = description;
 		this.address = address;
@@ -150,5 +166,29 @@ public class Provider implements Serializable, IModel {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public LocalTime getStartTime() {
+		return startTime != null ? startTime : LocalTime.of(9, 0);
+	}
+
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime != null ? startTime : LocalTime.of(18, 0);
+	}
+
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
+	}
+
+	public Integer getTimeBlockMinutes() {
+		return timeBlockMinutes != null ? timeBlockMinutes : 30;
+	}
+
+	public void setTimeBlockMinutes(Integer timeBlockMinutes) {
+		this.timeBlockMinutes = timeBlockMinutes ;
 	}
 }

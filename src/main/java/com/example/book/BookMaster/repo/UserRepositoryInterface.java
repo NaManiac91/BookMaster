@@ -11,6 +11,9 @@ public interface UserRepositoryInterface extends CrudRepository<User, UUID> {
 	@RestResource(exported = false)
 	User findByUsername(String name);
 	
+	@RestResource(exported = false)
+	User findByProviderProviderId(UUID providerId);
+	
 	@Override
 	@RestResource(exported = false)
 	<S extends User> S save(S entity);

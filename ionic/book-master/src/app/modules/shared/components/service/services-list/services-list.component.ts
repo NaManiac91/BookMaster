@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Service, Provider} from "../../../../shared/rest-api-client";
+import {Service, Provider} from "../../../rest-api-client";
 import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
+import {ClientService} from "../../../../common/services/client-service/client.service";
 
 @Component({
   selector: 'app-services-list',
@@ -18,7 +19,8 @@ export class ServicesListComponent  implements OnInit {
   private previousNavigation!: string;
 
   constructor(private router: Router,
-              private navCtrl: NavController) { }
+              private navCtrl: NavController,
+              private clientService: ClientService) { }
 
   ngOnInit() {
     const curretNavigation = this.router.getCurrentNavigation();
@@ -43,10 +45,12 @@ export class ServicesListComponent  implements OnInit {
   }
 
   selectService(service: Service) {
-    this.selected.emit(service);
+    /*this.selected.emit(service);
 
     if (this.previousNavigation) {
       this.return(service);
-    }
+    }*/
+
+    this.clientService.getAvailableTimeSlots(this.provider.providerId).subscribe(slots => console.log(slots));
   }
 }

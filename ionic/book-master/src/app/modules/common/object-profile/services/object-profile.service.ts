@@ -4,7 +4,8 @@ import {IModel} from "../../../shared/rest-api-client";
 export enum ObjectProfileView {
   Consult,
   Create,
-  Edit
+  Edit,
+  List
 }
 
 export const DEFAULT_VIEW = ObjectProfileView.Consult;
@@ -35,19 +36,23 @@ export function ObjectProfile(config: IObjectProfile) {
   providedIn: 'root'
 })
 export class ObjectProfileService {
-  cache: {[key: string]: any} = {};
+  cache: { [key: string]: any } = {};
 
   constructor() { }
 
-  getObjectProfile(type: string, view: ObjectProfileView) : any {
-    let cached = this.cache[type];
+  getObjectProfile(type: string, view: ObjectProfileView): any {
+    let cached = this.cache[type] && this.cache[type][view] ? this.cache[type][view] : null;
     if (!cached) {
       const profile: IObjectProfile | undefined = objectProfiles.find(profile => profile.view === view && profile.type.name === type);
 
-      if(!profile) {
+      if (!profile) {
         console.log('Object Profile not found');
       } else {
-        cached = this.cache[type] = profile;
+        if (!this.cache[type]) {
+          this.cache[type] = {}
+        }
+        this.cache[type][view] = {};
+        cached = this.cache[type][view] = profile;
       }
     }
 

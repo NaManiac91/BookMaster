@@ -7,6 +7,6 @@ public class CreateServiceDTO {
 	public String description;
 	public String[] tags;
 	public Float price;
-	public Float time;
+	public int time;
 	public UUID providerId;
 }

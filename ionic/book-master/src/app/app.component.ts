@@ -9,7 +9,7 @@ import { SecurityService } from './modules/shared/services/security/security.ser
 export class AppComponent implements OnInit {
   appPages = [
     { title: 'Home', url: '/Home', icon: 'home' },
-    { title: 'Providers', url: '/Providers', icon: 'storefront' }
+    { title: 'Providers', url: '/ReservationWorkflow', icon: 'storefront' }
   ];
 
   isLogged: boolean = false;

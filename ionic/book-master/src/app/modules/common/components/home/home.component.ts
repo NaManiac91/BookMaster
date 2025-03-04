@@ -1,23 +1,24 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
 import {Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
-import { SecurityService } from 'src/app/modules/shared/services/security/security.service';
+import {SecurityService} from 'src/app/modules/shared/services/security/security.service';
 import {ObjectProfileView} from "../../object-profile/services/object-profile.service";
+import {NavController} from "@ionic/angular";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent  implements OnInit {
+export class HomeComponent implements OnInit {
   user!: User;
   provider!: Provider;
   view: ObjectProfileView = ObjectProfileView.Consult;
 
   constructor(private securityService: SecurityService,
-              private router: Router,
-              private changeDetectorRef: ChangeDetectorRef
-  ) { }
+              private changeDetectorRef: ChangeDetectorRef,
+              private navCtrl: NavController
+  ) {
+  }
 
   ngOnInit() {
     this.initUser(this.securityService.loggedUser);
@@ -37,8 +38,10 @@ export class HomeComponent  implements OnInit {
   }
 
   createService() {
-    this.router.navigate(['Create'], {queryParams: {
-      type: Service.name
-    }});
+    this.navCtrl.navigateRoot('Create', {
+      queryParams: {
+        type: Service.name
+      }
+    });
   }
 }

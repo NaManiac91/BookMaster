@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Reservation, Service } from 'src/app/modules/shared/rest-api-client';
-import { ModalInfoComponent } from '../../modal/modal-info/modal-info.component';
+import { ModalInfoComponent } from '../../../../common/components/modal/modal-info/modal-info.component';
 import { ModalController } from '@ionic/angular';
 
 @Component({

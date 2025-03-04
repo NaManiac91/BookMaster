@@ -1,16 +1,16 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, Output } from '@angular/core';
-import { SecurityService } from '../../services/security/security.service';
-import { User } from '../../rest-api-client';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Component, OnInit, Output} from '@angular/core';
+import {SecurityService} from '../../services/security/security.service';
+import {User} from '../../rest-api-client';
+import {Subject} from 'rxjs';
+import {NavController} from "@ionic/angular";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent  implements OnInit {
+export class LoginComponent implements OnInit {
   username!: string;
   password!: string;
 
@@ -18,11 +18,12 @@ export class LoginComponent  implements OnInit {
 
   constructor(private httpClient: HttpClient,
               private securityService: SecurityService,
-              private router: Router) { }
+              private navCtrl: NavController) {
+  }
 
   ngOnInit() {
     if (this.securityService.loggedUser) {
-      this.router.navigate(['']);
+      this.navCtrl.navigateRoot('');
     }
   }
 
