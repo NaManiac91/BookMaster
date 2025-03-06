@@ -67,7 +67,7 @@ public class Provider implements Serializable, IModel {
 	@JsonBackReference
 	private User user;
 
-	protected Provider() {
+	public Provider() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -160,6 +160,10 @@ public class Provider implements Serializable, IModel {
 		return providerId;
 	}
 	
+	public void setProviderId(UUID providerId) {
+		this.providerId = providerId;
+	}
+
 	public User getUser() {
 		return user;
 	}

@@ -53,7 +53,7 @@ public class User implements Serializable, IModel {
 	@JsonManagedReference("userId")
 	private Provider provider;
 	
-	protected User() {
+	public User() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -137,5 +137,9 @@ public class User implements Serializable, IModel {
 
 	public UUID getUserId() {
 		return userId;
+	}
+
+	public void setUserId(UUID userId) {
+		this.userId = userId;
 	}
 }

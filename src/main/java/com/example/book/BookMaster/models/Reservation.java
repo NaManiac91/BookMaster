@@ -2,7 +2,8 @@ package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
@@ -16,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import utils.DateUtil;
 
 @Entity
 public class Reservation implements Serializable, IModel {
@@ -31,15 +31,11 @@ public class Reservation implements Serializable, IModel {
 	
 	@Column
 	@NonNull()
-    private Integer timeBlockMinutes;
-	
+	private LocalDate date;
+
 	@Column
 	@NonNull()
-    private LocalDateTime startDate;
-	
-	@Column
-	@NonNull()
-    private LocalDateTime endDate;
+    private String slots;		//	list of slots in this format ["09:00", "10:00"]
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -61,17 +57,13 @@ public class Reservation implements Serializable, IModel {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Reservation(LocalDateTime startDate, LocalDateTime endDate, int minutes, String note) {
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.timeBlockMinutes = minutes;
+	public Reservation(String slots, String note) {
+		this.slots = slots;
 		this.note = note;
 	}
 
-	public Reservation(LocalDateTime startDate, LocalDateTime endDate, int minutes, User user, Service service, String note) {
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.timeBlockMinutes = minutes;
+	public Reservation(String slots, User user, Service service, String note) {
+		this.slots = slots;
 		this.user = user;
 		this.service = service;
 		this.note = note;
@@ -103,7 +95,7 @@ public class Reservation implements Serializable, IModel {
 
 	@Override
 	public String toString() {
-		return "Reservation [reservationId=" + reservationId + ", startDate=" + this.startDate + ", endDate=" + this.endDate +
+		return "Reservation [reservationId=" + reservationId + ", slots=" + this.slots +
 				", user=" + user + ", service=" + service + ", note=" + note + "]";
 	}
 
@@ -111,6 +103,25 @@ public class Reservation implements Serializable, IModel {
 		return reservationId;
 	}
 	
+	public void setReservationId(UUID reservationId) {
+		this.reservationId = reservationId;
+	}
+	
+	public String getSlots() {
+		return slots != null ? slots : "09:00,12:00";
+	}
+
+	public void setSlots(String slots) {
+		this.slots = slots;
+	}
+	
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
 
 	public String getProviderName() {
 		return providerName;
@@ -133,31 +144,7 @@ public class Reservation implements Serializable, IModel {
 		this.serviceName = this.getService().getName();
 	}
 	
-	public LocalDateTime getStartDate() {
-		return startDate != null ? startDate : DateUtil.createLocalDateTime(LocalDate.now().toString(), "09:00");
-	}
-
-	public void setStartDate(LocalDateTime startDate) {
-		this.startDate = startDate;
-	}
-
-	public LocalDateTime getEndDate() {
-		return endDate != null ? endDate : DateUtil.createLocalDateTime(LocalDate.now().toString(), "10:00");
-	}
-
-	public void setEndDate(LocalDateTime endDate) {
-		this.endDate = endDate;
-	}
-
-	public Integer getTimeBlockMinutes() {
-		return timeBlockMinutes;
-	}
-
-	public void setTimeBlockMinutes(Integer timeBlockMinutes) {
-		this.timeBlockMinutes = timeBlockMinutes;
-	}
-	
-	public LocalDate getDate() {
-		return this.getStartDate().toLocalDate();
+	public List<String> getListSlot() {
+		return Arrays.asList(this.getSlots().split(","));
 	}
 }

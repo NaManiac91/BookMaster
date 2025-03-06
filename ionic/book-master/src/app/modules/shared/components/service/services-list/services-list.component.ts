@@ -18,6 +18,7 @@ export class ServicesListComponent  implements OnInit {
 
   private previousNavigation!: string;
 
+  slots: string[] = [];
   constructor(private router: Router,
               private navCtrl: NavController,
               private clientService: ClientService) { }
@@ -51,6 +52,6 @@ export class ServicesListComponent  implements OnInit {
       this.return(service);
     }*/
 
-    this.clientService.getAvailableTimeSlots(this.provider.providerId).subscribe(slots => console.log(slots));
+    this.clientService.getAvailableTimeSlots(this.provider.providerId).subscribe(slots => this.slots = slots);
   }
 }

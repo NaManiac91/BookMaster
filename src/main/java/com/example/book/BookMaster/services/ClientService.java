@@ -1,7 +1,6 @@
 package com.example.book.BookMaster.services;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +14,6 @@ import com.example.book.BookMaster.repo.ProviderRepositoryInterface;
 import com.example.book.BookMaster.repo.ReservationRepositoryInterface;
 import com.example.book.BookMaster.repo.ServiceRepositoryInterface;
 import com.example.book.BookMaster.repo.UserRepositoryInterface;
-
-import utils.DateUtil;
 
 @org.springframework.stereotype.Service
 public class ClientService {
@@ -35,21 +32,19 @@ public class ClientService {
 		this.providerRepo = providerRepo;
 	}
 	
-	public Reservation createReservation(LocalDate date, String slot, UUID userId, UUID serviceId, String note) {
+	public Reservation createReservation(LocalDate date, String slots, UUID userId, UUID serviceId, String note) {
 		User user = this.userRepo.findById(userId).get();
 		Service service = this.serviceRepo.findById(serviceId).get();
 		Provider provider = user.getProvider();
 		
 		// Check if slot is already booked
 		List<String> slotBooked = this.getSlotBooked(provider.getProviderId(), date);
-        if (this.isTimeSlotAvailable(slotBooked, slot)) {
+        if (this.isTimeSlotAvailable(slotBooked, slots)) {
         	throw new RuntimeException("Slot already booked");
         }
 		
         //Save new Reservation
-        LocalDateTime startDate = DateUtil.createLocalDateTime(date.toString(), slot); 
-        LocalDateTime endDate = DateUtil.createLocalDateTime(date.toString(), DateUtil.parseTime(slot).plusMinutes(provider.getTimeBlockMinutes()).toString());
-		Reservation reservation = new Reservation(startDate, endDate, service.getTime(), note);
+        Reservation reservation = new Reservation(slots, note);
 		
 		user.addReservation(reservation);
 		service.addReservation(reservation);
@@ -69,7 +64,7 @@ public class ClientService {
 
 		List<String> slotBooked = new ArrayList<>();
 		for (Reservation r : reservations) {
-			slotBooked.add(r.getStartDate().toLocalTime().toString());
+			slotBooked.addAll(r.getListSlot());
 		}
 		return slotBooked;
 	}
@@ -84,7 +79,7 @@ public class ClientService {
 		List<String> availableSlots = new ArrayList<>();
         LocalTime currentTime = startTime;
 
-        // Create all slot
+        // Create all slots
         while (currentTime.isBefore(endTime)) {
             LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
             String timeSlot = currentTime.toString();
@@ -94,7 +89,7 @@ public class ClientService {
             currentTime = nextTime;
         }
         
-        // Remove the slot already booked
+        // Remove the slots already booked
         availableSlots.removeAll(this.getSlotBooked(providerId, date));
 
         return availableSlots;

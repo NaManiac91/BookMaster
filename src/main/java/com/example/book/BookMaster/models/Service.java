@@ -97,7 +97,7 @@ public class Service implements Serializable, IModel {
 		this.time = time;
 	}
 
-	protected Service() {
+	public Service() {
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -128,6 +128,10 @@ public class Service implements Serializable, IModel {
 		this.provider = provider;
 	}
 	
+	public Set<Reservation> getReservations() {
+		return reservations;
+	}
+
 	public void setReservations(Set<Reservation> reservations) {
 		this.reservations = reservations;
 	}
@@ -138,5 +142,9 @@ public class Service implements Serializable, IModel {
 
 	public UUID getServiceId() {
 		return serviceId;
+	}
+
+	public void setServiceId(UUID serviceId) {
+		this.serviceId = serviceId;
 	}
 }
