@@ -9,7 +9,7 @@
     </ion-card-title>
   </ion-card-header>
 
-  <ion-list *ngIf="slots.length === 0">
+  <ion-list>
     <ion-item *ngFor="let service of services">
       <ion-label>{{ service.name }} - {{ service.description }}</ion-label>
 
@@ -18,13 +18,4 @@
       </ion-button>
     </ion-item>
   </ion-list>
-
-  <ion-list *ngIf="slots.length > 0">
-    <ion-item *ngFor="let slot of slots">
-      <ion-button>
-        <ion-label>{{ slot }}</ion-label>
-      </ion-button>
-    </ion-item>
-  </ion-list>
-
 </ion-card>

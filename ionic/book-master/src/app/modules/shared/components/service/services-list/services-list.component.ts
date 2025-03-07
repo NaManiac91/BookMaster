@@ -2,8 +2,12 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Service, Provider} from "../../../rest-api-client";
 import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
-import {ClientService} from "../../../../common/services/client-service/client.service";
+import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
 
+@ObjectProfile({
+  view: ObjectProfileView.List,
+  type: Service
+})
 @Component({
   selector: 'app-services-list',
   templateUrl: './services-list.component.html',
@@ -15,21 +19,20 @@ export class ServicesListComponent  implements OnInit {
   @Input() selectable = false;
 
   @Output() selected = new EventEmitter<Service>();
+  @Output() closed = new EventEmitter<void>();
 
   private previousNavigation!: string;
 
-  slots: string[] = [];
   constructor(private router: Router,
-              private navCtrl: NavController,
-              private clientService: ClientService) { }
+              private navCtrl: NavController) { }
 
   ngOnInit() {
-    const curretNavigation = this.router.getCurrentNavigation();
+    const currentNavigation = this.router.getCurrentNavigation();
 
-    if (curretNavigation && curretNavigation.extras && curretNavigation.extras.state) {
-      this.provider =  curretNavigation.extras.state['provider'];
-      this.selectable =  curretNavigation.extras.state['selectable'];
-      this.previousNavigation =  curretNavigation.extras.state['previousNavigation'];
+    if (currentNavigation && currentNavigation.extras && currentNavigation.extras.state) {
+      this.provider =  currentNavigation.extras.state['provider'];
+      this.selectable =  currentNavigation.extras.state['selectable'];
+      this.previousNavigation =  currentNavigation.extras.state['previousNavigation'];
     }
 
     if (this.provider) {
@@ -38,20 +41,18 @@ export class ServicesListComponent  implements OnInit {
   }
 
   return(service?: Service) {
-    this.navCtrl.navigateBack(this.previousNavigation, {
-      state: {
-        service: service
-      }
-    });
+    if (this.previousNavigation) {
+      this.navCtrl.navigateBack(this.previousNavigation, {
+        state: {
+          service: service
+        }
+      });
+    } else {
+      this.closed.emit();
+    }
   }
 
   selectService(service: Service) {
-    /*this.selected.emit(service);
-
-    if (this.previousNavigation) {
-      this.return(service);
-    }*/
-
-    this.clientService.getAvailableTimeSlots(this.provider.providerId).subscribe(slots => this.slots = slots);
+    this.selected.emit(service);
   }
 }

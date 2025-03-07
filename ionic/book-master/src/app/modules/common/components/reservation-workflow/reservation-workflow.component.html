@@ -1,1 +1,11 @@
-<app-object-profile [view]="view" [object]="type" ></app-object-profile>
+<app-providers-list *ngIf="!currentProvider" (selected)="currentProvider = $event"></app-providers-list>
+<app-services-list *ngIf="currentProvider && !currentService" [provider]="currentProvider" [selectable]="true"
+                   (selected)="serviceSelected($event)" (closed)="currentProvider = null"></app-services-list>
+
+<ion-list *ngIf="slots.length > 0">
+  <ion-item *ngFor="let slot of slots">
+    <ion-button>
+      <ion-label>{{ slot }}</ion-label>
+    </ion-button>
+  </ion-item>
+</ion-list>

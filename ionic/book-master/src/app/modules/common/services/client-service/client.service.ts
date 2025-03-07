@@ -17,6 +17,8 @@ export class ClientService {
   }
 
   getAvailableTimeSlots(providerId: string): Observable<string[]> {
-    return <Observable<string[]>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId + '&date=2025-02-25');
+    const date = new Date();
+    return <Observable<string[]>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId +
+      `&date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
   }
 }

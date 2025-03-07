@@ -14,7 +14,7 @@
           <ion-label>{{provider.name}} - {{provider.description}}</ion-label>
         </ion-label>
 
-        <ion-button item-right (click)="showServices(provider)">
+        <ion-button item-right (click)="selected.emit(provider)">
           <ion-icon name="list-circle-outline"></ion-icon>
         </ion-button>
       </ion-item>
