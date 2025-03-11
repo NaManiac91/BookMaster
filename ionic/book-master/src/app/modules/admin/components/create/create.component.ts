@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, Type} from '@angular/core';
 import {AdminService} from '../../services/admin.service';
-import {IModel, Service, User} from 'src/app/modules/shared/rest-api-client';
+import {IModel, User} from 'src/app/modules/shared/rest-api-client';
 import {SecurityService} from 'src/app/modules/shared/services/security/security.service';
 import {ActivatedRoute} from '@angular/router';
 import {ObjectProfileView} from "../../../common/object-profile/services/object-profile.service";
@@ -32,8 +32,7 @@ export class CreateComponent implements OnInit {
   }
 
   create() {
-    this.adminService.createService(<Service>this.object, this.user.provider.providerId).subscribe(provider => {
-      this.securityService.setProvider(provider);
+    this.adminService.create(this.object, this.user).subscribe(() => {
       this.navCtrl.navigateRoot('');
     });
   }

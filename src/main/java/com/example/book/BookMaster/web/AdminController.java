@@ -17,6 +17,7 @@ import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.services.AdminService;
 import com.example.book.BookMaster.services.FetchService;
 import com.example.book.BookMaster.web.DTO.AddServiceDTO;
+import com.example.book.BookMaster.web.DTO.CreateProviderDTO;
 import com.example.book.BookMaster.web.DTO.CreateServiceDTO;
 import com.example.book.BookMaster.web.DTO.UpdateDescriptionProviderDTO;
 
@@ -46,11 +47,23 @@ public class AdminController {
 	@PostMapping(path = "/createService")
 	public ResponseEntity<Provider> createService(@RequestBody @Validated CreateServiceDTO request) {
 		try {
-		 this.adminService.createService(new Service(request.name, request.description, request.tags, request.price, request.time), request.providerId);
+			this.adminService.createService(new Service(request.name, request.description, request.tags, request.price, request.time), request.providerId);
 		} catch (Exception e) {
 			return new ResponseEntity<Provider>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
         return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/createProvider")
+	public ResponseEntity<Provider> createProvider(@RequestBody @Validated CreateProviderDTO request) {
+		Provider result;
+		try {
+			Provider provider = new Provider(request.name, request.description, request.address, request.email, request.phone, request.type, request.startTime, request.endTime, request.timeBlockMinutes);
+			result = this.adminService.createProvider(provider, UUID.fromString(request.userId));
+		} catch (Exception e) {
+			return new ResponseEntity<Provider>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        return new ResponseEntity<Provider>(result, HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/updateDescriptionProvider")

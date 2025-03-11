@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {IModel} from "../../../shared/rest-api-client";
 
 export enum ObjectProfileView {
   Consult,
@@ -13,10 +12,6 @@ export const DEFAULT_VIEW = ObjectProfileView.Consult;
 export interface IObjectProfile {
   view: ObjectProfileView;
   type: any;
-}
-
-export interface IProfileComponent {
-  object: IModel;
 }
 
 const objectProfiles: IObjectProfile[] = [];

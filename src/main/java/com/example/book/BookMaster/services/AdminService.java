@@ -34,6 +34,12 @@ public class AdminService {
 		return this.userRepo.save(new User(username, email));
 	}
 	
+	public User createUserProvider(String username, String email, UUID providerId) {
+		User user = new User(username, email);
+		user.setProvider(this.providerRepo.findById(providerId).get());
+		return this.userRepo.save(user);
+	}
+	
 	public Service createService(String name) {
 		return this.serviceRepo.save(new Service(name));
 	}
@@ -43,8 +49,9 @@ public class AdminService {
 		return this.serviceRepo.save(service);
 	}
 	
-	public Provider createProvider(String name) {
-		return this.providerRepo.save(new Provider(name));
+	public Provider createProvider(Provider provider, UUID userId) {
+		provider.setUser(this.userRepo.findById(userId).get());
+		return this.providerRepo.save(provider);
 	}
 	
 	public void addService(UUID providerId, UUID serviceId) {

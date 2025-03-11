@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Service} from "../../../rest-api-client";
 import {
-  IProfileComponent,
   ObjectProfile,
   ObjectProfileView
 } from "../../../../common/object-profile/services/object-profile.service";
@@ -15,13 +14,8 @@ import {
   templateUrl: './service-create.component.html',
   styleUrls: ['./service-create.component.scss'],
 })
-export class ServiceCreateComponent implements OnInit, IProfileComponent {
-  object!: Service;
+export class ServiceCreateComponent {
+  object: Service;
 
   constructor() {}
-
-  ngOnInit() {
-
-  }
-
 }

@@ -46,7 +46,7 @@ public class Service implements Serializable, IModel {
 	private Float price;
 	
 	@Column
-	private Integer time;	// in minutes
+	private Integer time;	// in slots
 	
 	@ManyToOne
 	@JsonBackReference

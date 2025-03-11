@@ -51,13 +51,13 @@ public class Provider implements Serializable, IModel {
 	private String type;
 	
 	@Column
-	private LocalTime startTime;
+	private LocalTime startTime = LocalTime.of(9, 0);	// 09:00
 	
 	@Column
-	private LocalTime endTime;
+	private LocalTime endTime = LocalTime.of(9, 0);	// 18:00
 	
 	@Column
-	private Integer timeBlockMinutes;	
+	private Integer timeBlockMinutes = 30;	//in minutes	
 
 	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -87,6 +87,20 @@ public class Provider implements Serializable, IModel {
 		this.email = email;
 		this.phone = phone;
 		this.type = type;
+	}
+
+	public Provider(String name, String description, String address, String email, String phone, String type,
+			LocalTime startTime, LocalTime endTime, Integer timeBlockMinutes) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.address = address;
+		this.email = email;
+		this.phone = phone;
+		this.type = type;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.timeBlockMinutes = timeBlockMinutes;
 	}
 
 	public String getName() {

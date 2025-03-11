@@ -1,11 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.22.595 on 2024-11-19 14:46:41.
+
+// Generated using typescript-generator version 2.22.595 on 2025-03-11 11:43:27.
 
 import {Initializer} from "./services/model-initializer/model-initializer.service";
-
-export interface Serializable {
-}
 
 @Initializer('IModel', IModel)
 export class IModel {
@@ -13,51 +11,58 @@ export class IModel {
 }
 
 @Initializer('Provider', Provider)
-export class Provider extends IModel implements Serializable {
-  address!: string;
-  description!: string;
-  email!: string;
-  name!: string;
-  phone!: string;
-  providerId!: string;
-  services!: Service[];
-  type!: string;
-  override readonly $t = 'Provider';
-}
-
-@Initializer('Service', Service)
-export class Service extends IModel implements Serializable {
-  description!: string;
-  name!: string;
-  price!: number;
-  provider!: Provider;
-  serviceId!: string;
-  tags!: string[];
-  time!: number;
-  reservations!: Reservation[];
-  override readonly $t = 'Service';
+export class Provider extends IModel {
+  providerId: string;
+  name: string;
+  description: string;
+  address: string;
+  email: string;
+  phone: string;
+  type: string;
+  startTime: Date;
+  endTime: Date;
+  timeBlockMinutes: number;
+  services: Service[];
+  override readonly $t: string = 'Provider';
+  static $t: string = 'Provider';
 }
 
 @Initializer('Reservation', Reservation)
-export class Reservation extends IModel implements Serializable {
-  date!: Date;
-  note!: string;
-  reservationId!: string;
-  service!: Service;
-  user!: User;
-  providerName!: string;
-  serviceName!: string;
-  override readonly $t = 'Reservation';
+export class Reservation extends IModel {
+  reservationId: string;
+  date: Date;
+  slots: string;
+  note: string;
+  providerName: string;
+  serviceName: string;
+  service: Service;
+  user: User;
+  override readonly $t: string = 'Reservation';
+  static $t: string = 'Reservation';
+}
+
+@Initializer('Service', Service)
+export class Service extends IModel {
+  serviceId: string;
+  name: string;
+  description: string;
+  tags: string[];
+  price: number;
+  time: number;
+  reservations: Reservation[];
+  override readonly $t: string = 'Service';
+  static $t: string = 'Service';
 }
 
 @Initializer('User', User)
-export class User extends IModel implements Serializable {
-  email!: string;
-  firstName!: string;
-  lastName!: string;
-  provider!: Provider;
-  reservations!: Reservation[];
-  userId!: string;
-  username!: string;
-  override readonly $t = 'User';
+export class User extends IModel {
+  userId: string;
+  username: string;
+  email: string;
+  lastName: string;
+  firstName: string;
+  reservations: Reservation[];
+  provider: Provider;
+  override readonly $t: string = 'User';
+  static $t: string = 'User';
 }

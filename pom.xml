@@ -60,15 +60,17 @@
 			                <goal>generate</goal>
 			            </goals>
 			            <phase>process-classes</phase>
+			            <configuration>
+					        <jsonLibrary>jackson2</jsonLibrary>
+					        <classPatterns>
+                    			<pattern>com.example.book.BookMaster.models.*</pattern>
+                    		</classPatterns>
+					        <outputKind>module</outputKind>
+					        <outputFile>ionic/book-master/src/app/modules/shared/rest-api-client.ts</outputFile>
+							<outputFileType>implementationFile</outputFileType>
+			    		</configuration>
 			        </execution>
 			    </executions>
-			    <configuration>
-			        <jsonLibrary>jackson2</jsonLibrary>
-			        <classes>IModel, Provider, Reservation, Service, User</classes>
-			        <outputKind>module</outputKind>
-			        <outputFile>/ionic/book-master/src/app/modules/shared/rest-api-client.ts</outputFile>
-					<outputFileType>implementationFile </outputFileType>
-			    </configuration>
 			</plugin-->
 		</plugins>
 	</build>

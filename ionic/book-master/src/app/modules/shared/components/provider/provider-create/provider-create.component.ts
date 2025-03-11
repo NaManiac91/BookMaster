@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
+import {
+  ObjectProfile,
+  ObjectProfileView
+} from "../../../../common/object-profile/services/object-profile.service";
 import {Provider} from "../../../rest-api-client";
 
 @ObjectProfile({
@@ -12,7 +15,7 @@ import {Provider} from "../../../rest-api-client";
   styleUrls: ['./provider-create.component.scss'],
 })
 export class ProviderCreateComponent  implements OnInit {
-
+  object: Provider
   constructor() { }
 
   ngOnInit() {}
