@@ -1,8 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FetchService} from "../../../../common/services/fetch-service/fetch.service";
-import {Provider, Reservation, Service} from "../../../rest-api-client";
-import {ClientService} from "../../../../common/services/client-service/client.service";
-import {SecurityService} from "../../../services/security/security.service";
+import {Provider} from "../../../rest-api-client";
 import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
 
 @ObjectProfile({
@@ -19,25 +17,9 @@ export class ProvidersListComponent implements OnInit {
 
   providers: Provider[] = [];
 
-  constructor(private fetchService: FetchService,
-              private clientService: ClientService,
-              private securityService: SecurityService) {
-  }
+  constructor(private fetchService: FetchService) { }
 
   ngOnInit() {
     this.fetchService.getProviders().subscribe(providers => this.providers = providers);
-  }
-
-  addReservation(service: Service) {
-    const reservation: Reservation = new Reservation();
-    reservation.service = service;
-    reservation.date = new Date();
-    reservation.user = this.securityService.loggedUser;
-    reservation.note = 'Simple reservation';
-
-    this.clientService.createReservation(reservation).subscribe(reservation => {
-      this.securityService.loggedUser.reservations.push(reservation);
-      this.securityService.userChange$.next(this.securityService.loggedUser);
-    });
   }
 }

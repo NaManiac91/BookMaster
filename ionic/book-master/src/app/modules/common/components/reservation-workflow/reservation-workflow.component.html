@@ -3,8 +3,8 @@
                    (selected)="serviceSelected($event)" (closed)="currentProvider = null"></app-services-list>
 
 <ion-list *ngIf="slots.length > 0">
-  <ion-item *ngFor="let slot of slots">
-    <ion-button>
+  <ion-item *ngFor="let slot of slots; let i = index">
+    <ion-button (click)="addReservation(i)">
       <ion-label>{{ slot }}</ion-label>
     </ion-button>
   </ion-item>

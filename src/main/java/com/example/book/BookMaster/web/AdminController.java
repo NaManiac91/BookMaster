@@ -54,7 +54,7 @@ public class AdminController {
         return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
 	}
 	
-	@PostMapping(path = "/createProvider")
+	@PostMapping(path = "/createProvider", consumes = "application/json")
 	public ResponseEntity<Provider> createProvider(@RequestBody @Validated CreateProviderDTO request) {
 		Provider result;
 		try {

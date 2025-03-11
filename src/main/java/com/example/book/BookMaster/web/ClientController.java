@@ -1,6 +1,7 @@
 package com.example.book.BookMaster.web;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.services.ClientService;
 import com.example.book.BookMaster.services.FetchService;
+import com.example.book.BookMaster.web.DTO.CreateReservationDTO;
 
 @RestController
 @RequestMapping(path = "/client")
@@ -34,9 +36,10 @@ public class ClientController {
 	}
 	
 	@PostMapping(path = "/createReservation")
-	public ResponseEntity<Reservation> createReservation(@RequestBody @Validated Reservation reservation) {
+	public ResponseEntity<Reservation> createReservation(@RequestBody @Validated CreateReservationDTO request) {
 		try {
-		  return new ResponseEntity<Reservation>(this.clientService.createReservation(reservation), HttpStatus.OK);
+		  return new ResponseEntity<Reservation>(this.clientService.createReservation(
+				  ZonedDateTime.parse(request.date).toLocalDate(), request.slots, UUID.fromString(request.userId), UUID.fromString(request.serviceId), request.note), HttpStatus.OK);
 
 		} catch (Exception e) {
 			return new ResponseEntity<Reservation>(HttpStatus.INTERNAL_SERVER_ERROR);
