@@ -6,4 +6,5 @@ public class CreateReservationDTO {
 	public String userId;
 	public String serviceId;
 	public String note;
+	public String providerId;
 }

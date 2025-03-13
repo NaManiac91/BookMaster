@@ -37,22 +37,13 @@ public class ClientController {
 	
 	@PostMapping(path = "/createReservation")
 	public ResponseEntity<Reservation> createReservation(@RequestBody @Validated CreateReservationDTO request) {
-		try {
-		  return new ResponseEntity<Reservation>(this.clientService.createReservation(
-				  ZonedDateTime.parse(request.date).toLocalDate(), request.slots, UUID.fromString(request.userId), UUID.fromString(request.serviceId), request.note), HttpStatus.OK);
-
-		} catch (Exception e) {
-			return new ResponseEntity<Reservation>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+			Reservation reservation = this.clientService.createReservation(
+					  ZonedDateTime.parse(request.date).toLocalDate(), request.slots, UUID.fromString(request.userId), UUID.fromString(request.serviceId), UUID.fromString(request.providerId), request.note);
+			return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/getAvailableTimeSlots")
 	public ResponseEntity<List<String>> getAvailableTimeSlots(@RequestParam @Validated String providerId, LocalDate date) {
-		try {
 		  return new ResponseEntity<List<String>>(this.clientService.getAvailableTimeSlots(UUID.fromString(providerId), date), HttpStatus.OK);
-
-		} catch (Exception e) {
-			return new ResponseEntity<List<String>>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 }

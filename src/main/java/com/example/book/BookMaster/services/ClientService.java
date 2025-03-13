@@ -32,19 +32,18 @@ public class ClientService {
 		this.providerRepo = providerRepo;
 	}
 	
-	public Reservation createReservation(LocalDate date, String slots, UUID userId, UUID serviceId, String note) {
+	public Reservation createReservation(LocalDate date, String slots, UUID userId, UUID serviceId, UUID providerId, String note) {
 		User user = this.userRepo.findById(userId).get();
 		Service service = this.serviceRepo.findById(serviceId).get();
-		Provider provider = user.getProvider();
 		
 		// Check if slot is already booked
-		List<String> slotBooked = this.getSlotBooked(provider.getProviderId(), date);
+		List<String> slotBooked = this.getSlotBooked(providerId, date);
         if (this.isTimeSlotAvailable(slotBooked, slots)) {
         	throw new RuntimeException("Slot already booked");
         }
 		
         //Save new Reservation
-        Reservation reservation = new Reservation(slots, note);
+        Reservation reservation = new Reservation(date, slots, providerId, note);
 		
 		user.addReservation(reservation);
 		service.addReservation(reservation);

@@ -1,32 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Reservation, Service } from 'src/app/modules/shared/rest-api-client';
-import { ModalInfoComponent } from '../../../../common/components/modal/modal-info/modal-info.component';
-import { ModalController } from '@ionic/angular';
+import {Component, Input} from '@angular/core';
+import {Reservation} from 'src/app/modules/shared/rest-api-client';
 
 @Component({
   selector: 'app-reservations-list',
   templateUrl: './reservations-list.component.html',
   styleUrls: ['./reservations-list.component.scss'],
 })
-export class ReservationsListComponent  implements OnInit {
+export class ReservationsListComponent {
   @Input() list: Reservation[] = [];
 
-  constructor(private modalCtrl: ModalController) { }
-
-  ngOnInit() {}
-
-
-  async showServiceInfo(service: Service) {
-    const modal = await this.modalCtrl.create({
-      component: ModalInfoComponent,
-      componentProps: {data : {title: 'Service Info', info: [service.name]}}
-    });
-    await modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === 'confirm') {
-
-    }
-  }
+  constructor() { }
 }

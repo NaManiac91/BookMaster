@@ -77,7 +77,7 @@ public class AdminService {
 		addService(provider.getProviderId(), service.getServiceId());
 		
 		String slot = provider.getStartTime() + "," + provider.getEndTime() ;
-		Reservation reservation = new Reservation(slot, user, service, "Book -> " + service.getName());
+		Reservation reservation = new Reservation(slot, user, service, provider.getProviderId(), "Book -> " + service.getName());
 		user.addReservation(reservation);
 		user.setProvider(provider);
 		

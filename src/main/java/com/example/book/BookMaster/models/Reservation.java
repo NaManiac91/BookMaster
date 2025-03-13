@@ -29,7 +29,7 @@ public class Reservation implements Serializable, IModel {
     @GeneratedValue(strategy = GenerationType.UUID)
 	private UUID reservationId;
 	
-	@Column
+	@Column()
 	@NonNull()
 	private LocalDate date;
 
@@ -47,25 +47,27 @@ public class Reservation implements Serializable, IModel {
 	@JsonBackReference("serviceId")
 	private Service service;
 	
+	private UUID providerId;
+	
 	@Column
 	private String note;
-	
-	private String providerName;
-	private String serviceName;
 	
 	public Reservation() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Reservation(String slots, String note) {
+	public Reservation(LocalDate date, String slots, UUID providerId, String note) {
+		this.date = date;
 		this.slots = slots;
+		this.providerId = providerId;
 		this.note = note;
 	}
 
-	public Reservation(String slots, User user, Service service, String note) {
+	public Reservation(String slots, User user, Service service, UUID providerId, String note) {
 		this.slots = slots;
 		this.user = user;
 		this.service = service;
+		this.providerId = providerId;
 		this.note = note;
 	}
 
@@ -122,29 +124,24 @@ public class Reservation implements Serializable, IModel {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-
-	public String getProviderName() {
-		return providerName;
-	}
-
-	public void setProviderName(String providerName) {
-		this.providerName = providerName;
-	}
 	
-	public String getServiceName() {
-		return serviceName;
+	public UUID getProviderId() {
+		return providerId;
 	}
 
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
-
-	public void fillReservationInfo() {
-		this.providerName = this.getService().getProvider().getName();
-		this.serviceName = this.getService().getName();
+	public void setProviderId(UUID providerId) {
+		this.providerId = providerId;
 	}
 	
 	public List<String> getListSlot() {
 		return Arrays.asList(this.getSlots().split(","));
+	}
+	
+	public String getProviderName() {
+		return this.getService().getProvider().getName();
+	}
+	
+	public String getServiceName() {
+		return this.getService().getName();
 	}
 }

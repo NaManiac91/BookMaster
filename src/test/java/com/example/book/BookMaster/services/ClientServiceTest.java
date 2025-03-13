@@ -50,12 +50,13 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void testCreateReservation() {
+    public void testCreateReservation() throws Exception {
         // Arrange
         LocalDate date = LocalDate.now();
         String slot = "10:00";
         UUID userId = UUID.randomUUID();
         UUID serviceId = UUID.randomUUID();
+        UUID providerId = UUID.randomUUID();
         String note = "Test reservation";
 
         User user = new User();
@@ -71,11 +72,12 @@ public class ClientServiceTest {
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(serviceRepo.findById(serviceId)).thenReturn(Optional.of(service));
+        when(serviceRepo.findById(providerId)).thenReturn(Optional.of(service));
         when(providerRepo.findById(provider.getProviderId())).thenReturn(Optional.of(provider));
         when(reservationRepo.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        Reservation reservation = clientService.createReservation(date, slot, userId, serviceId, note);
+        Reservation reservation = clientService.createReservation(date, slot, userId, serviceId, providerId, note);
 
         // Assert
         assertNotNull(reservation);
@@ -93,6 +95,7 @@ public class ClientServiceTest {
         String slot = "10:00";
         UUID userId = UUID.randomUUID();
         UUID serviceId = UUID.randomUUID();
+        UUID providerId = UUID.randomUUID();
         String note = "Test reservation";
 
         User user = new User();
@@ -116,7 +119,7 @@ public class ClientServiceTest {
 
         // Act & Assert
         assertThrows(RuntimeException.class, () -> {
-            clientService.createReservation(date, slot, userId, serviceId, note);
+            clientService.createReservation(date, slot, userId, serviceId, providerId, note);
         });
     }
 

@@ -35,8 +35,10 @@ export class Reservation extends IModel {
   note: string;
   providerName: string;
   serviceName: string;
+  listSlot: string[];
   service: Service;
   user: User;
+  providerId: string;
   override readonly $t: string = 'Reservation';
   static $t: string = 'Reservation';
 }

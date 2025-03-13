@@ -1,6 +1,6 @@
 import {CommonModule} from "@angular/common";
-import {HttpClientModule} from "@angular/common/http";
-import {NgModule} from "@angular/core";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {ErrorHandler, NgModule} from "@angular/core";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
 import {SecurityService} from "./services/security/security.service";
@@ -14,6 +14,8 @@ import {ReservationsListComponent} from "./components/reservation/reservations-l
 import {ComponentLoaderComponent} from "../common/object-profile/components/component-loader.component";
 import {ProvidersListComponent} from "./components/provider/providers-list/providers-list.component";
 import {ServicesListComponent} from "./components/service/services-list/services-list.component";
+import {GlobalErrorHandler} from "./HTTPHandlers/GlobalErrorHandler";
+import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
 
 const components = [
   LoginComponent,
@@ -48,7 +50,18 @@ const services = [
     HttpClientModule,
     components
   ],
-  providers: services
+  providers: [
+    ...services, {
+    // processes all errors
+    provide: ErrorHandler,
+    useClass: GlobalErrorHandler,
+    },
+    {
+      // interceptor to show loading spinner
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpLoadingInterceptor,
+      multi: true,
+    }]
 })
 export class SharedModule {
 

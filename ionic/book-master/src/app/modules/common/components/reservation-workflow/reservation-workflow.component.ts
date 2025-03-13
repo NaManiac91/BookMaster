@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Provider, Reservation, Service} from "../../../shared/rest-api-client";
 import {ClientService} from "../../services/client-service/client.service";
 import {SecurityService} from "../../../shared/services/security/security.service";
+import {NavController} from "@ionic/angular";
 
 @Component({
   selector: 'app-reservation-workflow',
@@ -14,7 +15,8 @@ export class ReservationWorkflowComponent {
   slots: string[] = [];
 
   constructor(private clientService: ClientService,
-              private securityService: SecurityService) { }
+              private securityService: SecurityService,
+              private navCtrl: NavController) { }
 
   serviceSelected(service: Service) {
     this.currentService = service;
@@ -24,6 +26,7 @@ export class ReservationWorkflowComponent {
   addReservation(slotIndex: number) {
     const reservation: Reservation = new Reservation();
     reservation.service = this.currentService;
+    reservation.providerId = this.currentProvider.providerId;
     reservation.date = new Date();
     reservation.user = this.securityService.loggedUser;
     reservation.note = 'Simple reservation';
@@ -36,8 +39,10 @@ export class ReservationWorkflowComponent {
     reservation.slots = slot.join(',');
 
     this.clientService.createReservation(reservation).subscribe(reservation => {
-      this.securityService.loggedUser.reservations.push(reservation);
-      this.securityService.userChange$.next(this.securityService.loggedUser);
+      const user = this.securityService.loggedUser;
+      user.reservations.push(reservation);
+      this.securityService.loggedUser = user;
+      this.navCtrl.navigateRoot('');
     });
   }
 }

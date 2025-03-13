@@ -17,6 +17,7 @@ export class ClientService {
       slots: reservation.slots,
       userId: reservation.user.userId,
       serviceId: reservation.service.serviceId,
+      providerId: reservation.providerId,
       note: reservation.note
     }
     return <Observable<Reservation>>this.httpClient.post(this.api + 'createReservation', params)
