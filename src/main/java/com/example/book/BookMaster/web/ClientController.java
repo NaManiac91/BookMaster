@@ -46,4 +46,10 @@ public class ClientController {
 	public ResponseEntity<List<String>> getAvailableTimeSlots(@RequestParam @Validated String providerId, LocalDate date) {
 		  return new ResponseEntity<List<String>>(this.clientService.getAvailableTimeSlots(UUID.fromString(providerId), date), HttpStatus.OK);
 	}
+	
+	@GetMapping(path = "/removeReservation")
+	public ResponseEntity<Boolean> removeReservation(@RequestParam @Validated String reservationId) {
+			boolean isRemoved = this.clientService.removeReservation(UUID.fromString(reservationId));
+			return new ResponseEntity<Boolean>(isRemoved, HttpStatus.OK);
+	}
 }

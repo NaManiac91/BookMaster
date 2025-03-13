@@ -29,4 +29,8 @@ export class ClientService {
     return <Observable<string[]>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId +
       `&date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
   }
+
+  removeReservation(reservationId: string): Observable<boolean> {
+    return <Observable<boolean>>this.httpClient.get(this.api + 'removeReservation?reservationId=' + reservationId);
+  }
 }

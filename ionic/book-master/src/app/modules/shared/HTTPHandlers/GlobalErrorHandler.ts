@@ -12,10 +12,10 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   async presentAlert(error: HttpErrorResponse) {
     const alert = await this.alertController.create({
-      header: 'A Short Title Is Best',
+      header: error?.name,
       subHeader: error?.statusText,
       message: error?.message || 'Undefined client error',
-      buttons: ['Action'],
+      buttons: ['OK'],
     });
 
     await alert.present();

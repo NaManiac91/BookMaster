@@ -98,12 +98,21 @@ public class ClientService {
         return slotBooked.contains(slot);
     }
 
-    // TO DO
-    /*
-    public boolean cancelReservation(LocalDate date, LocalTime startTime, LocalTime endTime) {
-        return reservations.removeIf(reservation -> reservation.getDate().equals(date) &&
-                                              reservation.getStartTime().equals(startTime) &&
-                                              reservation.getEndTime().equals(endTime));
-    }*/
+    public boolean removeReservation(UUID reservationId) {
+    	Reservation reservation = this.reservationRepo.findById(reservationId).get();	// Get reservation from DB
+    	
+    	/* Remove reservation from user and from service */
+    	User user = this.userRepo.findById(reservation.getUser().getUserId()).get();
+        boolean removed = user.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+       
+        Service service = this.serviceRepo.findById(reservation.getService().getServiceId()).get();
+        removed = service.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
 
+        if (removed) {
+        	this.userRepo.save(user);
+        	this.serviceRepo.save(service);
+        }
+        
+        return removed;
+    }
 }
