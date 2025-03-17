@@ -8,8 +8,7 @@ import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +16,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -61,11 +59,10 @@ public class Provider implements Serializable, IModel {
 	private Integer timeBlockMinutes = 30;	//in minutes	
 
 	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
-	@JsonManagedReference
     private Set<Service> services = new HashSet<>();
 
 	@OneToOne
-	@JsonBackReference
+	@JsonIgnore
 	private User user;
 
 	public Provider() {

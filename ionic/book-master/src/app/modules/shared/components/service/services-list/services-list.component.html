@@ -3,7 +3,7 @@
     <ion-card-title>
       <span>{{ provider.name }}</span>
 
-      <ion-button size="small" color="light" style="float: right" (click)="return()">
+      <ion-button *ngIf="closable" size="small" color="light" style="float: right" (click)="return()">
         <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-card-title>
@@ -16,6 +16,16 @@
       <ion-button *ngIf="selectable" item-right (click)="selectService(service)">
         <ion-icon name="add-circle-outline"></ion-icon>
       </ion-button>
+
+      <div *ngIf="administrable">
+        <ion-button color="success" item-right (click)="editService(service)">
+          <ion-icon [style.color]="'white'" name="pencil"></ion-icon>
+        </ion-button>
+
+        <ion-button color="danger" item-right (click)="removeService(service)">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
     </ion-item>
   </ion-list>
 </ion-card>

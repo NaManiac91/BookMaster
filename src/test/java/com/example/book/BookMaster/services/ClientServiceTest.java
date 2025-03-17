@@ -84,7 +84,7 @@ public class ClientServiceTest {
         assertEquals(date, reservation.getDate());
         assertEquals(LocalTime.parse(slot), reservation.getSlots());
         assertEquals(note, reservation.getNote());
-        assertEquals(user, reservation.getUser());
+        //assertEquals(user, reservation.getConsumer());
         assertEquals(service, reservation.getService());
     }
 

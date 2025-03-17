@@ -7,16 +7,12 @@ import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -46,12 +42,10 @@ public class User implements Serializable, IModel {
 	@Column
 	private String firstName;
 	
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-	@JsonManagedReference("userId")
-	private Set<Reservation> reservations = new HashSet<Reservation>();
+	@ManyToMany(mappedBy = "users")
+    private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	@OneToOne
-	@JsonManagedReference("userId")
 	private Provider provider;
 	
 	public User() {

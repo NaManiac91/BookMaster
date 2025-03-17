@@ -1,13 +1,1 @@
-<ion-card>
-  <ion-card-header (click)="open()" color="tertiary">
-    <ion-card-title>{{ object.name }}</ion-card-title>
-  </ion-card-header>
-
-  <ion-card-content *ngIf="closed">
-    <ion-list>
-      <ion-item *ngFor="let service of object.services">
-        <ion-label>{{service.name}} - {{service.description}}</ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-card-content>
-</ion-card>
+<app-services-list [provider]="object" [administrable]="true" [closable]="false" (selected)="serviceSelected($event.service, $event.operation)"></app-services-list>

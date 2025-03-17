@@ -2,12 +2,14 @@ package com.example.book.BookMaster.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 
 import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.models.User;
+import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.repo.ProviderRepositoryInterface;
 import com.example.book.BookMaster.repo.ServiceRepositoryInterface;
 import com.example.book.BookMaster.repo.UserRepositoryInterface;
@@ -47,8 +49,13 @@ public class FetchService {
 	public Optional<User> getUserByUsername(String username) {
 		Optional<User> user = Optional.of(this.userRepo.findByUsername(username));
 		
-		if (user.isPresent()) {
-			
+		if (user.isPresent() && user.get().getReservations().size() > 0) {
+			Set<Reservation> reservations = user.get().getReservations();
+			for (Reservation reservation : reservations) {
+				Service service = this.serviceRepo.findById(reservation.getServiceId()).get();
+				reservation.setService(service);
+				reservation.setProvider(service.getProvider());
+			}
 		}
 		
 		return user;

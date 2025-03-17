@@ -2,24 +2,18 @@ package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class Service implements Serializable, IModel {
@@ -46,16 +40,11 @@ public class Service implements Serializable, IModel {
 	private Float price;
 	
 	@Column
-	private Integer time;	// in slots
+	private Integer time;	// in number of slots ex 1, 2, ...
 	
 	@ManyToOne
-	@JsonBackReference
+	@JsonIgnore
 	private Provider provider;
-	
-    @OneToMany(mappedBy = "service", cascade = CascadeType.PERSIST, orphanRemoval = true)
-	@JsonManagedReference("serviceId")
-    @JsonIgnore
-	private Set<Reservation> reservations = new HashSet<Reservation>();
 	
 	public String getName() {
 		return name;
@@ -126,18 +115,6 @@ public class Service implements Serializable, IModel {
 
 	public void setProvider(Provider provider) {
 		this.provider = provider;
-	}
-	
-	public Set<Reservation> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(Set<Reservation> reservations) {
-		this.reservations = reservations;
-	}
-	
-	public void addReservation(Reservation reservation) {
-		this.reservations.add(reservation);
 	}
 
 	public UUID getServiceId() {

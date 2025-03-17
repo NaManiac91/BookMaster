@@ -4,19 +4,21 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Reservation implements Serializable, IModel {
@@ -29,54 +31,58 @@ public class Reservation implements Serializable, IModel {
     @GeneratedValue(strategy = GenerationType.UUID)
 	private UUID reservationId;
 	
-	@Column()
+	@Column
 	@NonNull()
-	private LocalDate date;
+	private LocalDate date = LocalDate.now();
 
 	@Column
 	@NonNull()
-    private String slots;		//	list of slots in this format ["09:00", "10:00"]
+    private String slots = "09:00";		//	list of slots in this format "09:00", "10:00"
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@JsonBackReference("userId")
-	private User user;
+	@ManyToMany
+    @JoinTable(
+        name = "user_reservation",
+        joinColumns = @JoinColumn(name = "reservation_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+	@JsonIgnore
+    private Set<User> users;
 	
-	@ManyToOne
-	@JoinColumn(name = "service_id")
-	@JsonBackReference("serviceId")
-	private Service service;
+	@Column
+	@NonNull()
+	private UUID serviceId;
 	
+	@Column
+	@NonNull()
 	private UUID providerId;
 	
 	@Column
 	private String note;
 	
+	/* Support fields */
+	private Service service;
+	@JsonIgnore
+	private Provider provider;
+	
 	public Reservation() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Reservation(LocalDate date, String slots, UUID providerId, String note) {
+	public Reservation(LocalDate date, String slots, UUID serviceId, UUID providerId, String note) {
 		this.date = date;
 		this.slots = slots;
+		this.serviceId = serviceId;
 		this.providerId = providerId;
 		this.note = note;
 	}
-
-	public Reservation(String slots, User user, Service service, UUID providerId, String note) {
+	
+	public Reservation(LocalDate date, String slots, User consumer, User provider, UUID serviceId, UUID providerId, String note) {
+		this.date = date;
 		this.slots = slots;
-		this.user = user;
-		this.service = service;
+		this.users = Set.of(consumer, provider);
+		this.serviceId = serviceId;
 		this.providerId = providerId;
 		this.note = note;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public Service getService() {
-		return service;
 	}
 
 	public String getNote() {
@@ -85,20 +91,6 @@ public class Reservation implements Serializable, IModel {
 
 	public void setNote(String note) {
 		this.note = note;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public void setService(Service service) {
-		this.service = service;
-	}
-
-	@Override
-	public String toString() {
-		return "Reservation [reservationId=" + reservationId + ", slots=" + this.slots +
-				", user=" + user + ", service=" + service + ", note=" + note + "]";
 	}
 
 	public UUID getReservationId() {
@@ -110,7 +102,7 @@ public class Reservation implements Serializable, IModel {
 	}
 	
 	public String getSlots() {
-		return slots != null ? slots : "09:00,12:00";
+		return slots;
 	}
 
 	public void setSlots(String slots) {
@@ -133,15 +125,43 @@ public class Reservation implements Serializable, IModel {
 		this.providerId = providerId;
 	}
 	
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+	public UUID getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(UUID serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public Service getService() {
+		return service;
+	}
+
+	public void setService(Service service) {
+		this.service = service;
+	}
+	
+	public Provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
+	}
+
 	public List<String> getListSlot() {
 		return Arrays.asList(this.getSlots().split(","));
 	}
 	
 	public String getProviderName() {
-		return this.getService().getProvider().getName();
-	}
-	
-	public String getServiceName() {
-		return this.getService().getName();
+		return this.getProvider().getName();
 	}
 }

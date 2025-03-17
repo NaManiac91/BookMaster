@@ -11,15 +11,7 @@ export class ClientService {
 
   constructor(private httpClient: HttpClient) { }
 
-  createReservation(reservation: Reservation): Observable<Reservation> {
-    const params: any = {
-      date: reservation.date,
-      slots: reservation.slots,
-      userId: reservation.user.userId,
-      serviceId: reservation.service.serviceId,
-      providerId: reservation.providerId,
-      note: reservation.note
-    }
+  createReservation(params: any): Observable<Reservation> {
     return <Observable<Reservation>>this.httpClient.post(this.api + 'createReservation', params)
       .pipe(map(reservation => Object.assign(new Reservation(), reservation)));
   }

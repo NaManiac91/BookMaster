@@ -17,8 +17,10 @@ export class ServicesListComponent  implements OnInit {
   @Input() provider!: Provider;
   @Input() services: Service[] = [];
   @Input() selectable = false;
+  @Input() administrable: boolean = false;
+  @Input() closable: boolean = true;
 
-  @Output() selected = new EventEmitter<Service>();
+  @Output() selected = new EventEmitter<{service: Service, operation?: string}>();
   @Output() closed = new EventEmitter<void>();
 
   private previousNavigation!: string;
@@ -36,7 +38,7 @@ export class ServicesListComponent  implements OnInit {
     }
 
     if (this.provider) {
-      this.services = this.provider.services;
+      this.services = this.provider.services.map(service => Object.assign(new Service, service));
     }
   }
 
@@ -53,6 +55,14 @@ export class ServicesListComponent  implements OnInit {
   }
 
   selectService(service: Service) {
-    this.selected.emit(service);
+    this.selected.emit({service: service});
+  }
+
+  removeService(service: Service) {
+    this.selected.emit({service: service, operation: 'remove'});
+  }
+
+  editService(service: Service) {
+    this.selected.emit({service: service, operation: 'edit'});
   }
 }

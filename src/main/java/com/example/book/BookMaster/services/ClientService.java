@@ -3,7 +3,9 @@ package com.example.book.BookMaster.services;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.example.book.BookMaster.models.Provider;
@@ -33,8 +35,8 @@ public class ClientService {
 	}
 	
 	public Reservation createReservation(LocalDate date, String slots, UUID userId, UUID serviceId, UUID providerId, String note) {
-		User user = this.userRepo.findById(userId).get();
-		Service service = this.serviceRepo.findById(serviceId).get();
+		User consumer = this.userRepo.findById(userId).get();
+		User provider = this.userRepo.findByProviderProviderId(providerId);
 		
 		// Check if slot is already booked
 		List<String> slotBooked = this.getSlotBooked(providerId, date);
@@ -43,15 +45,19 @@ public class ClientService {
         }
 		
         //Save new Reservation
-        Reservation reservation = new Reservation(date, slots, providerId, note);
+        Reservation reservation = new Reservation(date, slots, serviceId, providerId, note);
 		
-		user.addReservation(reservation);
-		service.addReservation(reservation);
+		consumer.addReservation(reservation);
+		provider.addReservation(reservation);
 		
-		reservation.setUser(user);
-		reservation.setService(service);
+		reservation.setUsers(Set.of(consumer, provider));
 		
-		return this.reservationRepo.save(reservation);
+		Reservation response = this.reservationRepo.save(reservation);
+		
+		Service service = this.serviceRepo.findById(serviceId).get();
+		response.setService(service);
+		response.setProvider(service.getProvider());
+		return response;
 	}
 	
 	public Reservation createReservation(Reservation reservation) {
@@ -101,16 +107,18 @@ public class ClientService {
     public boolean removeReservation(UUID reservationId) {
     	Reservation reservation = this.reservationRepo.findById(reservationId).get();	// Get reservation from DB
     	
-    	/* Remove reservation from user and from service */
-    	User user = this.userRepo.findById(reservation.getUser().getUserId()).get();
-        boolean removed = user.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+    	/* Remove reservation from user consumer and user provider */
+    	Iterator<User> i = reservation.getUsers().iterator();
+    	User consumer = this.userRepo.findById(i.next().getUserId()).get();
+        boolean removed = consumer.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
        
-        Service service = this.serviceRepo.findById(reservation.getService().getServiceId()).get();
-        removed = service.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
-
+        User provider = this.userRepo.findById(i.next().getUserId()).get();
+        removed = provider.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+       
         if (removed) {
-        	this.userRepo.save(user);
-        	this.serviceRepo.save(service);
+        	this.userRepo.save(consumer);
+        	this.userRepo.save(provider);
+        	this.reservationRepo.delete(reservation);
         }
         
         return removed;

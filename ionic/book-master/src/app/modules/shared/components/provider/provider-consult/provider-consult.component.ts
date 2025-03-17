@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
-import {Provider} from "../../../rest-api-client";
+import {Provider, Service} from "../../../rest-api-client";
+import {NavController} from "@ionic/angular";
 
 @ObjectProfile({
   view: ObjectProfileView.Consult,
@@ -13,10 +14,19 @@ import {Provider} from "../../../rest-api-client";
 })
 export class ProviderConsultComponent {
   object!: Provider;
-  closed = false;
-  constructor() { }
 
-  open() {
-    this.closed = !this.closed;
+  constructor(private navCtrl: NavController) { }
+
+  serviceSelected(service: Service, operation: string) {
+    if (operation == 'edit') {
+      this.navCtrl.navigateRoot('Create', {
+        queryParams: {
+          object: service,
+          view: ObjectProfileView.Edit
+        }
+      });
+    } else if (operation == 'delete') {
+      // TO DO DELETE
+    }
   }
 }

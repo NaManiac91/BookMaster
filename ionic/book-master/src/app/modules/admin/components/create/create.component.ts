@@ -28,7 +28,13 @@ export class CreateComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.securityService.loggedUser;
-    this.type = this.modelInitializerService.getTypeByClassName(this.activatedRoute.snapshot.queryParams['type']);
+    this.object = this.activatedRoute.snapshot.queryParams['object'];
+
+    if (this.object) {
+      this.type = this.modelInitializerService.getTypeByClassName(this.object.$t);
+    } else {
+      this.type = this.modelInitializerService.getTypeByClassName(this.activatedRoute.snapshot.queryParams['type']);
+    }
   }
 
   create() {

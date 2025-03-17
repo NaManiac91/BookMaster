@@ -1,5 +1,6 @@
 package com.example.book.BookMaster.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,7 +78,8 @@ public class AdminService {
 		addService(provider.getProviderId(), service.getServiceId());
 		
 		String slot = provider.getStartTime() + "," + provider.getEndTime() ;
-		Reservation reservation = new Reservation(slot, user, service, provider.getProviderId(), "Book -> " + service.getName());
+		Reservation reservation = new Reservation(LocalDate.now(), slot, service.getServiceId(), provider.getProviderId(), "Book -> " + service.getName());
+		
 		user.addReservation(reservation);
 		user.setProvider(provider);
 		

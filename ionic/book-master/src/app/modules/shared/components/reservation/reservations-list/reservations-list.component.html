@@ -4,7 +4,7 @@
   </ion-list-header>
   <ion-item *ngFor="let reservation of list; let i = index">
     <ion-label>{{ reservation.date | date : 'dd/MM/yyyy' }} - {{ reservation.slots }} - {{ reservation.providerName }}
-      - {{ reservation.serviceName }}
+      - {{ reservation.service.name }}
     </ion-label>
 
     <ion-button color="danger" (click)="remove(reservation.reservationId, i)">
