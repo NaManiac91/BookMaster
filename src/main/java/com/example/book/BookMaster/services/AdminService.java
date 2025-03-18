@@ -32,42 +32,76 @@ public class AdminService {
 	}
 
 	public User createUser(String username, String email) {
-		return this.userRepo.save(new User(username, email));
+		try {
+			return this.userRepo.save(new User(username, email));
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 	public User createUserProvider(String username, String email, UUID providerId) {
 		User user = new User(username, email);
-		user.setProvider(this.providerRepo.findById(providerId).get());
-		return this.userRepo.save(user);
+		
+		try {
+			user.setProvider(this.providerRepo.findById(providerId).get());
+			return this.userRepo.save(user);
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 	public Service createService(String name) {
-		return this.serviceRepo.save(new Service(name));
+		try {
+			return this.serviceRepo.save(new Service(name));
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 	public Service createService(Service service, UUID providerId) {
-		service.setProvider(this.providerRepo.findById(providerId).get());
-		return this.serviceRepo.save(service);
+		try {
+			service.setProvider(this.providerRepo.findById(providerId).get());
+			return this.serviceRepo.save(service);
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
-	public Provider createProvider(Provider provider, UUID userId) {
-		provider.setUser(this.userRepo.findById(userId).get());
-		return this.providerRepo.save(provider);
+	public Provider createProvider(Provider provider, UUID userId) {	
+		try {
+			provider.setUser(this.userRepo.findById(userId).get());
+			return this.providerRepo.save(provider);
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 	public void addService(UUID providerId, UUID serviceId) {
-		Optional<Service> service = this.serviceRepo.findById(serviceId);
-		Optional<Provider> provider = this.providerRepo.findById(providerId);
-		
-		if (service.isPresent() && provider.isPresent()) {
-			Provider p = provider.get();
-			Service s = service.get();
+		try {
+			Optional<Service> service = this.serviceRepo.findById(serviceId);
+			Optional<Provider> provider = this.providerRepo.findById(providerId);
 			
-			p.addService(s);
-			
-			this.providerRepo.save(p);
-		} else {
-			throw new RuntimeException("Missing service or provider");
+			if (service.isPresent() && provider.isPresent()) {
+				Provider p = provider.get();
+				Service s = service.get();
+				
+				p.addService(s);
+				
+				this.providerRepo.save(p);
+			} else {
+				throw new RuntimeException("Missing service or provider");
+			}
+		} catch (Exception ex) {
+			throw ex;
+		}
+	}
+	
+	public boolean removeService(UUID serviceId) {
+		try {
+			this.serviceRepo.deleteById(serviceId);
+			return true;
+		} catch (Exception ex) {
+			return false;
 		}
 	}
 	
@@ -83,11 +117,19 @@ public class AdminService {
 		user.addReservation(reservation);
 		user.setProvider(provider);
 		
-		this.userRepo.save(user);
+		try {
+			this.userRepo.save(user);
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 	public void updateProvider(Provider provider) {
-		this.providerRepo.save(provider);
+		try {
+			this.providerRepo.save(provider);
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 	
 }

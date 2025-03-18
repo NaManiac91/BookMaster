@@ -1,8 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Service, Provider} from "../../../rest-api-client";
+import {Provider, Service} from "../../../rest-api-client";
 import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
 import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
+import {Operation} from "../../../enum";
 
 @ObjectProfile({
   view: ObjectProfileView.List,
@@ -20,7 +21,7 @@ export class ServicesListComponent  implements OnInit {
   @Input() administrable: boolean = false;
   @Input() closable: boolean = true;
 
-  @Output() selected = new EventEmitter<{service: Service, operation?: string}>();
+  @Output() selected = new EventEmitter<{service: Service, operation?: Operation}>();
   @Output() closed = new EventEmitter<void>();
 
   private previousNavigation!: string;
@@ -59,10 +60,10 @@ export class ServicesListComponent  implements OnInit {
   }
 
   removeService(service: Service) {
-    this.selected.emit({service: service, operation: 'remove'});
+    this.selected.emit({service: service, operation: Operation.Remove});
   }
 
   editService(service: Service) {
-    this.selected.emit({service: service, operation: 'edit'});
+    this.selected.emit({service: service, operation: Operation.Create});
   }
 }

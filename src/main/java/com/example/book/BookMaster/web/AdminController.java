@@ -7,9 +7,11 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.book.BookMaster.models.Provider;
@@ -46,6 +48,11 @@ public class AdminController {
 		this.adminService.createService(new Service(request.name, request.description, request.tags, request.price, request.time), request.providerId);
 		
 		return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/removeService")
+	public ResponseEntity<Boolean> removeService(@RequestParam @Validated String serviceId) {
+		return new ResponseEntity<Boolean>(this.adminService.removeService(UUID.fromString(serviceId)), HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/createProvider", consumes = "application/json")
