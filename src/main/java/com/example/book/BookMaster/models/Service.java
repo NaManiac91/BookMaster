@@ -1,7 +1,6 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
@@ -106,7 +105,7 @@ public class Service implements Serializable, IModel {
 	@Override
 	public String toString() {
 		return "Service [serviceId=" + serviceId + ", name=" + name + ", description=" + description + ", tags="
-				+ Arrays.toString(tags) + ", price=" + price + ", time=" + time + "]";
+				+ tags.toString() + ", price=" + price + ", time=" + time + "]";
 	}
 
 	public Provider getProvider() {

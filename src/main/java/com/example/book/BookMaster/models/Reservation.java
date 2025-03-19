@@ -2,7 +2,6 @@ package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -158,7 +157,7 @@ public class Reservation implements Serializable, IModel {
 	}
 
 	public List<String> getListSlot() {
-		return Arrays.asList(this.getSlots().split(","));
+		return List.of(this.getSlots().split(","));
 	}
 	
 	public String getProviderName() {

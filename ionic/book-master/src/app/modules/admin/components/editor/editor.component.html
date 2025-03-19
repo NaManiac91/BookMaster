@@ -2,6 +2,6 @@
   <div ngModelGroup="create">
     <app-object-profile [view]="view" [object]="object ? object : type" (instance)="object = $event"></app-object-profile>
 
-    <ion-button (click)="create()">Create</ion-button>
+    <ion-button (click)="save()">Save</ion-button>
   </div>
 </form>

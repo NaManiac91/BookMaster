@@ -50,6 +50,13 @@ public class AdminController {
 		return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
 	}
 	
+	@PostMapping(path = "/editService")
+	public ResponseEntity<Provider> editService(@RequestBody @Validated Service request) {
+		Service service = this.adminService.editService(request);
+		
+		return new ResponseEntity<Provider>(service.getProvider(), HttpStatus.OK);
+	}
+	
 	@GetMapping(path = "/removeService")
 	public ResponseEntity<Boolean> removeService(@RequestParam @Validated String serviceId) {
 		return new ResponseEntity<Boolean>(this.adminService.removeService(UUID.fromString(serviceId)), HttpStatus.OK);

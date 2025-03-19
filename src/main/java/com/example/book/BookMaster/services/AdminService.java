@@ -67,6 +67,14 @@ public class AdminService {
 		}
 	}
 	
+	public Service editService(Service service) {
+		try {
+			return this.serviceRepo.save(service);
+		} catch (Exception ex) {
+			throw ex;
+		}
+	}
+	
 	public Provider createProvider(Provider provider, UUID userId) {	
 		try {
 			provider.setUser(this.userRepo.findById(userId).get());

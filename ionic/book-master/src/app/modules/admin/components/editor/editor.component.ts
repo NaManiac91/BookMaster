@@ -29,6 +29,11 @@ export class EditorComponent implements OnInit {
   ngOnInit() {
     this.user = this.authService.loggedUser;
     this.object = this.activatedRoute.snapshot.queryParams['object'];
+    const view = this.activatedRoute.snapshot.queryParams['view'];
+
+    if (view) {
+      this.view = view;
+    }
 
     if (this.object) {
       this.type = this.modelInitializerService.getTypeByClassName(this.object.$t);
@@ -37,11 +42,17 @@ export class EditorComponent implements OnInit {
     }
   }
 
-  create() {
-    this.adminService.create(this.object, this.user).subscribe(model => {
-      this.navCtrl.navigateRoot('Home', {
-        queryParams: {object: model}
-      });
-    });
+  save() {
+    if (this.view === ObjectProfileView.Create) {
+      this.adminService.create(this.object, this.user).subscribe(model =>
+        this.navCtrl.navigateRoot('Home', {
+          queryParams: {object: model}
+        }));
+    } else {
+        this.adminService.edit(this.object, this.type).subscribe(model =>
+          this.navCtrl.navigateRoot('Home', {
+            queryParams: {object: model}
+          }));
+    }
   }
 }

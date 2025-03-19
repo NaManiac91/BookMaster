@@ -6,7 +6,7 @@ import {
 } from "../../../../common/object-profile/services/object-profile.service";
 
 @ObjectProfile({
-  view: ObjectProfileView.Create,
+  view: [ObjectProfileView.Create, ObjectProfileView.Edit],
   type: Service
 })
 @Component({
