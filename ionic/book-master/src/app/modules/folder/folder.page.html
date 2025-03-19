@@ -16,7 +16,7 @@
 
   <div id="container" [ngSwitch]="folder">
     <app-home *ngSwitchCase="'Home'"></app-home>
-    <app-create *ngSwitchCase="'Create'"></app-create>
+    <app-editor *ngSwitchCase="'Editor'"></app-editor>
     <app-providers-list *ngSwitchCase="'Providers'"></app-providers-list>
     <app-services-list *ngSwitchCase="'Services'"></app-services-list>
     <app-reservation-workflow *ngSwitchCase="'ReservationWorkflow'"></app-reservation-workflow>

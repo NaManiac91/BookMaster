@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {SecurityService} from "../shared/services/security/security.service";
+import {AuthService} from "../shared/services/auth/auth.service";
 
 @Component({
   selector: 'app-folder',
@@ -11,7 +11,7 @@ export class FolderPage implements OnInit {
   public folder: string = 'Home';
   private activatedRoute = inject(ActivatedRoute);
 
-  constructor(private securityService: SecurityService) {
+  constructor(private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -19,7 +19,7 @@ export class FolderPage implements OnInit {
   }
 
   logout() {
-    this.securityService.loggedUser = null;
+    this.authService.loggedUser = null;
     window.location.reload();
   }
 }

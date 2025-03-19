@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
-import {SecurityService} from 'src/app/modules/shared/services/security/security.service';
+import {Component, inject, OnInit} from '@angular/core';
+import {IModel, Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
+import {AuthService} from 'src/app/modules/shared/services/auth/auth.service';
 import {ObjectProfileView} from "../../object-profile/services/object-profile.service";
 import {NavController} from "@ionic/angular";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -13,26 +14,29 @@ export class HomeComponent implements OnInit {
   user!: User;
   provider!: Provider;
   view: ObjectProfileView = ObjectProfileView.Consult;
+  private activatedRoute = inject(ActivatedRoute);
 
-  constructor(private securityService: SecurityService,
+  constructor(private authService: AuthService,
               private navCtrl: NavController) {
   }
 
   ngOnInit() {
-    this.initUser(this.securityService.loggedUser);
+    const object: IModel = this.activatedRoute.snapshot.queryParams['object'];
+
+    this.initUser(this.authService.loggedUser, object);
   }
 
-  private initUser(user: User) {
+  private initUser(user: User, object: IModel) {
     this.user = Object.assign(new User(), user);
 
     if (this.user.provider) {
-      this.user.provider = Object.assign(new Provider(), this.user.provider);
-      this.provider = this.user.provider;
+      const provider = object && object instanceof Provider ? object : this.user.provider;
+      this.provider = this.user.provider = Object.assign(new Provider(), provider);
     }
   }
 
   createService() {
-    this.navCtrl.navigateRoot('Create', {
+    this.navCtrl.navigateRoot('Editor', {
       queryParams: {
         type: Service.name
       }

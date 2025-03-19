@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
-import { CreateComponent } from './components/create/create.component';
+import { EditorComponent } from './components/editor/editor.component';
 import { AdminService } from './services/admin.service';
 import { CommonModule } from '../common/common.module';
 
 const components = [
-  CreateComponent
+  EditorComponent
 ];
 
 const services = [

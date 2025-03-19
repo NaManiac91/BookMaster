@@ -64,6 +64,6 @@ export class ServicesListComponent  implements OnInit {
   }
 
   editService(service: Service) {
-    this.selected.emit({service: service, operation: Operation.Create});
+    this.selected.emit({service: service, operation: Operation.Edit});
   }
 }

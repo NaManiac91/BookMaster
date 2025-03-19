@@ -4,7 +4,7 @@ import {User} from '../../rest-api-client';
 @Injectable({
   providedIn: 'root'
 })
-export class SecurityService {
+export class AuthService {
   constructor() { }
 
   get loggedUser(): User {

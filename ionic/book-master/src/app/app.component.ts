@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { SecurityService } from './modules/shared/services/security/security.service';
+import { AuthService } from './modules/shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +14,10 @@ export class AppComponent implements OnInit {
 
   isLogged: boolean = false;
 
-  constructor(private securityService: SecurityService) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
-    if (this.securityService.loggedUser) {
+    if (this.authService.loggedUser) {
       this.isLogged = true;
     }
   }

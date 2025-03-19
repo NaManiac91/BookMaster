@@ -3,7 +3,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {ErrorHandler, NgModule} from "@angular/core";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
-import {SecurityService} from "./services/security/security.service";
+import {AuthService} from "./services/auth/auth.service";
 import {ServiceCreateComponent} from "./components/service/service-create/service-create.component";
 import {ProviderCreateComponent} from "./components/provider/provider-create/provider-create.component";
 import {LoginComponent} from "./components/login/login.component";
@@ -30,7 +30,7 @@ const components = [
 ];
 
 const services = [
-  SecurityService,
+  AuthService,
   ModelInitializerService
 ];
 

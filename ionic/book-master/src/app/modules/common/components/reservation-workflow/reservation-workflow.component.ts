@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Provider, Service} from "../../../shared/rest-api-client";
 import {ClientService} from "../../services/client-service/client.service";
-import {SecurityService} from "../../../shared/services/security/security.service";
+import {AuthService} from "../../../shared/services/auth/auth.service";
 import {NavController} from "@ionic/angular";
 
 @Component({
@@ -15,7 +15,7 @@ export class ReservationWorkflowComponent {
   slots: string[] = [];
 
   constructor(private clientService: ClientService,
-              private securityService: SecurityService,
+              private authService: AuthService,
               private navCtrl: NavController) { }
 
   serviceSelected(service: Service) {
@@ -32,16 +32,16 @@ export class ReservationWorkflowComponent {
     const params: any = {
       date: new Date(),
       slots: slot.join(','),
-      userId: this.securityService.loggedUser.userId,
+      userId: this.authService.loggedUser.userId,
       serviceId: this.currentService.serviceId,
       providerId: this.currentProvider.providerId,
       note: 'Simple reservation'
     }
 
     this.clientService.createReservation(params).subscribe(reservation => {
-      const user = this.securityService.loggedUser;
+      const user = this.authService.loggedUser;
       user.reservations.push(reservation);
-      this.securityService.loggedUser = user;
+      this.authService.loggedUser = user;
       this.navCtrl.navigateRoot('');
     });
   }
