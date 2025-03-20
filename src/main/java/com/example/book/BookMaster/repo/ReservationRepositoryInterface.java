@@ -12,7 +12,7 @@ import com.example.book.BookMaster.models.Reservation;
 
 @RepositoryRestResource(exported = false)
 public interface ReservationRepositoryInterface extends CrudRepository<Reservation, UUID> {		
-	@Query(value = "SELECT reservation.* FROM reservation JOIN user_table ON reservation.user_id = user_table.user_id\r\n"
+	@Query(value = "SELECT reservation.* FROM reservation\r\n"
 			+ "WHERE reservation.provider_id = :providerId and reservation.date = :date", nativeQuery = true)
 	List<Reservation> findByProviderIdAndDate(UUID providerId, LocalDate date);
 }

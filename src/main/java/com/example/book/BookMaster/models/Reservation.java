@@ -163,4 +163,10 @@ public class Reservation implements Serializable, IModel {
 	public String getProviderName() {
 		return this.getProvider().getName();
 	}
+
+	@Override
+	public String toString() {
+		return "Reservation [reservationId=" + reservationId + ", date=" + date + ", slots=" + slots + ", users="
+				+ users + ", serviceId=" + serviceId + ", providerId=" + providerId + ", note=" + note + "]";
+	}
 }

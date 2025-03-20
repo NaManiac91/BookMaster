@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.models.Service;
@@ -19,6 +22,8 @@ import com.example.book.BookMaster.repo.UserRepositoryInterface;
 
 @org.springframework.stereotype.Service
 public class ClientService {
+    private static final Logger logger = LogManager.getLogger(ClientService.class);
+
 	private ReservationRepositoryInterface reservationRepo;
 	private UserRepositoryInterface userRepo;
 	private ServiceRepositoryInterface serviceRepo;
@@ -35,29 +40,40 @@ public class ClientService {
 	}
 	
 	public Reservation createReservation(LocalDate date, String slots, UUID userId, UUID serviceId, UUID providerId, String note) {
-		User consumer = this.userRepo.findById(userId).get();
-		User provider = this.userRepo.findByProviderProviderId(providerId);
-		
-		// Check if slot is already booked
-		List<String> slotBooked = this.getSlotBooked(providerId, date);
-        if (this.isTimeSlotAvailable(slotBooked, slots)) {
-        	throw new RuntimeException("Slot already booked");
-        }
-		
-        //Save new Reservation
-        Reservation reservation = new Reservation(date, slots, serviceId, providerId, note);
-		
-		consumer.addReservation(reservation);
-		provider.addReservation(reservation);
-		
-		reservation.setUsers(Set.of(consumer, provider));
-		
-		Reservation response = this.reservationRepo.save(reservation);
-		
-		Service service = this.serviceRepo.findById(serviceId).get();
-		response.setService(service);
-		response.setProvider(service.getProvider());
-		return response;
+	    try {
+	        // Fetch user and provider
+	        User consumer = this.userRepo.findById(userId)
+	            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+	        User provider = this.userRepo.findByProviderProviderId(providerId);
+	        if (provider == null) {
+	            throw new RuntimeException("Provider not found with ID: " + providerId);
+	        }
+
+	        // Check if slot is already booked
+	        List<String> slotBooked = this.getSlotBooked(providerId, date);
+	        if (this.isTimeSlotAvailable(slotBooked, slots)) {
+	            throw new RuntimeException("Slot already booked");
+	        }
+
+	        // Create and save new reservation
+	        Reservation reservation = new Reservation(date, slots, serviceId, providerId, note);
+	        consumer.addReservation(reservation);
+	        provider.addReservation(reservation);
+	        reservation.setUsers(Set.of(consumer, provider));
+	        Reservation response = this.reservationRepo.save(reservation);
+	        logger.info("Reservation created: {}", response);
+
+	        // Fetch and set service details
+	        Service service = this.serviceRepo.findById(serviceId)
+	            .orElseThrow(() -> new RuntimeException("Service not found with ID: " + serviceId));
+	        response.setService(service);
+	        response.setProvider(service.getProvider());
+	        
+	        return response;
+	    } catch (Exception e) {
+	        logger.error("Error creating reservation: {}", e.getMessage(), e);
+	        throw e; 
+	    }
 	}
 	
 	public Reservation createReservation(Reservation reservation) {

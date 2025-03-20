@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.book.BookMaster.models.Provider;
@@ -17,6 +20,8 @@ import com.example.book.BookMaster.repo.UserRepositoryInterface;
 
 @org.springframework.stereotype.Service
 public class AdminService {
+    private static final Logger logger = LogManager.getLogger(AdminService.class);
+
 	private UserRepositoryInterface userRepo;
 	private ServiceRepositoryInterface serviceRepo;
 	private ProviderRepositoryInterface providerRepo;
@@ -33,62 +38,81 @@ public class AdminService {
 
 	public User createUser(String username, String email) {
 		try {
-			return this.userRepo.save(new User(username, email));
-		} catch (Exception ex) {
-			throw ex;
+			User user = this.userRepo.save(new User(username, email));
+			logger.info("User created: {}", user);
+			return user;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public User createUserProvider(String username, String email, UUID providerId) {
-		User user = new User(username, email);
-		
 		try {
+			User user = new User(username, email);
 			user.setProvider(this.providerRepo.findById(providerId).get());
-			return this.userRepo.save(user);
-		} catch (Exception ex) {
-			throw ex;
+			User entity = this.userRepo.save(user);
+			logger.info("User created: {}", entity);
+			return entity;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public Service createService(String name) {
 		try {
-			return this.serviceRepo.save(new Service(name));
-		} catch (Exception ex) {
-			throw ex;
+			Service service = this.serviceRepo.save(new Service(name));
+			logger.info("Service created: {}", service);
+			return service;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public Service createService(Service service, UUID providerId) {
 		try {
 			service.setProvider(this.providerRepo.findById(providerId).get());
-			return this.serviceRepo.save(service);
-		} catch (Exception ex) {
-			throw ex;
+			Service entity = this.serviceRepo.save(service);	
+			logger.info("Service created: {}", entity);
+			return entity;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public Service editService(Service service) {
 		try {
-			return this.serviceRepo.save(service);
-		} catch (Exception ex) {
-			throw ex;
+			Service entity = this.serviceRepo.save(service);
+			logger.info("Service edited: {}", entity);
+			return entity;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public Provider createProvider(Provider provider, UUID userId) {	
 		try {
 			provider.setUser(this.userRepo.findById(userId).get());
-			return this.providerRepo.save(provider);
-		} catch (Exception ex) {
-			throw ex;
+			Provider entity = this.providerRepo.save(provider);
+			logger.info("Provider created: {}", entity);
+			return entity;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public void addService(UUID providerId, UUID serviceId) {
 		try {
+	        // Fetch user and provider
 			Optional<Service> service = this.serviceRepo.findById(serviceId);
 			Optional<Provider> provider = this.providerRepo.findById(providerId);
 			
+	        // If both exists create link and save
 			if (service.isPresent() && provider.isPresent()) {
 				Provider p = provider.get();
 				Service s = service.get();
@@ -96,47 +120,56 @@ public class AdminService {
 				p.addService(s);
 				
 				this.providerRepo.save(p);
+				logger.info("Serice: {} added to Provider: {}", service, p.getName());
 			} else {
+				logger.error("Missing service or provider");
 				throw new RuntimeException("Missing service or provider");
 			}
-		} catch (Exception ex) {
-			throw ex;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public boolean removeService(UUID serviceId) {
 		try {
 			this.serviceRepo.deleteById(serviceId);
+			logger.info("Service {} removed", serviceId);
 			return true;
-		} catch (Exception ex) {
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
 			return false;
 		}
 	}
 	
 	public void randomReservation(User user) {
-		Service service = ((List<Service>) this.serviceRepo.findAll()).get(0);
-		Provider provider = ((List<Provider>) this.providerRepo.findAll()).get(0);
-		
-		addService(provider.getProviderId(), service.getServiceId());
-		
-		String slot = provider.getStartTime() + "," + provider.getEndTime() ;
-		Reservation reservation = new Reservation(LocalDate.now(), slot, service.getServiceId(), provider.getProviderId(), "Book -> " + service.getName());
-		
-		user.addReservation(reservation);
-		user.setProvider(provider);
-		
 		try {
+	        // Fetch user and provider
+			Service service = ((List<Service>) this.serviceRepo.findAll()).get(0);
+			Provider provider = ((List<Provider>) this.providerRepo.findAll()).get(0);
+			
+			addService(provider.getProviderId(), service.getServiceId());
+			
+			// Create and save new reservation
+			String slot = provider.getStartTime() + "," + provider.getEndTime() ;
+			Reservation reservation = new Reservation(LocalDate.now(), slot, service.getServiceId(), provider.getProviderId(), "Book -> " + service.getName());
+			
+			user.addReservation(reservation);
+			user.setProvider(provider);
+			
 			this.userRepo.save(user);
-		} catch (Exception ex) {
-			throw ex;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
 	public void updateProvider(Provider provider) {
 		try {
 			this.providerRepo.save(provider);
-		} catch (Exception ex) {
-			throw ex;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
 		}
 	}
 	
