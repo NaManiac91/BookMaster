@@ -10,12 +10,19 @@ export class IModel {
   readonly $t: string = 'IModel';
 }
 
+export class Address  {
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
 @Initializer('Provider', Provider)
 export class Provider extends IModel {
   providerId: string;
   name: string;
   description: string;
-  address: string;
+  address: Address;
   email: string;
   phone: string;
   type: string;

@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {
   ObjectProfile,
-  ObjectProfileView
 } from "../../../../common/object-profile/services/object-profile.service";
 import {Provider} from "../../../rest-api-client";
+import {ObjectProfileView, ProviderType} from "../../../enum";
 
 @ObjectProfile({
-  view: ObjectProfileView.Create,
+  view: ObjectProfileView.CREATE,
   type: Provider
 })
 @Component({
@@ -14,10 +14,9 @@ import {Provider} from "../../../rest-api-client";
   templateUrl: './provider-create.component.html',
   styleUrls: ['./provider-create.component.scss'],
 })
-export class ProviderCreateComponent  implements OnInit {
-  object: Provider
+export class ProviderCreateComponent {
+  @Input() object: Provider
+  types = Object.values(ProviderType).filter(v => !Number.isFinite(v));
+
   constructor() { }
-
-  ngOnInit() {}
-
 }

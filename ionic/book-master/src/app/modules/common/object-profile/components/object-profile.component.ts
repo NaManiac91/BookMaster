@@ -2,21 +2,21 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   Type,
 } from '@angular/core';
 import {IModel} from '../../../shared/rest-api-client';
-import { ObjectProfileService, ObjectProfileView} from "../services/object-profile.service";
+import { ObjectProfileService} from "../services/object-profile.service";
+import {ObjectProfileView} from "../../../shared/enum";
 
 @Component({
   selector: 'app-object-profile',
   templateUrl: './object-profile.component.html',
   styleUrls: ['./object-profile.component.scss'],
 })
-export class ObjectProfileComponent  implements OnInit {
+export class ObjectProfileComponent {
   profileComponent!: any;
-  @Input() view: ObjectProfileView = ObjectProfileView.Consult;
+  @Input() view: ObjectProfileView = ObjectProfileView.CONSULT;
 
   private _type!: string;
   private _object!: any;
@@ -39,8 +39,6 @@ export class ObjectProfileComponent  implements OnInit {
   @Output() instance = new EventEmitter();
 
   constructor(private objectProfileService: ObjectProfileService){}
-
-  ngOnInit() {}
 
   updateProfile() {
     this.profileComponent = this.objectProfileService.getObjectProfile(this._type, this.view);

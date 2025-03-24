@@ -16,6 +16,7 @@ import {ProvidersListComponent} from "./components/provider/providers-list/provi
 import {ServicesListComponent} from "./components/service/services-list/services-list.component";
 import {GlobalErrorHandler} from "./HTTPHandlers/GlobalErrorHandler";
 import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
+import {UserCreateComponent} from "./components/user/user-create/user-create.component";
 
 const components = [
   LoginComponent,
@@ -26,7 +27,8 @@ const components = [
   ReservationsListComponent,
   ComponentLoaderComponent,
   ProvidersListComponent,
-  ServicesListComponent
+  ServicesListComponent,
+  UserCreateComponent
 ];
 
 const services = [
@@ -52,9 +54,9 @@ const services = [
   ],
   providers: [
     ...services, {
-    // processes all errors
-    provide: ErrorHandler,
-    useClass: GlobalErrorHandler,
+      // processes all errors
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
     },
     {
       // interceptor to show loading spinner

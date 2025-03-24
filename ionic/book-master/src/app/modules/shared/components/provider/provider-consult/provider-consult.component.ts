@@ -1,13 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
-import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
+import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
 import {Provider, Service} from "../../../rest-api-client";
 import {AlertController, NavController} from "@ionic/angular";
 import {AdminService} from "../../../../admin/services/admin.service";
-import {Operation} from "../../../enum";
+import {ObjectProfileView, Operation} from "../../../enum";
 import {ServicesListComponent} from "../../service/services-list/services-list.component";
 
 @ObjectProfile({
-  view: ObjectProfileView.Consult,
+  view: ObjectProfileView.CONSULT,
   type: Provider
 })
 @Component({
@@ -24,14 +24,14 @@ export class ProviderConsultComponent {
               private alertController: AlertController) { }
 
   serviceSelected(service: Service, operation: Operation) {
-    if (operation === Operation.Edit) {
+    if (operation === Operation.EDIT) {
       this.navCtrl.navigateRoot('Editor', {
         queryParams: {
           object: service,
-          view: ObjectProfileView.Edit
+          view: ObjectProfileView.EDIT
         }
       });
-    } else if (operation === Operation.Remove) {
+    } else if (operation === Operation.REMOVE) {
       this.adminService.removeService(service.serviceId).subscribe(async removed => {
         if (removed) {
           this.object.services.splice(this.object.services.findIndex(s => s.serviceId === service.serviceId), 1);

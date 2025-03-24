@@ -28,18 +28,16 @@ public class User implements Serializable, IModel {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID userId;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private String username;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private String email;
 	
-	@Column
 	private String lastName;
 	
-	@Column
 	private String firstName;
 	
 	@ManyToMany(mappedBy = "users")
@@ -48,9 +46,9 @@ public class User implements Serializable, IModel {
 	@OneToOne
 	private Provider provider;
 	
-	public User() {
-		// TODO Auto-generated constructor stub
-	}
+	/* Constructors */
+    // Default constructor
+	public User() {}
 	
 	public User(String username, String email) {
 		this.username = username;
@@ -72,6 +70,7 @@ public class User implements Serializable, IModel {
 		this.provider = provider;
 	}
 
+	/* Getters and setters */
 	public String getUsername() {
 		return username;
 	}
@@ -124,17 +123,17 @@ public class User implements Serializable, IModel {
 		this.provider = provider;
 	}
 
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", username=" + username + ", lastName=" + lastName + ", firstName="
-				+ firstName + ", email=" + email + "]";
-	}
-
 	public UUID getUserId() {
 		return userId;
 	}
 
 	public void setUserId(UUID userId) {
 		this.userId = userId;
+	}
+	
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", username=" + username + ", lastName=" + lastName + ", firstName="
+				+ firstName + ", email=" + email + "]";
 	}
 }

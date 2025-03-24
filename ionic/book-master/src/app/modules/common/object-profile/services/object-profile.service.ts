@@ -1,13 +1,7 @@
 import {Injectable} from '@angular/core';
+import {ObjectProfileView} from "../../../shared/enum";
 
-export enum ObjectProfileView {
-  Consult,
-  Create,
-  Edit,
-  List
-}
-
-export const DEFAULT_VIEW = ObjectProfileView.Consult;
+export const DEFAULT_VIEW = ObjectProfileView.CONSULT;
 
 export interface IObjectProfile {
   view: ObjectProfileView[] | ObjectProfileView;

@@ -12,7 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,32 +33,28 @@ public class Provider implements Serializable, IModel {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID providerId;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private String name;
 	
-	@Column
 	private String description;
 	
-	@Column
-	private String address;
+	@Embedded
+	private Address address;
 	
-	@Column
 	private String email;
 	
-	@Column
+	@Column(length = 10)
 	private String phone;
 	
 	@Column
-	private String type;
+	@Enumerated(EnumType.STRING)
+	private ProviderType type;
 	
-	@Column
 	private LocalTime startTime = LocalTime.of(9, 0);	// 09:00
 	
-	@Column
 	private LocalTime endTime = LocalTime.of(9, 0);	// 18:00
 	
-	@Column
 	private Integer timeBlockMinutes = 30;	//in minutes	
 
 	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
@@ -65,9 +64,9 @@ public class Provider implements Serializable, IModel {
 	@JsonIgnore
 	private User user;
 
-	public Provider() {
-		// TODO Auto-generated constructor stub
-	}
+	/* Constructors */
+    // Default constructor
+	public Provider() {}
 	
 	public Provider(String name) {
 		this.name = name;
@@ -78,7 +77,7 @@ public class Provider implements Serializable, IModel {
 		this.user = user;
 	}
 	
-	public Provider(String name, String description, String address, String email, String phone, String type) {
+	public Provider(String name, String description, Address address, String email, String phone, ProviderType type) {
 		this.name = name;
 		this.description = description;
 		this.address = address;
@@ -87,7 +86,7 @@ public class Provider implements Serializable, IModel {
 		this.type = type;
 	}
 
-	public Provider(String name, String description, String address, String email, String phone, String type,
+	public Provider(String name, String description, Address address, String email, String phone, ProviderType type,
 			LocalTime startTime, LocalTime endTime, Integer timeBlockMinutes) {
 		super();
 		this.name = name;
@@ -101,6 +100,7 @@ public class Provider implements Serializable, IModel {
 		this.timeBlockMinutes = timeBlockMinutes;
 	}
 
+    /* Getters and setters */
 	public String getName() {
 		return name;
 	}
@@ -117,11 +117,11 @@ public class Provider implements Serializable, IModel {
 		this.description = description;
 	}
 
-	public String getAddress() {
+	public Address getAddress() {
 		return address;
 	}
 
-	public void setAddress(String address) {
+	public void setAddress(Address address) {
 		this.address = address;
 	}
 
@@ -141,18 +141,12 @@ public class Provider implements Serializable, IModel {
 		this.phone = phone;
 	}
 
-	public String getType() {
+	public ProviderType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(ProviderType type) {
 		this.type = type;
-	}
-	
-	@Override
-	public String toString() {
-		return "Provider [providerId=" + providerId + ", name=" + name + ", description=" + description + ", address="
-				+ address + ", email=" + email + ", phone=" + phone + ", type=" + type + "]";
 	}
 	
 	public Set<Service> getServices() {
@@ -206,5 +200,11 @@ public class Provider implements Serializable, IModel {
 
 	public void setTimeBlockMinutes(Integer timeBlockMinutes) {
 		this.timeBlockMinutes = timeBlockMinutes ;
+	}
+	
+	@Override
+	public String toString() {
+		return "Provider [providerId=" + providerId + ", name=" + name + ", description=" + description + ", address="
+				+ address + ", email=" + email + ", phone=" + phone + ", type=" + type + "]";
 	}
 }

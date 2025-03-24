@@ -30,11 +30,11 @@ public class Reservation implements Serializable, IModel {
     @GeneratedValue(strategy = GenerationType.UUID)
 	private UUID reservationId;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private LocalDate date = LocalDate.now();
 
-	@Column
+	@Column(nullable = false, length = 5)
 	@NonNull()
     private String slots = "09:00";		//	list of slots in this format "09:00", "10:00"
 
@@ -47,15 +47,14 @@ public class Reservation implements Serializable, IModel {
 	@JsonIgnore
     private Set<User> users;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private UUID serviceId;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private UUID providerId;
 	
-	@Column
 	private String note;
 	
 	/* Support fields */
@@ -63,9 +62,9 @@ public class Reservation implements Serializable, IModel {
 	@JsonIgnore
 	private Provider provider;
 	
-	public Reservation() {
-		// TODO Auto-generated constructor stub
-	}
+	/* Constructors */
+    // Default constructor
+	public Reservation() {}
 	
 	public Reservation(LocalDate date, String slots, UUID serviceId, UUID providerId, String note) {
 		this.date = date;
@@ -84,6 +83,7 @@ public class Reservation implements Serializable, IModel {
 		this.note = note;
 	}
 
+    /* Getters and setters */
 	public String getNote() {
 		return note;
 	}

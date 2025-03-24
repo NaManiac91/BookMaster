@@ -1,9 +1,9 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {IModel, Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
 import {AuthService} from 'src/app/modules/shared/services/auth/auth.service';
-import {ObjectProfileView} from "../../object-profile/services/object-profile.service";
 import {NavController} from "@ionic/angular";
 import {ActivatedRoute} from "@angular/router";
+import {ObjectProfileView} from "../../../shared/enum";
 
 @Component({
   selector: 'app-home',
@@ -13,7 +13,7 @@ import {ActivatedRoute} from "@angular/router";
 export class HomeComponent implements OnInit {
   user!: User;
   provider!: Provider;
-  view: ObjectProfileView = ObjectProfileView.Consult;
+  view: ObjectProfileView = ObjectProfileView.CONSULT;
   private activatedRoute = inject(ActivatedRoute);
 
   constructor(private authService: AuthService,

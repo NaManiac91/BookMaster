@@ -34,4 +34,12 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  signup() {
+    this.navCtrl.navigateRoot('Editor', {
+      queryParams: {
+        type: User.name
+      }
+    });
+  }
+
 }

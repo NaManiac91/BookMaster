@@ -4,11 +4,16 @@
   </ion-item>
 
   <ion-item>
-    <ion-input label="Type" name="type" [(ngModel)]="object.type"></ion-input>
+    <ion-input label="Descritpion" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input label="Descritpion" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
+    <ion-label>Type</ion-label>
+    <ion-select [(ngModel)]="object.type">
+      <ion-select-option *ngFor="let type of types" [value]="type">
+        {{ type }}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
 
   <ion-item>
@@ -19,9 +24,24 @@
     <ion-input label="Email" name="email" [(ngModel)]="object.email" type="mail"></ion-input>
   </ion-item>
 
-  <ion-item>
-    <ion-input label="Address" name="address" [(ngModel)]="object.address"></ion-input>
-  </ion-item>
+  <ion-card>
+    <ion-item>
+      <ion-input label="Street Address" name="Country" [(ngModel)]="object.address.street" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="City" name="Country" [(ngModel)]="object.address.city" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Postal Code" name="Country" [(ngModel)]="object.address.postalCode" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Country" name="Country" [(ngModel)]="object.address.country" type="text" required></ion-input>
+    </ion-item>
+  </ion-card>
+
 
   <ion-item>
     <ion-input label="StartTime" name="startTime" [(ngModel)]="object.startTime" type="time"></ion-input>

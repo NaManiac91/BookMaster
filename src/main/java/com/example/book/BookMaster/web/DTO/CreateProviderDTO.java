@@ -2,13 +2,16 @@ package com.example.book.BookMaster.web.DTO;
 
 import java.time.LocalTime;
 
+import com.example.book.BookMaster.models.Address;
+import com.example.book.BookMaster.models.ProviderType;
+
 public class CreateProviderDTO {
 	public String name;
 	public String description;
-	public String address;
+	public Address address;
 	public String email;
 	public String phone;
-	public String type;
+	public ProviderType type;
 	public LocalTime startTime;
 	public LocalTime endTime;
 	public int timeBlockMinutes;

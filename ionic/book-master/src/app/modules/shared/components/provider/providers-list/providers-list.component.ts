@@ -1,10 +1,11 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FetchService} from "../../../../common/services/fetch-service/fetch.service";
 import {Provider} from "../../../rest-api-client";
-import {ObjectProfile, ObjectProfileView} from "../../../../common/object-profile/services/object-profile.service";
+import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
+import {ObjectProfileView} from "../../../enum";
 
 @ObjectProfile({
-  view: ObjectProfileView.List,
+  view: ObjectProfileView.LIST,
   type: Provider
 })
 @Component({

@@ -25,26 +25,37 @@ public class Service implements Serializable, IModel {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID serviceId;
 	
-	@Column
+	@Column(nullable = false)
 	@NonNull()
 	private String name;
 	
-	@Column
 	private String description;
-	
-	@Column
-	private String[] tags;
-	
-	@Column
+		
 	private Float price;
 	
-	@Column
 	private Integer time;	// in number of slots ex 1, 2, ...
 	
 	@ManyToOne
 	@JsonIgnore
 	private Provider provider;
 	
+	/* Constructors */
+    // Default constructor
+	public Service() {}
+	
+	public Service(String name) {
+		this.name = name;
+	}
+	
+	public Service(String name, String description, Float price, int time) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.price = price;
+		this.time = time;
+	}
+
+	/* Getters and setters */
 	public String getName() {
 		return name;
 	}
@@ -59,14 +70,6 @@ public class Service implements Serializable, IModel {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String[] getTags() {
-		return tags;
-	}
-
-	public void setTags(String[] tags) {
-		this.tags = tags;
 	}
 
 	public Float getPrice() {
@@ -85,29 +88,6 @@ public class Service implements Serializable, IModel {
 		this.time = time;
 	}
 
-	public Service() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public Service(String name) {
-		this.name = name;
-	}
-	
-	public Service(String name, String description, String[] tags, Float price, int time) {
-		super();
-		this.name = name;
-		this.description = description;
-		this.tags = tags;
-		this.price = price;
-		this.time = time;
-	}
-
-	@Override
-	public String toString() {
-		return "Service [serviceId=" + serviceId + ", name=" + name + ", description=" + description + ", tags="
-				+ tags.toString() + ", price=" + price + ", time=" + time + "]";
-	}
-
 	public Provider getProvider() {
 		return provider;
 	}
@@ -122,5 +102,10 @@ public class Service implements Serializable, IModel {
 
 	public void setServiceId(UUID serviceId) {
 		this.serviceId = serviceId;
+	}
+	
+	@Override
+	public String toString() {
+		return "Service [serviceId=" + serviceId + ", name=" + name + ", description=" + description + ", price=" + price + ", time=" + time + "]";
 	}
 }

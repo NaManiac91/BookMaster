@@ -3,9 +3,9 @@ import {AdminService} from '../../services/admin.service';
 import {IModel, User} from 'src/app/modules/shared/rest-api-client';
 import {AuthService} from 'src/app/modules/shared/services/auth/auth.service';
 import {ActivatedRoute} from '@angular/router';
-import {ObjectProfileView} from "../../../common/object-profile/services/object-profile.service";
 import {ModelInitializerService} from "../../../shared/services/model-initializer/model-initializer.service";
 import {NavController} from "@ionic/angular";
+import {ObjectProfileView} from "../../../shared/enum";
 
 @Component({
   selector: 'app-editor',
@@ -16,7 +16,7 @@ export class EditorComponent implements OnInit {
   user!: User;
   private activatedRoute = inject(ActivatedRoute);
   type!: Type<IModel>;
-  view: ObjectProfileView = ObjectProfileView.Create;
+  view: ObjectProfileView = ObjectProfileView.CREATE;
   object!: IModel;
 
   constructor(private adminService: AdminService,
@@ -43,7 +43,7 @@ export class EditorComponent implements OnInit {
   }
 
   save() {
-    if (this.view === ObjectProfileView.Create) {
+    if (this.view === ObjectProfileView.CREATE) {
       this.adminService.create(this.object, this.user).subscribe(model =>
         this.navCtrl.navigateRoot('Home', {
           queryParams: {object: model}
