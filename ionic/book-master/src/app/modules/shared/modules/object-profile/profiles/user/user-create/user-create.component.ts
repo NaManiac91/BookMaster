@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
-import {Address, Provider, User} from "../../../rest-api-client";
-import {ObjectProfileView} from "../../../enum";
+import {ObjectProfile} from "../../../services/object-profile.service";
+import {Address, Provider, User} from "../../../../../rest-api-client";
+import {ObjectProfileView} from "../../../../../enum";
 
 @ObjectProfile({
   view: ObjectProfileView.CREATE,
@@ -14,7 +14,7 @@ import {ObjectProfileView} from "../../../enum";
 })
 export class UserCreateComponent implements OnInit {
   object: User;
-  view: ObjectProfileView.CREATE;
+  view: ObjectProfileView = ObjectProfileView.CREATE;
 
   constructor() { }
 

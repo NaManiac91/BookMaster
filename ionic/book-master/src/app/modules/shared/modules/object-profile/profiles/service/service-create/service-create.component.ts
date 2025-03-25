@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {Service} from "../../../rest-api-client";
+import {Service} from "../../../../../rest-api-client";
 import {
   ObjectProfile,
-} from "../../../../common/object-profile/services/object-profile.service";
-import {ObjectProfileView} from "../../../enum";
+} from "../../../services/object-profile.service";
+import {ObjectProfileView} from "../../../../../enum";
 
 @ObjectProfile({
   view: [ObjectProfileView.CREATE, ObjectProfileView.EDIT],

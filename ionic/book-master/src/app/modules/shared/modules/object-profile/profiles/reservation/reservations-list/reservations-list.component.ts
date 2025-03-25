@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {Reservation} from 'src/app/modules/shared/rest-api-client';
-import {ClientService} from "../../../../common/services/client-service/client.service";
+import {ClientService} from "../../../../../../common/services/client-service/client.service";
 import {AlertController} from "@ionic/angular";
 
 @Component({

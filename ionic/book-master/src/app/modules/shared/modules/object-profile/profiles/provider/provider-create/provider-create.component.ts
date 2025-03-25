@@ -1,9 +1,9 @@
 import {Component, Input} from '@angular/core';
 import {
   ObjectProfile,
-} from "../../../../common/object-profile/services/object-profile.service";
-import {Provider} from "../../../rest-api-client";
-import {ObjectProfileView, ProviderType} from "../../../enum";
+} from "../../../services/object-profile.service";
+import {Provider} from "../../../../../rest-api-client";
+import {ObjectProfileView, ProviderType} from "../../../../../enum";
 
 @ObjectProfile({
   view: ObjectProfileView.CREATE,

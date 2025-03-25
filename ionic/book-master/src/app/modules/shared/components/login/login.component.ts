@@ -4,6 +4,7 @@ import {AuthService} from '../../services/auth/auth.service';
 import {User} from '../../rest-api-client';
 import {Subject} from 'rxjs';
 import {NavController} from "@ionic/angular";
+import {ObjectProfileView} from "../../enum";
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,9 @@ import {NavController} from "@ionic/angular";
 export class LoginComponent implements OnInit {
   username!: string;
   password!: string;
+  showUserCreate: boolean = false;
+  user: User;
+  view: ObjectProfileView = ObjectProfileView.CREATE;
 
   @Output() logged: Subject<void> = new Subject<void>();
 
@@ -35,11 +39,8 @@ export class LoginComponent implements OnInit {
   }
 
   signup() {
-    this.navCtrl.navigateRoot('Editor', {
-      queryParams: {
-        type: User.name
-      }
-    });
+    this.showUserCreate = true;
+    this.user = new User();
   }
 
 }

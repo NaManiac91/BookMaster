@@ -1,8 +1,8 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FetchService} from "../../../../common/services/fetch-service/fetch.service";
-import {Provider} from "../../../rest-api-client";
-import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
-import {ObjectProfileView} from "../../../enum";
+import {FetchService} from "../../../../../../common/services/fetch-service/fetch.service";
+import {Provider} from "../../../../../rest-api-client";
+import {ObjectProfile} from "../../../services/object-profile.service";
+import {ObjectProfileView} from "../../../../../enum";
 
 @ObjectProfile({
   view: ObjectProfileView.LIST,

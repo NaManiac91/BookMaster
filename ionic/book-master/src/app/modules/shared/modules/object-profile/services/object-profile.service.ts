@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ObjectProfileView} from "../../../shared/enum";
+import {ObjectProfileView} from "../../../enum";
 
 export const DEFAULT_VIEW = ObjectProfileView.CONSULT;
 

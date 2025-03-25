@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Provider, Service} from "../../../rest-api-client";
+import {Provider, Service} from "../../../../../rest-api-client";
 import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
-import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
-import {ObjectProfileView, Operation} from "../../../enum";
+import {ObjectProfile} from "../../../services/object-profile.service";
+import {ObjectProfileView, Operation} from "../../../../../enum";
 
 @ObjectProfile({
   view: ObjectProfileView.LIST,

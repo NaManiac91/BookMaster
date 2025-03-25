@@ -4,31 +4,14 @@ import {ErrorHandler, NgModule} from "@angular/core";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
 import {AuthService} from "./services/auth/auth.service";
-import {ServiceCreateComponent} from "./components/service/service-create/service-create.component";
-import {ProviderCreateComponent} from "./components/provider/provider-create/provider-create.component";
 import {LoginComponent} from "./components/login/login.component";
-import {UserDetailComponent} from "./components/user/user-detail/user-detail.component";
 import {ModelInitializerService} from "./services/model-initializer/model-initializer.service";
-import {ProviderConsultComponent} from "./components/provider/provider-consult/provider-consult.component";
-import {ReservationsListComponent} from "./components/reservation/reservations-list/reservations-list.component";
-import {ComponentLoaderComponent} from "../common/object-profile/components/component-loader.component";
-import {ProvidersListComponent} from "./components/provider/providers-list/providers-list.component";
-import {ServicesListComponent} from "./components/service/services-list/services-list.component";
 import {GlobalErrorHandler} from "./HTTPHandlers/GlobalErrorHandler";
 import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
-import {UserCreateComponent} from "./components/user/user-create/user-create.component";
+import {ObjectProfileModule} from "./modules/object-profile/object-profile.module";
 
 const components = [
-  LoginComponent,
-  ServiceCreateComponent,
-  ProviderCreateComponent,
-  ProviderConsultComponent,
-  UserDetailComponent,
-  ReservationsListComponent,
-  ComponentLoaderComponent,
-  ProvidersListComponent,
-  ServicesListComponent,
-  UserCreateComponent
+  LoginComponent
 ];
 
 const services = [
@@ -42,7 +25,8 @@ const services = [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    HttpClientModule
+    HttpClientModule,
+    ObjectProfileModule
   ],
   declarations: components,
   exports: [
@@ -50,7 +34,8 @@ const services = [
     FormsModule,
     IonicModule,
     HttpClientModule,
-    components
+    components,
+    ObjectProfileModule
   ],
   providers: [
     ...services, {

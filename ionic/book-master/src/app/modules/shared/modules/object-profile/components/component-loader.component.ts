@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   ComponentRef,
   EventEmitter,
@@ -35,7 +34,7 @@ export class ComponentLoaderComponent  implements OnChanges, AfterViewInit, OnDe
 
   @Output() instance = new EventEmitter();
 
-  constructor(private cdRef: ChangeDetectorRef) { }
+  constructor() { }
 
   updateComponent() {
     if (!this._component){

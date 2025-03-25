@@ -1,19 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import {Injectable, Type} from '@angular/core';
-import {IModel, Provider, Service, User} from "../../shared/rest-api-client";
+import {IModel, Provider, Service} from "../../shared/rest-api-client";
 import {Observable, map, of} from "rxjs";
+import {AuthService} from "../../shared/services/auth/auth.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
   private readonly api = 'api/admin/';
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,
+              private authService: AuthService) { }
 
-  create(object: IModel, user: User): Observable<IModel> {
+  create(object: IModel): Observable<IModel> {
     switch (object.$t) {
-      case Provider.$t: return this.createProvider(object as Provider, user.userId);
-      case Service.$t: return this.createService(object as Service, user.provider.providerId);
+      case Provider.$t: return this.createProvider(object as Provider, this.authService.loggedUser.userId);
+      case Service.$t: return this.createService(object as Service, this.authService.loggedUser.provider.providerId);
     }
     return of(object);
   }

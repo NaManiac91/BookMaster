@@ -5,9 +5,9 @@ import {
   Output,
   Type,
 } from '@angular/core';
-import {IModel} from '../../../shared/rest-api-client';
+import {IModel} from '../../../rest-api-client';
 import { ObjectProfileService} from "../services/object-profile.service";
-import {ObjectProfileView} from "../../../shared/enum";
+import {ObjectProfileView} from "../../../enum";
 
 @Component({
   selector: 'app-object-profile',

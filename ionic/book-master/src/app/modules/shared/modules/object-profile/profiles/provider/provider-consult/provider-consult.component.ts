@@ -1,9 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
-import {ObjectProfile} from "../../../../common/object-profile/services/object-profile.service";
-import {Provider, Service} from "../../../rest-api-client";
+import {ObjectProfile} from "../../../services/object-profile.service";
+import {Provider, Service} from "../../../../../rest-api-client";
 import {AlertController, NavController} from "@ionic/angular";
-import {AdminService} from "../../../../admin/services/admin.service";
-import {ObjectProfileView, Operation} from "../../../enum";
+import {AdminService} from "../../../../../../admin/services/admin.service";
+import {ObjectProfileView, Operation} from "../../../../../enum";
 import {ServicesListComponent} from "../../service/services-list/services-list.component";
 
 @ObjectProfile({
