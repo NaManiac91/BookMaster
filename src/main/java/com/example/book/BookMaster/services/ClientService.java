@@ -77,43 +77,64 @@ public class ClientService {
 	}
 	
 	public Reservation createReservation(Reservation reservation) {
-		return this.reservationRepo.save(reservation);
+		try {
+	        Reservation response = this.reservationRepo.save(reservation);
+	        logger.info("Reservation created: {}", response);
+			return response;
+		} catch (Exception e) {
+	        logger.error("Error creating reservation: {}", e.getMessage(), e);
+	        throw e; 
+	    }
 	}
 	
 	private List<String> getSlotBooked(UUID providerId, LocalDate date) {
-		List<Reservation> reservations = this.reservationRepo.findByProviderIdAndDate(providerId, date);
-
-		List<String> slotBooked = new ArrayList<>();
-		for (Reservation r : reservations) {
-			slotBooked.addAll(r.getListSlot());
-		}
-		return slotBooked;
+		try {
+			List<Reservation> reservations = this.reservationRepo.findByProviderIdAndDate(providerId, date);
+	
+			// Fetch booked slots in the given date
+			List<String> slotBooked = new ArrayList<>();
+			for (Reservation r : reservations) {
+				slotBooked.addAll(r.getListSlot());
+			}
+			
+			logger.info("Slot already booked for {} in {} : {}", providerId, date, slotBooked);
+			return slotBooked;
+		} catch (Exception e) {
+	        logger.error("Error creating reservation: {}", e.getMessage(), e);
+	        throw e; 
+	    }
 	}
 	
 	public List<String> getAvailableTimeSlots(UUID providerId, LocalDate date) {
-		// Retrieve provider information to check time slot
-		Provider provider = this.providerRepo.findById(providerId).get();
-		LocalTime startTime = provider.getStartTime(); 
-		LocalTime endTime = provider.getEndTime();
-		int timeBlockMinutes = provider.getTimeBlockMinutes();
-		
-		List<String> availableSlots = new ArrayList<>();
-        LocalTime currentTime = startTime;
-
-        // Create all slots
-        while (currentTime.isBefore(endTime)) {
-            LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
-            String timeSlot = currentTime.toString();
-
-            availableSlots.add(timeSlot);
-
-            currentTime = nextTime;
-        }
-        
-        // Remove the slots already booked
-        availableSlots.removeAll(this.getSlotBooked(providerId, date));
-
-        return availableSlots;
+		try {
+			// Retrieve provider information to check time slot
+			Provider provider = this.providerRepo.findById(providerId).get();
+			LocalTime startTime = provider.getStartTime(); 
+			LocalTime endTime = provider.getEndTime();
+			int timeBlockMinutes = provider.getTimeBlockMinutes();
+			
+			List<String> availableSlots = new ArrayList<>();
+	        LocalTime currentTime = startTime;
+	
+	        // Create all slots
+	        while (currentTime.isBefore(endTime)) {
+	            LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
+	            String timeSlot = currentTime.toString();
+	
+	            availableSlots.add(timeSlot);
+	
+	            currentTime = nextTime;
+	        }
+	        
+	        // Remove the slots already booked
+	        availableSlots.removeAll(this.getSlotBooked(providerId, date));
+			logger.info("Availabled slots for {} in {} : {}", providerId, date, availableSlots);
+			
+	        return availableSlots;
+		} catch (Exception e) {
+	        logger.error("Error creating reservation: {}", e.getMessage(), e);
+	        throw e; 
+	    }
     }
 
     public boolean isTimeSlotAvailable(List<String> slotBooked, String slot) {
@@ -121,22 +142,28 @@ public class ClientService {
     }
 
     public boolean removeReservation(UUID reservationId) {
-    	Reservation reservation = this.reservationRepo.findById(reservationId).get();	// Get reservation from DB
-    	
-    	/* Remove reservation from user consumer and user provider */
-    	Iterator<User> i = reservation.getUsers().iterator();
-    	User consumer = this.userRepo.findById(i.next().getUserId()).get();
-        boolean removed = consumer.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
-       
-        User provider = this.userRepo.findById(i.next().getUserId()).get();
-        removed = provider.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
-       
-        if (removed) {
-        	this.userRepo.save(consumer);
-        	this.userRepo.save(provider);
-        	this.reservationRepo.delete(reservation);
-        }
-        
-        return removed;
+    	try {
+	    	Reservation reservation = this.reservationRepo.findById(reservationId).get();	// Get reservation from DB
+	    	
+	    	// Remove reservation from user consumer and user provider
+	    	Iterator<User> i = reservation.getUsers().iterator();
+	    	User consumer = this.userRepo.findById(i.next().getUserId()).get();
+	        boolean removed = consumer.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+	       
+	        User provider = this.userRepo.findById(i.next().getUserId()).get();
+	        removed = provider.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+	       
+	        if (removed) {
+	        	this.userRepo.save(consumer);
+	        	this.userRepo.save(provider);
+	        	this.reservationRepo.delete(reservation);
+				logger.info("Reservation {} removed from {} - {}", reservationId, consumer.getUserId(), provider.getUserId());
+	        }
+	        
+	        return removed;
+	    } catch (Exception e) {
+	        logger.error("Error removing reservation: {}", e.getMessage(), e);
+	        throw e; 
+	    }
     }
 }

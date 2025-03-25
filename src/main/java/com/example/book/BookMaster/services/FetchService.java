@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Service;
@@ -16,6 +18,8 @@ import com.example.book.BookMaster.repo.UserRepositoryInterface;
 
 @org.springframework.stereotype.Service
 public class FetchService {
+    private static final Logger logger = LogManager.getLogger(FetchService.class);
+
 	private UserRepositoryInterface userRepo;
 	private ServiceRepositoryInterface serviceRepo;
 	private ProviderRepositoryInterface providerRepo;
@@ -47,18 +51,25 @@ public class FetchService {
 	}
 	
 	public Optional<User> getUserByUsername(String username) {
-		Optional<User> user = Optional.of(this.userRepo.findByUsername(username));
-		
-		if (user.isPresent() && user.get().getReservations().size() > 0) {
-			Set<Reservation> reservations = user.get().getReservations();
-			for (Reservation reservation : reservations) {
-				Service service = this.serviceRepo.findById(reservation.getServiceId()).get();
-				reservation.setService(service);
-				reservation.setProvider(service.getProvider());
+		try {
+			Optional<User> user = Optional.of(this.userRepo.findByUsername(username));
+			
+			if (user.isPresent() && user.get().getReservations().size() > 0) {
+				Set<Reservation> reservations = user.get().getReservations();
+				for (Reservation reservation : reservations) {
+			        // Fetch and set service details
+					Service service = this.serviceRepo.findById(reservation.getServiceId()).get();
+					reservation.setService(service);
+					reservation.setProvider(service.getProvider());
+				}
 			}
-		}
-		
-		return user;
+			
+			logger.info("Fetch: {}", user);
+			return user;
+		} catch (Exception e) {
+	        logger.error("Error fetching user: {}", e.getMessage(), e);
+	        throw e; 
+	    }
 	}
 
 }
