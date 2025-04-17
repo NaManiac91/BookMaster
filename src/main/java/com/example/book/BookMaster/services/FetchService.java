@@ -31,23 +31,58 @@ public class FetchService {
 	}
 	
 	public List<User> getUsers() {
-		return (List<User>)this.userRepo.findAll();
+		try {
+			List<User> users = (List<User>)this.userRepo.findAll();
+			logger.info("Users fetched");
+			return users;
+		} catch (Exception e) {
+		    logger.error("Error fetching users: {}", e.getMessage(), e);
+		    throw e; 
+		}
 	}
 	
 	public List<Service> getServices() {
-		return (List<Service>)this.serviceRepo.findAll();
+		try {
+			List<Service> services = (List<Service>)this.serviceRepo.findAll();
+			logger.info("Services fetched");
+			return services;
+		} catch (Exception e) {
+		    logger.error("Error fetching services: {}", e.getMessage(), e);
+		    throw e; 
+		}
 	}
 	
 	public List<Provider> getProviders() {
-		return (List<Provider>)this.providerRepo.findAll();
+		try {
+			List<Provider> providers = (List<Provider>)this.providerRepo.findAll();
+			logger.info("Providers fetched");
+			return providers;
+		} catch (Exception e) {
+		    logger.error("Error fetching providers: {}", e.getMessage(), e);
+		    throw e; 
+		}
 	}
 	
 	public Optional<Provider> getProvider(UUID providerId) {
-		return this.providerRepo.findById(providerId);
+		try {
+			Optional<Provider> provider = this.providerRepo.findById(providerId);
+			logger.info("Provider fetched: " + providerId);
+			return provider;
+		} catch (Exception e) {
+		    logger.error("Error fetching provider: " + providerId + " {}", e.getMessage(), e);
+		    throw e; 
+		}
 	}
 	
 	public Optional<Service> getService(UUID serviceId) {
-		return this.serviceRepo.findById(serviceId);
+		try {
+			Optional<Service> service = this.serviceRepo.findById(serviceId);
+			logger.info("Service fetched: " + serviceId);
+			return service;
+		} catch (Exception e) {
+		    logger.error("Error fetching service: " + serviceId + " {}", e.getMessage(), e);
+		    throw e; 
+		}
 	}
 	
 	public Optional<User> getUserByUsername(String username) {
