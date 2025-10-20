@@ -16,9 +16,8 @@ export class ClientService {
       .pipe(map(reservation => Object.assign(new Reservation(), reservation)));
   }
 
-  getAvailableTimeSlots(providerId: string): Observable<string[]> {
-    const date = new Date();
-    return <Observable<string[]>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId +
+  getAvailableTimeSlots(providerId: string, date: Date): Observable<{ [key: string]: string[] }> {
+    return <Observable<{ [key: string]: string[] }>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId +
       `&date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
   }
 

@@ -3,6 +3,7 @@ package com.example.book.BookMaster.web;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,8 @@ public class ClientController {
 	}
 	
 	@GetMapping(path = "/getAvailableTimeSlots")
-	public ResponseEntity<List<String>> getAvailableTimeSlots(@RequestParam @Validated String providerId, LocalDate date) {
-		  return new ResponseEntity<List<String>>(this.clientService.getAvailableTimeSlots(UUID.fromString(providerId), date), HttpStatus.OK);
+	public ResponseEntity<Map<LocalDate, List<String>>> getAvailableTimeSlots(@RequestParam @Validated String providerId, LocalDate date) {
+		  return new ResponseEntity<Map<LocalDate, List<String>>> (this.clientService.getAvailableTimeSlots(UUID.fromString(providerId), date), HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/removeReservation")

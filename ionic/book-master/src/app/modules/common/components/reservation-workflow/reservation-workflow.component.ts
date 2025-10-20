@@ -12,7 +12,8 @@ import {NavController} from "@ionic/angular";
 export class ReservationWorkflowComponent {
   currentProvider!: Provider;
   currentService!: Service;
-  slots: string[] = [];
+  slots: { [key: string]: string[] } = {};
+  currentDay: Date = new Date;
 
   constructor(private clientService: ClientService,
               private authService: AuthService,
@@ -20,17 +21,17 @@ export class ReservationWorkflowComponent {
 
   serviceSelected(service: Service) {
     this.currentService = service;
-    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId).subscribe(slots => this.slots = slots);
+    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, this.currentDay).subscribe(slots => this.slots = slots);
   }
 
-  addReservation(slotIndex: number) {
+  addReservation(slotDay: string, slotIndex: number) {
     const slot = [];
     for (let index = 0; index < this.currentService.time; index++) {
-      slot.push(this.slots[slotIndex + index]);
+      slot.push(this.slots[slotDay][slotIndex + index]);
     }
 
     const params: any = {
-      date: new Date(),
+      date: new Date(slotDay),
       slots: slot.join(','),
       userId: this.authService.loggedUser.userId,
       serviceId: this.currentService.serviceId,
@@ -44,5 +45,18 @@ export class ReservationWorkflowComponent {
       this.authService.loggedUser = user;
       this.navCtrl.navigateRoot('');
     });
+  }
+
+  update(offset: number) {
+    const newDay = new Date(this.currentDay);
+    newDay.setDate(newDay.getDate() + offset);
+    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, newDay).subscribe(slots => {
+      this.slots = slots;
+      this.currentDay = newDay;
+    });
+  }
+
+  isNotToday(date: string): boolean {
+    return new Date().toDateString() !== new Date(date).toDateString();
   }
 }

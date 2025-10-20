@@ -1,11 +1,22 @@
 <app-providers-list *ngIf="!currentProvider" (selected)="currentProvider = $event"></app-providers-list>
+
 <app-services-list *ngIf="currentProvider && !currentService" [provider]="currentProvider" [selectable]="true"
                    (selected)="serviceSelected($event.service)" (closed)="currentProvider = null"></app-services-list>
 
-<ion-list *ngIf="slots.length > 0">
-  <ion-item *ngFor="let slot of slots; let i = index">
-    <ion-button (click)="addReservation(i)">
-      <ion-label>{{ slot }}</ion-label>
-    </ion-button>
-  </ion-item>
-</ion-list>
+<div style="display: flex">
+  <ion-list *ngFor="let slotDay of slots | keyvalue; let lastDay = last; let firstDay = first">
+    <ion-item>
+      <ion-icon *ngIf="firstDay && isNotToday(slotDay.key)" name="arrow-back-circle-outline" (click)="update(-1)"></ion-icon>
+
+      <span>{{ slotDay.key | date: 'EEEEEE dd/MM'}}</span>
+
+      <ion-icon *ngIf="lastDay" name="arrow-forward-circle-outline" (click)="update(1)"></ion-icon>
+    </ion-item>
+
+    <ion-item *ngFor="let slot of slotDay.value; let j = index" lines="full" class="ion-text-center">
+      <ion-button (click)="addReservation(slotDay.key, j)" style="width: 100%">
+        <ion-label>{{ slot }}</ion-label>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</div>

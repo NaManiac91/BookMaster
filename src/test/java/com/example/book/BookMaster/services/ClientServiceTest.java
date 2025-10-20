@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -139,11 +140,15 @@ public class ClientServiceTest {
         when(reservationRepo.findByProviderIdAndDate(providerId, date)).thenReturn(new ArrayList<>());
 
         // Act
-        List<String> availableSlots = clientService.getAvailableTimeSlots(providerId, date);
+        Map<LocalDate, List<String>> availableSlots = clientService.getAvailableTimeSlots(providerId, date);
 
         // Assert
         assertNotNull(availableSlots);
-        assertEquals(8, availableSlots.size()); // 9:00, 10:00, ..., 16:00
+        assertEquals(4, availableSlots.size()); // currentDay + 3 following days
+        
+        for(List<String> daySlot : availableSlots.values()) {
+        	assertEquals(8, daySlot.size()); // 9:00, 10:00, ..., 16:00
+        }
     }
 
     @Test

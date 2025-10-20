@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -105,32 +107,38 @@ public class ClientService {
 	    }
 	}
 	
-	public List<String> getAvailableTimeSlots(UUID providerId, LocalDate date) {
+	public Map<LocalDate, List<String>> getAvailableTimeSlots(UUID providerId, LocalDate date) {
 		try {
 			// Retrieve provider information to check time slot
 			Provider provider = this.providerRepo.findById(providerId).get();
-			LocalTime startTime = provider.getStartTime(); 
-			LocalTime endTime = provider.getEndTime();
-			int timeBlockMinutes = provider.getTimeBlockMinutes();
-			
-			List<String> availableSlots = new ArrayList<>();
-	        LocalTime currentTime = startTime;
-	
-	        // Create all slots
-	        while (currentTime.isBefore(endTime)) {
-	            LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
-	            String timeSlot = currentTime.toString();
-	
-	            availableSlots.add(timeSlot);
-	
-	            currentTime = nextTime;
-	        }
+	        LocalTime startTime = provider.getStartTime();
+	        LocalTime endTime = provider.getEndTime();
+	        int timeBlockMinutes = provider.getTimeBlockMinutes();
+
+	        Map<LocalDate, List<String>> availableSlotsByDate = new LinkedHashMap<>();
 	        
-	        // Remove the slots already booked
-	        availableSlots.removeAll(this.getSlotBooked(providerId, date));
-			logger.info("Availabled slots for {} in {} : {}", providerId, date, availableSlots);
-			
-	        return availableSlots;
+	        // Loop through 4 days (current day + 3 days after)
+	        for (int i = 0; i < 4; i++) {
+	            LocalDate currentDate = date.plusDays(i);
+	            List<String> availableSlots = new ArrayList<>();
+	            LocalTime currentTime = startTime;
+
+	            // Create all slots for this date
+	            while (currentTime.isBefore(endTime)) {
+	                LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
+	                String timeSlot = currentTime.toString();
+	                availableSlots.add(timeSlot);
+	                currentTime = nextTime;
+	            }
+
+	            // Remove the slots already booked for this date
+	            availableSlots.removeAll(this.getSlotBooked(providerId, currentDate));
+	            availableSlotsByDate.put(currentDate, availableSlots);
+	            
+	            logger.info("Available slots for {} on {}: {}", providerId, currentDate, availableSlots);
+	        }
+
+	        return availableSlotsByDate;
 		} catch (Exception e) {
 	        logger.error("Error creating reservation: {}", e.getMessage(), e);
 	        throw e; 
