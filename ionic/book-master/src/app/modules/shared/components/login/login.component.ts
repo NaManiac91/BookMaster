@@ -43,4 +43,14 @@ export class LoginComponent implements OnInit {
     this.user = new User();
   }
 
+  loginWithGoogle() {
+    this.authService.login();
+  }
+
+  createUser() {
+    this.httpClient.post('api/client/createUser', this.user).subscribe(user => {
+      this.authService.loggedUser = <User>user;
+      this.logged.next();
+    });
+  }
 }

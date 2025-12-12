@@ -1,6 +1,6 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {AuthService} from "../shared/services/auth/auth.service";
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { AuthService } from "../shared/services/auth/auth.service";
 
 @Component({
   selector: 'app-folder',
@@ -19,7 +19,9 @@ export class FolderPage implements OnInit {
   }
 
   logout() {
-    this.authService.loggedUser = null;
-    window.location.reload();
+    this.authService.logout().subscribe(() => {
+      this.authService.loggedUser = null;
+      window.location.reload();
+    });
   }
 }

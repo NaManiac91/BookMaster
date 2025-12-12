@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.book.BookMaster.models.Reservation;
+import com.example.book.BookMaster.models.User;
 import com.example.book.BookMaster.services.ClientService;
 import com.example.book.BookMaster.services.FetchService;
 import com.example.book.BookMaster.web.DTO.CreateReservationDTO;
@@ -52,5 +53,11 @@ public class ClientController {
 	public ResponseEntity<Boolean> removeReservation(@RequestParam @Validated String reservationId) {
 			boolean isRemoved = this.clientService.removeReservation(UUID.fromString(reservationId));
 			return new ResponseEntity<Boolean>(isRemoved, HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/createUser")
+	public ResponseEntity<User> createUser(@RequestBody @Validated User request) {
+			User user = this.clientService.createUser(request);
+			return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 }

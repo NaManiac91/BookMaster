@@ -18,10 +18,15 @@
       </ion-list>
       <ion-button color="light" class="margin-20" (click)="signup()">Sign Up</ion-button>
       <ion-button class="login-button margin-20" color="secondary" (click)="login()">Login</ion-button>
+
+      <ion-button (click)="loginWithGoogle()">
+        Login with Google
+      </ion-button>
     </div>
 
     <div *ngIf="showUserCreate">
       <app-object-profile [view]="view" [object]="user"></app-object-profile>
+      <ion-button color="light" class="margin-20" (click)="createUser()">Save</ion-button>
     </div>
 
   </ion-card>

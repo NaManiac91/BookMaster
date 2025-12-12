@@ -9,9 +9,11 @@ import {ModelInitializerService} from "./services/model-initializer/model-initia
 import {GlobalErrorHandler} from "./HTTPHandlers/GlobalErrorHandler";
 import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
 import {ObjectProfileModule} from "./modules/object-profile/object-profile.module";
+import {AuthCallbackComponent} from "./components/auth-callback/auth-callback.component";
 
 const components = [
-  LoginComponent
+  LoginComponent,
+  AuthCallbackComponent
 ];
 
 const services = [

@@ -174,4 +174,13 @@ public class ClientService {
 	        throw e; 
 	    }
     }
+    
+    public User createUser(User user) {
+    	try {
+    		return this.userRepo.save(user);
+    	} catch (Exception e) {
+	        logger.error("Error creating user: {}", e.getMessage(), e);
+	        throw e; 
+    	}
+    }
 }

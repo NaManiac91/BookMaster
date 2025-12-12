@@ -15,6 +15,7 @@ import {ObjectProfileView} from "../../../../../enum";
 export class UserCreateComponent implements OnInit {
   object: User;
   view: ObjectProfileView = ObjectProfileView.CREATE;
+  isProvider: boolean = false;
 
   constructor() { }
 

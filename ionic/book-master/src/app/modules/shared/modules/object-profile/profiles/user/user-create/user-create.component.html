@@ -1,5 +1,17 @@
-<p>
-  user-create works!
-</p>
+<ion-card>
+  <ion-item>
+    <ion-input label="Username" name="Username" [(ngModel)]="object.username" type="text" required></ion-input>
+  </ion-item>
 
-<app-object-profile [view]="view" [object]="object.provider"></app-object-profile>
+  <ion-item>
+    <ion-input label="Email" name="Email" [(ngModel)]="object.email" type="email" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Is Provider</ion-label>
+    <ion-toggle [(ngModel)]="isProvider"></ion-toggle>
+  </ion-item>
+</ion-card>
+
+
+<app-object-profile *ngIf="isProvider" [view]="view" [object]="object.provider"></app-object-profile>

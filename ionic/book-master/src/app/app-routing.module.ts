@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './modules/shared/components/login/login.component';
+import {AuthCallbackComponent} from "./modules/shared/components/auth-callback/auth-callback.component";
 
 const routes: Routes = [
   {
@@ -15,6 +16,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'auth/callback',
+    component: AuthCallbackComponent
   }
 ];
 
