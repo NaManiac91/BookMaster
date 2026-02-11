@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { ProviderCreateComponent } from './provider-create.component';
+import { Address, Provider } from '../../../../../rest-api-client';
 
 describe('ProviderCreateComponent', () => {
   let component: ProviderCreateComponent;
@@ -10,11 +12,13 @@ describe('ProviderCreateComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ProviderCreateComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), FormsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProviderCreateComponent);
     component = fixture.componentInstance;
+    component.object = new Provider();
+    component.object.address = new Address();
     fixture.detectChanges();
   }));
 

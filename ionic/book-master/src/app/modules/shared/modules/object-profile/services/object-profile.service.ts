@@ -49,6 +49,6 @@ export class ObjectProfileService {
       }
     }
 
-    return cached.component;
+    return cached?.component;
   }
 }

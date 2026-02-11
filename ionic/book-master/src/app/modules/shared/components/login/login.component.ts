@@ -48,6 +48,14 @@ export class LoginComponent implements OnInit {
   }
 
   createUser() {
+    if (!this.user?.username || !this.user?.email) {
+      return;
+    }
+
+    if (!this.user.provider?.name) {
+      this.user.provider = undefined as any;
+    }
+
     this.httpClient.post('api/client/createUser', this.user).subscribe(user => {
       this.authService.loggedUser = <User>user;
       this.logged.next();

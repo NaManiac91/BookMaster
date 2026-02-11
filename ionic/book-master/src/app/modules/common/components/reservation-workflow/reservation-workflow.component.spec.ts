@@ -1,16 +1,35 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
+import { of } from 'rxjs';
 
 import { ReservationWorkflowComponent } from './reservation-workflow.component';
+import { ClientService } from '../../services/client-service/client.service';
+import { AuthService } from '../../../shared/services/auth/auth.service';
 
 describe('ReservationWorkflowComponent', () => {
   let component: ReservationWorkflowComponent;
   let fixture: ComponentFixture<ReservationWorkflowComponent>;
+  const clientServiceMock = {
+    getAvailableTimeSlots: jasmine.createSpy('getAvailableTimeSlots').and.returnValue(of({})),
+    createReservation: jasmine.createSpy('createReservation').and.returnValue(of({}))
+  };
+  const authServiceMock: any = {
+    loggedUser: { userId: 'u1', reservations: [] as any[] }
+  };
+  const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ReservationWorkflowComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        { provide: ClientService, useValue: clientServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: NavController, useValue: navCtrlMock }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReservationWorkflowComponent);

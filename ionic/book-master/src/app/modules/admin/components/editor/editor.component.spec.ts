@@ -1,16 +1,38 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
+import { of } from 'rxjs';
 
 import { EditorComponent } from './editor.component';
+import { AdminService } from '../../services/admin.service';
+import { ModelInitializerService } from '../../../shared/services/model-initializer/model-initializer.service';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
   let fixture: ComponentFixture<EditorComponent>;
+  const adminServiceMock = {
+    create: jasmine.createSpy('create').and.returnValue(of({})),
+    edit: jasmine.createSpy('edit').and.returnValue(of({}))
+  };
+  const modelInitializerServiceMock = {
+    getTypeByClassName: jasmine.createSpy('getTypeByClassName').and.returnValue(undefined)
+  };
+  const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditorComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), FormsModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        { provide: AdminService, useValue: adminServiceMock },
+        { provide: ModelInitializerService, useValue: modelInitializerServiceMock },
+        { provide: NavController, useValue: navCtrlMock },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditorComponent);

@@ -9,7 +9,7 @@
 
   <ion-item>
     <ion-label>Is Provider</ion-label>
-    <ion-toggle [(ngModel)]="isProvider"></ion-toggle>
+    <ion-toggle [(ngModel)]="isProvider" (ionChange)="onProviderChange()"></ion-toggle>
   </ion-item>
 </ion-card>
 

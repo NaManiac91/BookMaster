@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/error", "/webjars/**").permitAll()
+                        .requestMatchers("/", "/error", "/webjars/**", "/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("http://localhost:4200/home", true));

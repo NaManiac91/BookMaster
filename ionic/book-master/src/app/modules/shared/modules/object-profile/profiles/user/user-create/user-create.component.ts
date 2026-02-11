@@ -20,7 +20,25 @@ export class UserCreateComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.object.provider = new Provider();
-    this.object.provider.address = new Address();
+    this.isProvider = !!this.object?.provider;
+    this.syncProviderState();
+  }
+
+  onProviderChange() {
+    this.syncProviderState();
+  }
+
+  private syncProviderState() {
+    if (this.isProvider) {
+      if (!this.object.provider) {
+        this.object.provider = new Provider();
+      }
+      if (!this.object.provider.address) {
+        this.object.provider.address = new Address();
+      }
+      return;
+    }
+
+    this.object.provider = undefined as unknown as Provider;
   }
 }

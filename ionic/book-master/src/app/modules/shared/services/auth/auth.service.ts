@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {User} from '../../rest-api-client';
-import {Observable} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { User } from '../../rest-api-client';
+import { Observable } from "rxjs";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ import {HttpClient} from "@angular/common/http";
 export class AuthService {
   private api = '/api';
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
   get loggedUser(): User {
     return localStorage.getItem('loggedUser') ? JSON.parse(<any>localStorage.getItem('loggedUser')) : null;
