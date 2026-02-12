@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
     this.user = Object.assign(new User(), user);
 
     if (this.user.provider) {
-      const provider = object && object instanceof Provider ? object : this.user.provider;
+      const provider = object && object.$t === Provider.$t ? object : this.user.provider;
       this.provider = this.user.provider = Object.assign(new Provider(), provider);
     }
   }
@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   createService() {
     this.navCtrl.navigateRoot('Editor', {
       queryParams: {
-        type: Service.name
+        type: Service.$t
       }
     });
   }

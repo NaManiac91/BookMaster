@@ -45,8 +45,12 @@ public class AdminController {
 	
 	@PostMapping(path = "/createService")
 	public ResponseEntity<Provider> createService(@RequestBody @Validated CreateServiceDTO request) {
+		if (request.providerId == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
 		this.adminService.createService(new Service(request.name, request.description, request.price, request.time), request.providerId);
-		
+
 		return new ResponseEntity<Provider>(this.fetchService.getProvider(request.providerId).get(), HttpStatus.OK);
 	}
 	

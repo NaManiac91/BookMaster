@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { EditorComponent } from './editor.component';
 import { AdminService } from '../../services/admin.service';
 import { ModelInitializerService } from '../../../shared/services/model-initializer/model-initializer.service';
+import { Service } from '../../../shared/rest-api-client';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -18,6 +19,7 @@ describe('EditorComponent', () => {
     edit: jasmine.createSpy('edit').and.returnValue(of({}))
   };
   const modelInitializerServiceMock = {
+    getTypeByToken: jasmine.createSpy('getTypeByToken').and.returnValue(Service),
     getTypeByClassName: jasmine.createSpy('getTypeByClassName').and.returnValue(undefined)
   };
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
@@ -31,7 +33,7 @@ describe('EditorComponent', () => {
         { provide: AdminService, useValue: adminServiceMock },
         { provide: ModelInitializerService, useValue: modelInitializerServiceMock },
         { provide: NavController, useValue: navCtrlMock },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { type: Service.$t } } } }
       ]
     }).compileComponents();
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import {Injectable, Type} from '@angular/core';
 import {IModel, Provider, Service} from "../../shared/rest-api-client";
-import {Observable, map, of} from "rxjs";
+import {Observable, map, of, throwError} from "rxjs";
 import {AuthService} from "../../shared/services/auth/auth.service";
 
 @Injectable({
@@ -15,7 +15,13 @@ export class AdminService {
   create(object: IModel): Observable<IModel> {
     switch (object.$t) {
       case Provider.$t: return this.createProvider(object as Provider, this.authService.loggedUser.userId);
-      case Service.$t: return this.createService(object as Service, this.authService.loggedUser.provider.providerId);
+      case Service.$t: {
+        const providerId = this.authService.loggedUser?.provider?.providerId;
+        if (!providerId) {
+          return throwError(() => new Error('Missing providerId for service creation'));
+        }
+        return this.createService(object as Service, providerId);
+      }
     }
     return of(object);
   }

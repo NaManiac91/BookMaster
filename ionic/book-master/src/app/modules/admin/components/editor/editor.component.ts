@@ -26,15 +26,16 @@ export class EditorComponent implements OnInit {
   ngOnInit() {
     this.object = this.activatedRoute.snapshot.queryParams['object'];
     const view = this.activatedRoute.snapshot.queryParams['view'];
+    const typeToken = this.object?.$t || this.activatedRoute.snapshot.queryParams['type'];
 
     if (view) {
       this.view = view;
     }
 
-    if (this.object) {
-      this.type = this.modelInitializerService.getTypeByClassName(this.object.$t);
-    } else {
-      this.type = this.modelInitializerService.getTypeByClassName(this.activatedRoute.snapshot.queryParams['type']);
+    this.type = this.modelInitializerService.getTypeByToken(typeToken);
+
+    if (!this.type) {
+      throw new Error(`Unknown model type token: ${typeToken}`);
     }
   }
 

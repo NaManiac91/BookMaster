@@ -73,7 +73,13 @@ public class AdminService {
 	
 	public Service createService(Service service, UUID providerId) {
 		try {
-			service.setProvider(this.providerRepo.findById(providerId).get());
+			if (providerId == null) {
+				throw new IllegalArgumentException("providerId is required");
+			}
+
+			Provider provider = this.providerRepo.findById(providerId)
+					.orElseThrow(() -> new IllegalArgumentException("Provider not found with ID: " + providerId));
+			service.setProvider(provider);
 			Service entity = this.serviceRepo.save(service);	
 			logger.info("Service created: {}", entity);
 			return entity;

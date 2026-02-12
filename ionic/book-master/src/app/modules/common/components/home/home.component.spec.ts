@@ -6,6 +6,7 @@ import { NavController } from '@ionic/angular';
 
 import { HomeComponent } from './home.component';
 import { AuthService } from '../../../shared/services/auth/auth.service';
+import { Service } from '../../../shared/rest-api-client';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -34,5 +35,15 @@ describe('HomeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('navigates to editor using stable model token', () => {
+    component.createService();
+
+    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('Editor', {
+      queryParams: {
+        type: Service.$t
+      }
+    });
   });
 });

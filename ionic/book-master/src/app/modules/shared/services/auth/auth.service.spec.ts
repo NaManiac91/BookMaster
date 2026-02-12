@@ -74,6 +74,6 @@ describe('AuthService', () => {
 
     service.login();
 
-    expect(openSpy).toHaveBeenCalledWith('http://localhost:8080/oauth2/authorization/google', '_self');
+    expect(openSpy).toHaveBeenCalledWith('/oauth2/authorization/google', '_self');
   });
 });

@@ -10,6 +10,14 @@ export interface IObjectProfile {
 
 const objectProfiles: IObjectProfile[] = [];
 
+function resolveTypeToken(type: any): string | undefined {
+  if (!type) {
+    return undefined;
+  }
+
+  return type.$t || type.name;
+}
+
 export function ObjectProfile(config: IObjectProfile) {
   return (target: any) => {
     if (!Array.isArray(config.view)) {
@@ -36,7 +44,7 @@ export class ObjectProfileService {
     let cached = this.cache[type] && this.cache[type][view] ? this.cache[type][view] : null;
     if (!cached) {
       const profile: IObjectProfile | undefined = objectProfiles
-        .find(profile => (profile.view as ObjectProfileView[]).some(v => v === view) && profile.type.name === type);
+        .find(profile => (profile.view as ObjectProfileView[]).some(v => v === view) && resolveTypeToken(profile.type) === type);
 
       if (!profile) {
         console.log('Object Profile not found');

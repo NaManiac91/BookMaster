@@ -177,6 +177,22 @@ public class ClientService {
     
     public User createUser(User user) {
     	try {
+    		if (user.getProvider() != null) {
+    			Provider provider = user.getProvider();
+
+    			// Avoid transient/invalid provider objects sent by partial frontend payloads.
+    			if (provider.getProviderId() != null) {
+    				final UUID providerId = provider.getProviderId();
+    				provider = this.providerRepo.findById(providerId)
+    						.orElseThrow(() -> new RuntimeException("Provider not found with ID: " + providerId));
+    				user.setProvider(provider);
+    			} else if (provider.getName() == null || provider.getName().isBlank()) {
+    				user.setProvider(null);
+    			} else {
+    				provider.setUser(user);
+    			}
+    		}
+
     		return this.userRepo.save(user);
     	} catch (Exception e) {
 	        logger.error("Error creating user: {}", e.getMessage(), e);

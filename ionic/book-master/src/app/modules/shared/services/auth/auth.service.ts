@@ -32,8 +32,8 @@ export class AuthService {
   }
 
   login() {
-    // Open OAuth URL in system browser
-    window.open('http://localhost:8080/oauth2/authorization/google', '_self');
+    // Use same-origin path so Docker/nginx proxy and local proxy both work.
+    window.open('/oauth2/authorization/google', '_self');
   }
 
   logout(): Observable<any> {

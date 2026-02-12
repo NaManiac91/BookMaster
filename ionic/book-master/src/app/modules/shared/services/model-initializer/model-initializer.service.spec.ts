@@ -11,15 +11,19 @@ describe('ModelInitializerService', () => {
     service = TestBed.inject(ModelInitializerService);
   });
 
-  it('resolves registered model types by class name', () => {
-    expect(service.getTypeByClassName(IModel.name)).toBe(IModel);
-    expect(service.getTypeByClassName(Provider.name)).toBe(Provider);
-    expect(service.getTypeByClassName(Reservation.name)).toBe(Reservation);
-    expect(service.getTypeByClassName(Service.name)).toBe(Service);
-    expect(service.getTypeByClassName(User.name)).toBe(User);
+  it('resolves registered model types by stable token', () => {
+    expect(service.getTypeByToken('IModel')).toBe(IModel);
+    expect(service.getTypeByToken(Provider.$t)).toBe(Provider);
+    expect(service.getTypeByToken(Reservation.$t)).toBe(Reservation);
+    expect(service.getTypeByToken(Service.$t)).toBe(Service);
+    expect(service.getTypeByToken(User.$t)).toBe(User);
   });
 
-  it('returns undefined for unknown class name', () => {
-    expect(service.getTypeByClassName('UnknownType')).toBeUndefined();
+  it('keeps backward compatibility with class-name alias', () => {
+    expect(service.getTypeByClassName(Service.$t)).toBe(Service);
+  });
+
+  it('returns undefined for unknown token', () => {
+    expect(service.getTypeByToken('UnknownType')).toBeUndefined();
   });
 });

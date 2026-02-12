@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.lang.NonNull;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,7 +44,7 @@ public class User implements Serializable, IModel {
 	@ManyToMany(mappedBy = "users")
     private Set<Reservation> reservations = new HashSet<Reservation>();
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Provider provider;
 	
 	/* Constructors */

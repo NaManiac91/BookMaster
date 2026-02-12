@@ -15,7 +15,12 @@ export function Initializer(className: string, type : Type<IModel>) {
 export class ModelInitializerService {
   constructor() { }
 
+  getTypeByToken(typeToken: string): Type<IModel> {
+    return classes[typeToken];
+  }
+
+  // Backward-compatible alias. Prefer getTypeByToken.
   getTypeByClassName(className: string): Type<IModel> {
-    return classes[className];
+    return this.getTypeByToken(className);
   }
 }
