@@ -1,8 +1,26 @@
 .header {
-    display: flex; 
+    display: flex;
     flex-direction: row;
 }
 
 .title-avatar {
     width: 80%;
+}
+
+.search-empty {
+  --background: transparent;
+  color: var(--ion-color-medium);
+}
+
+.provider-admin {
+  display: flex;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+ion-list {
+  border: 1px solid var(--app-card-tertiary-border);
+  border-radius: 14px;
+  box-shadow: none;
+  overflow: hidden;
 }

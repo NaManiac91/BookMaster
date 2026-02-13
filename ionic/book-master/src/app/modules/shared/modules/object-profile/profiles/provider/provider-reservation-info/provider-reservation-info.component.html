@@ -1,0 +1,46 @@
+<ion-card *ngIf="object" class="provider-reservation-info">
+  <ion-card-content>
+    <h3 class="provider-title">{{ object.name }}</h3>
+
+    <p *ngIf="object.description" class="provider-description">{{ object.description }}</p>
+
+    <ion-list lines="none" class="provider-contacts">
+      <ion-item *ngIf="hasAddress" class="contact-item">
+        <ion-icon name="location-outline" slot="start" class="contact-icon"></ion-icon>
+        <ion-label>
+          {{ object.address?.street }}
+          <span *ngIf="object.address?.street && (object.address?.city || object.address?.postalCode)">, </span>
+          {{ object.address?.postalCode }}
+          <span *ngIf="object.address?.postalCode && object.address?.city"> </span>
+          {{ object.address?.city }}
+          <span *ngIf="(object.address?.city || object.address?.postalCode || object.address?.street) && object.address?.country">, </span>
+          {{ object.address?.country }}
+        </ion-label>
+        <ion-button *ngIf="mapsUrl"
+                    fill="clear"
+                    slot="end"
+                    [href]="mapsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Apri in Google Maps"
+                    class="map-button">
+          <ion-icon name="map-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item *ngIf="object.phone" class="contact-item">
+        <ion-icon name="call-outline" slot="start" class="contact-icon"></ion-icon>
+        <ion-label>
+          <a [href]="phoneHref" class="contact-link">{{ object.phone }}</a>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="object.email" class="contact-item">
+        <ion-icon name="mail-outline" slot="start" class="contact-icon"></ion-icon>
+        <ion-label>
+          <a [href]="mailHref" class="contact-link">{{ object.email }}</a>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

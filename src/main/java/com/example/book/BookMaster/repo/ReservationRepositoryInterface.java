@@ -15,4 +15,9 @@ public interface ReservationRepositoryInterface extends CrudRepository<Reservati
 	@Query(value = "SELECT reservation.* FROM reservation\r\n"
 			+ "WHERE reservation.provider_id = :providerId and reservation.date = :date", nativeQuery = true)
 	List<Reservation> findByProviderIdAndDate(UUID providerId, LocalDate date);
+
+	@Query(value = "SELECT r.* FROM reservation r "
+			+ "JOIN user_reservation ur ON ur.reservation_id = r.reservation_id "
+			+ "WHERE ur.user_id = :userId AND r.date < :today", nativeQuery = true)
+	List<Reservation> findPastByUserId(UUID userId, LocalDate today);
 }

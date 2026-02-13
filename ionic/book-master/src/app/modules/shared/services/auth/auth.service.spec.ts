@@ -62,7 +62,7 @@ describe('AuthService', () => {
   it('calls logout endpoint with credentials', () => {
     service.logout().subscribe();
 
-    const req = httpMock.expectOne('/api/logout');
+    const req = httpMock.expectOne('/logout');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({});
     expect(req.request.withCredentials).toBeTrue();

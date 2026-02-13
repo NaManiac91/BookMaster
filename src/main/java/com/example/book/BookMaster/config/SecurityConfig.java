@@ -9,6 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class SecurityConfig {
     @Value("${app.frontend-url:http://localhost:4200}")
     private String frontendUrl;
-    @Value("${app.security.auth-disabled:false}")
+    @Value("${app.security.auth-disabled:true}")
     private boolean authDisabled;
 
     @Bean
@@ -27,6 +28,14 @@ public class SecurityConfig {
             http
                     .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                     .csrf(csrf -> csrf.disable())
+                    .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                    .logout(logout -> logout
+                            .logoutUrl("/logout")
+                            .invalidateHttpSession(true)
+                            .clearAuthentication(true)
+                            .deleteCookies("JSESSIONID")
+                            .logoutSuccessHandler((request, response, authentication) ->
+                                    response.setStatus(HttpServletResponse.SC_OK)))
                     .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
             return http.build();
@@ -35,8 +44,16 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                response.setStatus(HttpServletResponse.SC_OK)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/error", "/webjars/**", "/login/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/error", "/webjars/**", "/login/**", "/oauth2/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl(frontendUrl + "/Home", true));

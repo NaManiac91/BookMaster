@@ -54,6 +54,12 @@ public class ClientController {
 			boolean isRemoved = this.clientService.removeReservation(UUID.fromString(reservationId));
 			return new ResponseEntity<Boolean>(isRemoved, HttpStatus.OK);
 	}
+
+	@GetMapping(path = "/getReservationHistory")
+	public ResponseEntity<List<Reservation>> getReservationHistory(@RequestParam @Validated String userId) {
+		List<Reservation> reservations = this.clientService.getReservationHistory(UUID.fromString(userId));
+		return new ResponseEntity<List<Reservation>>(reservations, HttpStatus.OK);
+	}
 	
 	@PostMapping(path = "/createUser")
 	public ResponseEntity<User> createUser(@RequestBody @Validated User request) {

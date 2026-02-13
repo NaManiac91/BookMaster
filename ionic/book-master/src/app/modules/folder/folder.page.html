@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title class="center-text">{{ folder }}</ion-title>
-    <ion-button color="danger" shape="round" slot="end" (click)="logout()">
+    <ion-button type="button" color="danger" shape="round" slot="end" (click)="logout()">
       <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
     </ion-button>
   </ion-toolbar>
@@ -17,6 +17,8 @@
   <div id="container" [ngSwitch]="folder">
     <app-home *ngSwitchCase="'Home'"></app-home>
     <app-editor *ngSwitchCase="'Editor'"></app-editor>
+    <app-provider-admin *ngSwitchCase="'ProviderAdmin'"></app-provider-admin>
+    <app-reservation-history *ngSwitchCase="'ReservationHistory'"></app-reservation-history>
     <app-providers-list *ngSwitchCase="'Providers'"></app-providers-list>
     <app-services-list *ngSwitchCase="'Services'"></app-services-list>
     <app-reservation-workflow *ngSwitchCase="'ReservationWorkflow'"></app-reservation-workflow>

@@ -57,8 +57,9 @@ public class AdminController {
 	@PostMapping(path = "/editService")
 	public ResponseEntity<Provider> editService(@RequestBody @Validated Service request) {
 		Service service = this.adminService.editService(request);
-		
-		return new ResponseEntity<Provider>(service.getProvider(), HttpStatus.OK);
+		UUID providerId = service.getProvider() != null ? service.getProvider().getProviderId() : null;
+		Provider response = providerId != null ? this.fetchService.getProvider(providerId).orElse(service.getProvider()) : service.getProvider();
+		return new ResponseEntity<Provider>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/removeService")
@@ -83,5 +84,12 @@ public class AdminController {
 		this.adminService.updateProvider(p);
 
         return new ResponseEntity<Provider>(this.fetchService.getProvider(providerId).get(), HttpStatus.OK);
+	}
+
+	@PostMapping(path = "/editProvider")
+	public ResponseEntity<Provider> editProvider(@RequestBody @Validated Provider request) {
+		Provider provider = this.adminService.updateProvider(request);
+		Provider response = this.fetchService.getProvider(provider.getProviderId()).orElse(provider);
+		return new ResponseEntity<Provider>(response, HttpStatus.OK);
 	}
 }

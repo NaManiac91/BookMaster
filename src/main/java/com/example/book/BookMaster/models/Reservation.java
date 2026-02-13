@@ -1,6 +1,7 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +78,10 @@ public class Reservation implements Serializable, IModel {
 	public Reservation(LocalDate date, String slots, User consumer, User provider, UUID serviceId, UUID providerId, String note) {
 		this.date = date;
 		this.slots = slots;
-		this.users = Set.of(consumer, provider);
+		Set<User> participants = new LinkedHashSet<>();
+		participants.add(consumer);
+		participants.add(provider);
+		this.users = participants;
 		this.serviceId = serviceId;
 		this.providerId = providerId;
 		this.note = note;

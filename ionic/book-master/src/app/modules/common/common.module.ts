@@ -5,11 +5,15 @@ import {HomeComponent} from './components/home/home.component';
 import {ModalInfoComponent} from './components/modal/modal-info/modal-info.component';
 import {ClientService} from "./services/client-service/client.service";
 import {ReservationWorkflowComponent} from "./components/reservation-workflow/reservation-workflow.component";
+import {ProviderAdminComponent} from "./components/provider-admin/provider-admin.component";
+import {ReservationHistoryComponent} from "./components/reservation-history/reservation-history.component";
 
 const components = [
   HomeComponent,
   ModalInfoComponent,
-  ReservationWorkflowComponent
+  ReservationWorkflowComponent,
+  ProviderAdminComponent,
+  ReservationHistoryComponent
 ];
 
 const services = [

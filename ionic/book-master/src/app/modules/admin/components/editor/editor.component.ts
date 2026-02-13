@@ -39,6 +39,15 @@ export class EditorComponent implements OnInit {
     }
   }
 
+  get title(): string {
+    const action = this.view === ObjectProfileView.EDIT ? 'Modifica' : 'Crea';
+    return `${action} ${this.objectTypeLabel}`;
+  }
+
+  private get objectTypeLabel(): string {
+    return this.object?.$t || (this.type as any)?.$t || (this.type as any)?.name || '';
+  }
+
   save() {
     if (this.view === ObjectProfileView.CREATE) {
       this.adminService.create(this.object).subscribe(model =>

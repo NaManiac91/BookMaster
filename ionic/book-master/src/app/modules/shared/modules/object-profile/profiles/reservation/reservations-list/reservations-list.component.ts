@@ -14,10 +14,17 @@ export class ReservationsListComponent {
   constructor(private clientService: ClientService,
               private alertController: AlertController) { }
 
-  remove(reservationId: string, index: number) {
+  get futureReservations(): Reservation[] {
+    return this.list.filter(reservation => this.isFutureOrToday(reservation));
+  }
+
+  remove(reservationId: string) {
     this.clientService.removeReservation(reservationId).subscribe(async removed => {
       if (removed) {
-        this.list.splice(index, 1);
+        const index = this.list.findIndex(r => r.reservationId === reservationId);
+        if (index >= 0) {
+          this.list.splice(index, 1);
+        }
 
         const alert = await this.alertController.create({
           message: 'Reservation removed successfully.',
@@ -27,5 +34,13 @@ export class ReservationsListComponent {
         await alert.present();
       }
     });
+  }
+
+  private isFutureOrToday(reservation: Reservation): boolean {
+    const reservationDate = new Date(reservation.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    reservationDate.setHours(0, 0, 0, 0);
+    return reservationDate >= today;
   }
 }

@@ -3,6 +3,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { of } from 'rxjs';
+import {Router} from "@angular/router";
+import {FetchService} from "../../services/fetch-service/fetch.service";
 
 import { ReservationWorkflowComponent } from './reservation-workflow.component';
 import { ClientService } from '../../services/client-service/client.service';
@@ -19,6 +21,12 @@ describe('ReservationWorkflowComponent', () => {
     loggedUser: { userId: 'u1', reservations: [] as any[] }
   };
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
+  const routerMock = {
+    getCurrentNavigation: jasmine.createSpy('getCurrentNavigation').and.returnValue(null)
+  };
+  const fetchServiceMock = {
+    getProviderById: jasmine.createSpy('getProviderById').and.returnValue(of({ services: [] }))
+  };
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -28,7 +36,9 @@ describe('ReservationWorkflowComponent', () => {
       providers: [
         { provide: ClientService, useValue: clientServiceMock },
         { provide: AuthService, useValue: authServiceMock },
-        { provide: NavController, useValue: navCtrlMock }
+        { provide: NavController, useValue: navCtrlMock },
+        { provide: Router, useValue: routerMock },
+        { provide: FetchService, useValue: fetchServiceMock }
       ]
     }).compileComponents();
 

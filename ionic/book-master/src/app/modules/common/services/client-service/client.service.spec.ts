@@ -61,4 +61,19 @@ describe('ClientService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(true);
   });
+
+  it('calls reservation history endpoint and maps models', () => {
+    let result: Reservation[] | undefined;
+
+    service.getReservationHistory('u1').subscribe((reservations) => {
+      result = reservations;
+    });
+
+    const req = httpMock.expectOne('api/client/getReservationHistory?userId=u1');
+    expect(req.request.method).toBe('GET');
+    req.flush([{ reservationId: 'r1' }]);
+
+    expect(result?.length).toBe(1);
+    expect(result?.[0] instanceof Reservation).toBeTrue();
+  });
 });

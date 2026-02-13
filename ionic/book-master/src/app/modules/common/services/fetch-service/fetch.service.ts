@@ -22,6 +22,10 @@ export class FetchService {
     return this.httpClient.get(this.api + 'getProviders');
   }
 
+  searchProviders(query: string, type: 'provider' | 'service' | 'all' = 'all'): Observable<any> {
+    return this.httpClient.get(this.api + 'searchProviders?q=' + encodeURIComponent(query) + '&type=' + type);
+  }
+
   getProviderById(providerId: string): Observable<any> {
     return this.httpClient.get(this.api + 'getProvider?providerId=' + providerId);
   }

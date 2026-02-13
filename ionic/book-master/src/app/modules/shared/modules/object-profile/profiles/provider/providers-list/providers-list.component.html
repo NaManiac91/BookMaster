@@ -3,21 +3,19 @@
     <ion-card-title>I nostri partners</ion-card-title>
   </ion-card-header>
 
-  <ion-card-content>
-    <ion-list>
-      <ion-item *ngFor="let provider of providers">
-        <ion-avatar item-left>
-          <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-        </ion-avatar>
+  <ion-list>
+    <ion-item *ngFor="let provider of providers">
+      <ion-avatar item-left>
+        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+      </ion-avatar>
 
-        <ion-label class="title-avatar">
-          <ion-label>{{provider.name}} - {{provider.description}}</ion-label>
-        </ion-label>
+      <ion-label class="title-avatar">
+        <ion-label>{{ provider.name }} - {{ provider.description }}</ion-label>
+      </ion-label>
 
-        <ion-button item-right (click)="selected.emit(provider)">
-          <ion-icon name="list-circle-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-  </ion-card-content>
+      <ion-button item-right (click)="selected.emit(provider)">
+        <ion-icon name="list-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
 </ion-card>

@@ -6,7 +6,9 @@ import { NavController } from '@ionic/angular';
 
 import { HomeComponent } from './home.component';
 import { AuthService } from '../../../shared/services/auth/auth.service';
-import { Service } from '../../../shared/rest-api-client';
+import {Provider} from '../../../shared/rest-api-client';
+import {FetchService} from "../../services/fetch-service/fetch.service";
+import {of} from "rxjs";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -14,6 +16,9 @@ describe('HomeComponent', () => {
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
   const authServiceMock = {
     loggedUser: { userId: 'u1' }
+  };
+  const fetchServiceMock = {
+    searchProviders: jasmine.createSpy('searchProviders').and.returnValue(of([]))
   };
 
   beforeEach(waitForAsync(() => {
@@ -24,6 +29,7 @@ describe('HomeComponent', () => {
       providers: [
         { provide: NavController, useValue: navCtrlMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: FetchService, useValue: fetchServiceMock },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } }
       ]
     }).compileComponents();
@@ -37,12 +43,22 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('navigates to editor using stable model token', () => {
-    component.createService();
+  it('navigates to provider admin section', () => {
+    component.provider = Object.assign(new Provider(), { providerId: 'p1' });
 
-    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('Editor', {
-      queryParams: {
-        type: Service.$t
+    component.goToProviderAdmin();
+
+    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('ProviderAdmin');
+  });
+
+  it('navigates to reservation workflow from search result', () => {
+    const selectedProvider = Object.assign(new Provider(), { providerId: 'p-search' });
+
+    component.openReservationByProvider(selectedProvider);
+
+    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('ReservationWorkflow', {
+      state: {
+        provider: selectedProvider
       }
     });
   });

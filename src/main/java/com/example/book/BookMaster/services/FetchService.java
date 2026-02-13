@@ -2,6 +2,7 @@ package com.example.book.BookMaster.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,6 +62,48 @@ public class FetchService {
 		    logger.error("Error fetching providers: {}", e.getMessage(), e);
 		    throw e; 
 		}
+	}
+
+	public List<Provider> searchProviders(String query, String type) {
+		try {
+			if (query == null || query.isBlank()) {
+				return List.of();
+			}
+
+			final String normalizedQuery = query.trim();
+			final String normalizedType = type == null ? "all" : type.trim().toLowerCase();
+			List<Provider> providers;
+
+			switch (normalizedType) {
+				case "provider":
+					providers = this.providerRepo.searchByProviderName(normalizedQuery);
+					break;
+				case "service":
+					providers = this.providerRepo.searchByServiceName(normalizedQuery);
+					break;
+				default:
+					providers = this.providerRepo.searchByNameOrServiceName(normalizedQuery);
+					break;
+			}
+
+			List<Provider> distinctProviders = this.distinctByProviderId(providers);
+			logger.info("Providers searched with query '{}' type '{}': {} (distinct: {})",
+					query, normalizedType, providers.size(), distinctProviders.size());
+			return distinctProviders;
+		} catch (Exception e) {
+			logger.error("Error searching providers for query '{}': {}", query, e.getMessage(), e);
+			throw e;
+		}
+	}
+
+	private List<Provider> distinctByProviderId(List<Provider> providers) {
+		LinkedHashMap<UUID, Provider> distinct = new LinkedHashMap<>();
+		for (Provider provider : providers) {
+			if (provider != null && provider.getProviderId() != null) {
+				distinct.putIfAbsent(provider.getProviderId(), provider);
+			}
+		}
+		return List.copyOf(distinct.values());
 	}
 	
 	public Optional<Provider> getProvider(UUID providerId) {

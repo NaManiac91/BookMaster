@@ -1,7 +1,13 @@
 <form #form="ngForm" name="createForm">
   <div ngModelGroup="create">
-    <app-object-profile [view]="view" [object]="object ? object : type" (instance)="object = $event"></app-object-profile>
 
+    <ion-card>
+      <ion-card-header color="tertiary">
+        <ion-card-title>{{ title }}</ion-card-title>
+      </ion-card-header>
+
+      <app-object-profile [view]="view" [object]="object ? object : type" (instance)="object = $event"></app-object-profile>
+    </ion-card>
     <ion-button (click)="save()">Save</ion-button>
   </div>
 </form>

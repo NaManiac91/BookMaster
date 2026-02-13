@@ -35,3 +35,49 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/* App-wide card theme for cards using tertiary headers */
+:root {
+  --app-card-tertiary-border: color-mix(in srgb, var(--ion-color-primary) 18%, var(--ion-color-light-shade));
+  --app-card-tertiary-surface-start: color-mix(in srgb, var(--ion-color-primary) 6%, #ffffff);
+  --app-card-tertiary-surface-end: color-mix(in srgb, var(--ion-color-tertiary) 8%, #ffffff);
+}
+
+ion-card:has(> ion-card-header[color="tertiary"]) {
+  border: 1px solid var(--app-card-tertiary-border);
+  border-radius: 14px;
+  box-shadow: none;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--app-card-tertiary-surface-start) 0%,
+    #ffffff 55%,
+    var(--app-card-tertiary-surface-end) 100%
+  );
+}
+
+ion-card > ion-card-header[color="tertiary"] {
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--ion-color-primary) 10%, var(--ion-color-light-shade));
+  padding-top: 12px;
+  padding-bottom: 10px;
+  color: #000000;
+  --color: #000000;
+}
+
+ion-card > ion-card-header[color="tertiary"] ion-card-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+ion-card:has(> ion-card-header[color="tertiary"]) > ion-card-content {
+  padding-top: 10px;
+  padding-bottom: 12px;
+}
+
+/* Remove bottom divider for the last row in Ionic lists */
+ion-list > ion-item:last-of-type {
+  --inner-border-width: 0;
+  --border-width: 0;
+}

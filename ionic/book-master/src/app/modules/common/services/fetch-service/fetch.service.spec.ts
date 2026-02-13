@@ -53,6 +53,11 @@ describe('FetchService', () => {
     expect(providerReq.request.method).toBe('GET');
     providerReq.flush({});
 
+    service.searchProviders('nail').subscribe();
+    const searchReq = httpMock.expectOne('api/fetch/searchProviders?q=nail&type=all');
+    expect(searchReq.request.method).toBe('GET');
+    searchReq.flush([]);
+
     service.getUserById('u1').subscribe();
     const userReq = httpMock.expectOne('api/fetch/getUserById?userId=u1');
     expect(userReq.request.method).toBe('GET');

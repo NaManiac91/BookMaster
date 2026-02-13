@@ -24,4 +24,9 @@ export class ClientService {
   removeReservation(reservationId: string): Observable<boolean> {
     return <Observable<boolean>>this.httpClient.get(this.api + 'removeReservation?reservationId=' + reservationId);
   }
+
+  getReservationHistory(userId: string): Observable<Reservation[]> {
+    return <Observable<Reservation[]>>this.httpClient.get<any[]>(this.api + 'getReservationHistory?userId=' + userId)
+      .pipe(map((reservations: any[]) => (reservations || []).map(r => Object.assign(new Reservation(), r))));
+  }
 }

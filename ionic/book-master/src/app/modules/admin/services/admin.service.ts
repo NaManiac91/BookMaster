@@ -40,12 +40,14 @@ export class AdminService {
 
   private convertProviderToClient(response: any) {
     const provider: Provider = Object.assign(new Provider(), response);
-    provider.services = response.services.map((service: Service) => Object.assign(new Service(), service))
+    provider.services = (response.services || []).map((service: Service) => Object.assign(new Service(), service))
     return provider;
   }
 
   edit(object: IModel, type: Type<IModel>): Observable<IModel> {
-    return <Observable<IModel>>this.httpClient.post(this.api + `edit${(type as any).$t}`, object)
+    const payload = object.$t === Provider.$t ? this.toProviderEditPayload(object as Provider) : object;
+
+    return <Observable<IModel>>this.httpClient.post(this.api + `edit${(type as any).$t}`, payload)
       .pipe(map((response: any) => {
         switch (object.$t) {
           case Provider.$t: return this.convertProviderToClient(response);
@@ -53,6 +55,21 @@ export class AdminService {
         }
         return response;
       }));
+  }
+
+  private toProviderEditPayload(provider: Provider) {
+    return {
+      providerId: provider.providerId,
+      name: provider.name,
+      description: provider.description,
+      address: provider.address,
+      email: provider.email,
+      phone: provider.phone,
+      type: provider.type,
+      startTime: provider.startTime,
+      endTime: provider.endTime,
+      timeBlockMinutes: provider.timeBlockMinutes
+    };
   }
 
   removeService(serviceId: string): Observable<boolean> {

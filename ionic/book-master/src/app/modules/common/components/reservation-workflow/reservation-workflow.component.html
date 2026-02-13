@@ -1,9 +1,24 @@
-<app-providers-list *ngIf="!currentProvider" (selected)="currentProvider = $event"></app-providers-list>
+<ion-item *ngIf="currentStep !== 'provider'" lines="none" class="workflow-nav">
+  <ion-button class="back-button" fill="clear" (click)="goBack()" [disabled]="!canGoBack" aria-label="Step precedente">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </ion-button>
 
-<app-services-list *ngIf="currentProvider && !currentService" [provider]="currentProvider" [selectable]="true"
-                   (selected)="serviceSelected($event.service)" (closed)="currentProvider = null"></app-services-list>
+  <ion-label class="ion-text-center">{{ stepLabel }}</ion-label>
+</ion-item>
 
-<div style="display: flex">
+<app-providers-list *ngIf="currentStep === 'provider'" (selected)="providerSelected($event)"></app-providers-list>
+
+<app-object-profile *ngIf="currentStep === 'service' && currentProvider"
+                    [view]="providerInfoView"
+                    [object]="currentProvider"></app-object-profile>
+
+<app-services-list *ngIf="currentStep === 'service' && currentProvider"
+                   [provider]="currentProvider"
+                   [selectable]="true"
+                   [closable]="false"
+                   (selected)="serviceSelected($event.service)"></app-services-list>
+
+<div *ngIf="currentStep === 'slots' && currentService" style="display: flex">
   <ion-list *ngFor="let slotDay of slots | keyvalue; let lastDay = last; let firstDay = first">
     <ion-item>
       <ion-icon *ngIf="firstDay && isNotToday(slotDay.key)" name="arrow-back-circle-outline" (click)="update(-1)"></ion-icon>
@@ -14,7 +29,9 @@
     </ion-item>
 
     <ion-item *ngFor="let slot of slotDay.value; let j = index" lines="full" class="ion-text-center">
-      <ion-button (click)="addReservation(slotDay.key, j)" style="width: 100%">
+      <ion-button (click)="addReservation(slotDay.key, j)"
+                  [disabled]="!hasRequiredConsecutiveSlots(slotDay.key, j)"
+                  style="width: 100%">
         <ion-label>{{ slot }}</ion-label>
       </ion-button>
     </ion-item>

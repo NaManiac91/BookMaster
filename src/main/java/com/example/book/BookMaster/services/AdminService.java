@@ -170,9 +170,27 @@ public class AdminService {
 		}
 	}
 	
-	public void updateProvider(Provider provider) {
+	public Provider updateProvider(Provider provider) {
 		try {
-			this.providerRepo.save(provider);
+			if (provider.getProviderId() == null) {
+				throw new IllegalArgumentException("providerId is required");
+			}
+
+			Provider current = this.providerRepo.findById(provider.getProviderId())
+					.orElseThrow(() -> new IllegalArgumentException("Provider not found with ID: " + provider.getProviderId()));
+
+			// Update editable provider fields only. Keep relations (services/user) untouched.
+			current.setName(provider.getName());
+			current.setDescription(provider.getDescription());
+			current.setAddress(provider.getAddress());
+			current.setEmail(provider.getEmail());
+			current.setPhone(provider.getPhone());
+			current.setType(provider.getType());
+			current.setStartTime(provider.getStartTime());
+			current.setEndTime(provider.getEndTime());
+			current.setTimeBlockMinutes(provider.getTimeBlockMinutes());
+
+			return this.providerRepo.save(current);
 		} catch (Exception e) {
 			logger.error("SQL error: {}", e.getMessage(), e);
 			throw e;

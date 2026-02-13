@@ -1,0 +1,14 @@
+<ng-container *ngIf="provider; else noProviderCard">
+  <app-object-profile [object]="provider" [view]="view"></app-object-profile>
+
+  <div class="actions">
+    <ion-button (click)="editProvider()">Modifica Profilo</ion-button>
+    <ion-button (click)="createService()">Crea Servizio</ion-button>
+  </div>
+</ng-container>
+
+<ng-template #noProviderCard>
+  <ion-item lines="none">
+    <ion-label>Questa sezione e' disponibile solo per utenti provider.</ion-label>
+  </ion-item>
+</ng-template>

@@ -1,0 +1,71 @@
+.provider-reservation-info {
+  border: 1px solid color-mix(in srgb, var(--ion-color-primary) 18%, var(--ion-color-light-shade));
+  border-radius: 14px;
+  box-shadow: none;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ion-color-primary) 6%, #ffffff) 0%,
+    #ffffff 55%,
+    color-mix(in srgb, var(--ion-color-tertiary) 8%, #ffffff) 100%
+  );
+}
+
+.provider-reservation-info ion-card-content {
+  padding: 14px 14px 12px;
+}
+
+.provider-title {
+  margin: 0 0 4px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ion-color-dark);
+}
+
+.provider-description {
+  margin: 0 0 12px;
+  color: var(--ion-color-medium);
+  line-height: 1.35;
+  font-size: 0.92rem;
+}
+
+.provider-contacts {
+  background: transparent;
+  padding-top: 4px;
+}
+
+.contact-item {
+  --background: transparent;
+  --min-height: 40px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --inner-padding-start: 0;
+  border-radius: 10px;
+  margin-bottom: 2px;
+}
+
+.contact-icon {
+  color: color-mix(in srgb, var(--ion-color-primary) 70%, var(--ion-color-medium));
+  font-size: 1rem;
+}
+
+.contact-link {
+  color: color-mix(in srgb, var(--ion-color-primary) 85%, #000);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.contact-link:hover,
+.contact-link:focus {
+  text-decoration: underline;
+}
+
+.map-button {
+  --color: color-mix(in srgb, var(--ion-color-primary) 85%, #000);
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --background: color-mix(in srgb, var(--ion-color-primary) 12%, transparent);
+  --border-radius: 10px;
+}

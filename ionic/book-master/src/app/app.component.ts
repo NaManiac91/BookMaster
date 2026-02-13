@@ -9,7 +9,8 @@ import { AuthService } from './modules/shared/services/auth/auth.service';
 export class AppComponent implements OnInit {
   appPages = [
     { title: 'Home', url: '/Home', icon: 'home' },
-    { title: 'Providers', url: '/ReservationWorkflow', icon: 'storefront' }
+    { title: 'Providers', url: '/ReservationWorkflow', icon: 'storefront' },
+    { title: 'History', url: '/ReservationHistory', icon: 'time' }
   ];
 
   isLogged: boolean = false;

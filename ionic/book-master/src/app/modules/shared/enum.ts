@@ -2,7 +2,8 @@ export enum ObjectProfileView {
   CONSULT,
   CREATE,
   EDIT,
-  LIST
+  LIST,
+  INFO
 }
 
 export enum Operation {

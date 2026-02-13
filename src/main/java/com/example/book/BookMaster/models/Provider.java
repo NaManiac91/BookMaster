@@ -187,7 +187,7 @@ public class Provider implements Serializable, IModel {
 	}
 
 	public LocalTime getEndTime() {
-		return endTime != null ? startTime : LocalTime.of(18, 0);
+		return endTime != null ? endTime : LocalTime.of(18, 0);
 	}
 
 	public void setEndTime(LocalTime endTime) {

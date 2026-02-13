@@ -1,15 +1,18 @@
-<ion-list>
-  <ion-list-header>
-    <ion-label>Reservations</ion-label>
-  </ion-list-header>
-  <ion-item *ngFor="let reservation of list; let i = index">
-    <ion-label>{{ reservation.date | date : 'dd/MM/yyyy' }} - {{ reservation.slots }} - {{ reservation.providerName }}
-      - {{ reservation.service.name }}
-    </ion-label>
+<ion-card>
+  <ion-card-header color="tertiary">
+    <ion-card-title>Prenotazioni Future</ion-card-title>
+  </ion-card-header>
 
-    <ion-button color="danger" (click)="remove(reservation.reservationId, i)">
-      <ion-icon name="close"></ion-icon>
-    </ion-button>
-  </ion-item>
-  <ion-item *ngIf="list.length === 0">Ancora Nessuna Prenotazione</ion-item>
-</ion-list>
+  <ion-list>
+    <ion-item *ngFor="let reservation of futureReservations">
+      <ion-label>{{ reservation.date | date : 'dd/MM/yyyy' }} - {{ reservation.slots }} - {{ reservation.providerName }}
+        - {{ reservation.service.name }}
+      </ion-label>
+
+      <ion-button color="danger" (click)="remove(reservation.reservationId)">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item *ngIf="futureReservations.length === 0">Nessuna prenotazione futura.</ion-item>
+  </ion-list>
+</ion-card>

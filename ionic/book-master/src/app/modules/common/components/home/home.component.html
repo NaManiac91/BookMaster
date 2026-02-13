@@ -10,11 +10,64 @@
 </ion-card>
 
 <div class="content">
+  <ion-card>
+    <ion-card-header color="tertiary">
+      <ion-card-title>Trova Provider o Servizio</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-segment [value]="searchMode" (ionChange)="onSearchModeChange($any($event.detail).value)">
+        <ion-segment-button value="provider">
+          <ion-label>Provider</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="service">
+          <ion-label>Servizio</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-searchbar [(ngModel)]="searchQuery"
+                     (ionInput)="onSearchQueryChange($any($event.detail).value)"
+                     placeholder="Cerca per provider o servizio"></ion-searchbar>
+
+      <ion-list *ngIf="searchMode === 'provider' && searchHasResults">
+        <ion-item *ngFor="let p of providerResults">
+          <ion-label>
+            <h2>{{ p.name }}</h2>
+            <p>{{ p.description }}</p>
+            <p *ngIf="p.services?.length">{{ p.services.length }} servizi disponibili</p>
+          </ion-label>
+          <ion-button slot="end" (click)="openReservationByProvider(p)">
+            Prenota
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngIf="searchMode === 'service' && searchHasResults">
+        <ion-item *ngFor="let result of serviceResults">
+          <ion-label>
+            <h2>{{ result.service.name }}</h2>
+            <p>{{ result.provider.name }}</p>
+            <p *ngIf="result.service.description">{{ result.service.description }}</p>
+          </ion-label>
+          <ion-button slot="end" (click)="openReservationByService(result)">
+            Prenota
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-item *ngIf="isSearching" lines="none" class="search-empty">
+        <ion-label>Ricerca in corso...</ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="searchHasNoResults" lines="none" class="search-empty">
+        <ion-label>Nessun provider o servizio trovato.</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
   <app-reservations-list [list]="user.reservations"></app-reservations-list>
 
-  <div *ngIf="provider">
-    <app-object-profile [object]="provider" [view]="view"></app-object-profile>
-    <ion-button (click)="createService()">Create Service</ion-button>
+  <div class="provider-admin">
+      <ion-button *ngIf="provider" expand="block" (click)="goToProviderAdmin()">Area Admin</ion-button>
   </div>
 
 </div>

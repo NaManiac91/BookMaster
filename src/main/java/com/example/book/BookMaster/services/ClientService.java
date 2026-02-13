@@ -3,7 +3,8 @@ package com.example.book.BookMaster.services;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,10 @@ public class ClientService {
 	        Reservation reservation = new Reservation(date, slots, serviceId, providerId, note);
 	        consumer.addReservation(reservation);
 	        provider.addReservation(reservation);
-	        reservation.setUsers(Set.of(consumer, provider));
+	        Set<User> participants = new LinkedHashSet<>();
+	        participants.add(consumer);
+	        participants.add(provider);
+	        reservation.setUsers(participants);
 	        Reservation response = this.reservationRepo.save(reservation);
 	        logger.info("Reservation created: {}", response);
 
@@ -152,20 +156,25 @@ public class ClientService {
     public boolean removeReservation(UUID reservationId) {
     	try {
 	    	Reservation reservation = this.reservationRepo.findById(reservationId).get();	// Get reservation from DB
-	    	
-	    	// Remove reservation from user consumer and user provider
-	    	Iterator<User> i = reservation.getUsers().iterator();
-	    	User consumer = this.userRepo.findById(i.next().getUserId()).get();
-	        boolean removed = consumer.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
-	       
-	        User provider = this.userRepo.findById(i.next().getUserId()).get();
-	        removed = provider.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
-	       
+
+	    	// Remove reservation from every participant linked to the reservation.
+	        boolean removed = false;
+	        for (User participant : reservation.getUsers()) {
+	        	User user = this.userRepo.findById(participant.getUserId()).orElse(null);
+	        	if (user == null) {
+	        		continue;
+	        	}
+
+	        	boolean removedForUser = user.getReservations().removeIf(r -> r.getReservationId().equals(reservation.getReservationId()));
+	        	if (removedForUser) {
+	        		this.userRepo.save(user);
+	        	}
+	        	removed = removed || removedForUser;
+	        }
+
 	        if (removed) {
-	        	this.userRepo.save(consumer);
-	        	this.userRepo.save(provider);
 	        	this.reservationRepo.delete(reservation);
-				logger.info("Reservation {} removed from {} - {}", reservationId, consumer.getUserId(), provider.getUserId());
+				logger.info("Reservation {} removed", reservationId);
 	        }
 	        
 	        return removed;
@@ -174,6 +183,27 @@ public class ClientService {
 	        throw e; 
 	    }
     }
+
+	public List<Reservation> getReservationHistory(UUID userId) {
+		try {
+			List<Reservation> reservations = this.reservationRepo.findPastByUserId(userId, LocalDate.now());
+			reservations.sort(Comparator.comparing(Reservation::getDate).reversed());
+
+			for (Reservation reservation : reservations) {
+				Service service = this.serviceRepo.findById(reservation.getServiceId())
+						.orElse(null);
+				if (service != null) {
+					reservation.setService(service);
+					reservation.setProvider(service.getProvider());
+				}
+			}
+
+			return reservations;
+		} catch (Exception e) {
+			logger.error("Error fetching reservation history for user {}: {}", userId, e.getMessage(), e);
+			throw e;
+		}
+	}
     
     public User createUser(User user) {
     	try {

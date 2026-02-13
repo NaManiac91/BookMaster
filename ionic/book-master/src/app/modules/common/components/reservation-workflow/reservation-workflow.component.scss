@@ -1,0 +1,16 @@
+.workflow-nav {
+  --background: color-mix(in srgb, var(--ion-color-light) 75%, #ffffff);
+  --border-radius: 12px;
+  margin: 0 0 8px;
+}
+
+.workflow-nav ion-button[disabled] {
+  opacity: 0.4;
+}
+
+.back-button {
+  --border-color: var(--ion-color-medium-tint);
+  --border-style: solid;
+  --border-width: 1px;
+  --border-radius: 10px;
+}

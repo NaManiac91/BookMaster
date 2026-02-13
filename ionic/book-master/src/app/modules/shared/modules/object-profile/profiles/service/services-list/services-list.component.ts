@@ -33,9 +33,18 @@ export class ServicesListComponent  implements OnInit {
     const currentNavigation = this.router.getCurrentNavigation();
 
     if (currentNavigation && currentNavigation.extras && currentNavigation.extras.state) {
-      this.provider =  currentNavigation.extras.state['provider'];
-      this.selectable =  currentNavigation.extras.state['selectable'];
-      this.previousNavigation =  currentNavigation.extras.state['previousNavigation'];
+      const state = currentNavigation.extras.state;
+      if (state['provider']) {
+        this.provider = state['provider'];
+      }
+
+      if (typeof state['selectable'] === 'boolean') {
+        this.selectable = state['selectable'];
+      }
+
+      if (typeof state['previousNavigation'] === 'string') {
+        this.previousNavigation = state['previousNavigation'];
+      }
     }
 
     if (this.provider) {
