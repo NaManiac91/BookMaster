@@ -48,6 +48,14 @@ public class ClientController {
 	public ResponseEntity<Map<LocalDate, List<String>>> getAvailableTimeSlots(@RequestParam @Validated String providerId, LocalDate date) {
 		  return new ResponseEntity<Map<LocalDate, List<String>>> (this.clientService.getAvailableTimeSlots(UUID.fromString(providerId), date), HttpStatus.OK);
 	}
+
+	@GetMapping(path = "/getAvailabilitySummary")
+	public ResponseEntity<Map<LocalDate, Integer>> getAvailabilitySummary(@RequestParam @Validated String providerId,
+																		  @RequestParam("from") LocalDate fromDate,
+																		  @RequestParam("to") LocalDate toDate) {
+		return new ResponseEntity<Map<LocalDate, Integer>>(
+				this.clientService.getAvailabilitySummary(UUID.fromString(providerId), fromDate, toDate), HttpStatus.OK);
+	}
 	
 	@GetMapping(path = "/removeReservation")
 	public ResponseEntity<Boolean> removeReservation(@RequestParam @Validated String reservationId) {

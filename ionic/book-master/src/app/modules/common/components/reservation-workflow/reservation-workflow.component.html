@@ -4,15 +4,6 @@
   </ion-button>
 
   <ion-label class="ion-text-center">{{ stepLabel }}</ion-label>
-
-  <div *ngIf="currentStep === 'slots'" class="workflow-date-picker">
-    <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-    <input class="workflow-date-input"
-           type="date"
-           [value]="selectedCalendarDate"
-           [min]="todayIsoDate"
-           (change)="onCalendarDateChange($event)">
-  </div>
 </ion-item>
 
 <app-providers-list *ngIf="currentStep === 'provider'" (selected)="providerSelected($event)"></app-providers-list>
@@ -27,14 +18,49 @@
                    [closable]="false"
                    (selected)="serviceSelected($event.service)"></app-services-list>
 
+<div *ngIf="currentStep === 'slots' && currentService" class="availability-calendar">
+  <div class="calendar-header">
+    <ion-button fill="clear"
+                size="small"
+                (click)="changeMonth(-1)"
+                [disabled]="!canGoToPreviousMonth"
+                aria-label="Mese precedente">
+      <ion-icon *ngIf="canGoToPreviousMonth" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    <span class="calendar-title">{{ currentMonthLabel }}</span>
+    <ion-button fill="clear" size="small" (click)="changeMonth(1)" aria-label="Mese successivo">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="calendar-grid calendar-weekdays">
+    <span *ngFor="let weekDay of weekDays">{{ weekDay }}</span>
+  </div>
+
+  <div class="calendar-grid">
+    <button *ngFor="let dayCell of calendarCells"
+            type="button"
+            class="calendar-day"
+            [class.empty]="!dayCell"
+            [class.selected]="dayCell?.isoDate === selectedCalendarDate"
+            [class.disabled]="dayCell && !dayCell.selectable"
+            [disabled]="!dayCell || !dayCell.selectable"
+            (click)="selectCalendarDay(dayCell)">
+      <span class="calendar-day-number">{{ dayCell?.date?.getDate() }}</span>
+      <span *ngIf="dayCell?.selectable"
+            class="calendar-dot"
+            [class.level-none]="getAvailabilityLevel(dayCell.isoDate) === 'none'"
+            [class.level-low]="getAvailabilityLevel(dayCell.isoDate) === 'low'"
+            [class.level-medium]="getAvailabilityLevel(dayCell.isoDate) === 'medium'"
+            [class.level-high]="getAvailabilityLevel(dayCell.isoDate) === 'high'"></span>
+    </button>
+  </div>
+</div>
+
 <div *ngIf="currentStep === 'slots' && currentService" style="display: flex">
-  <ion-list *ngFor="let slotDay of slots | keyvalue; let lastDay = last; let firstDay = first">
+  <ion-list *ngFor="let slotDay of slots | keyvalue">
     <ion-item>
-      <ion-icon *ngIf="firstDay && isNotToday(slotDay.key)" name="arrow-back-circle-outline" (click)="update(-1)"></ion-icon>
-
       <span>{{ slotDay.key | date: 'EEEEEE dd/MM'}}</span>
-
-      <ion-icon *ngIf="lastDay" name="arrow-forward-circle-outline" (click)="update(1)"></ion-icon>
     </ion-item>
 
     <ion-item *ngFor="let slot of slotDay.value; let j = index" lines="full" class="ion-text-center">
@@ -49,10 +75,6 @@
 
 <div *ngIf="currentStep === 'summary' && reservationPreview" class="reservation-summary">
   <ion-card>
-    <ion-card-header>
-      <ion-card-title>Riepilogo prenotazione</ion-card-title>
-    </ion-card-header>
-
     <app-object-profile [view]="reservationConsultView" [object]="reservationPreview"></app-object-profile>
   </ion-card>
 

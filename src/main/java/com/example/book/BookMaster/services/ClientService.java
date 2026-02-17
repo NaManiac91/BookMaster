@@ -157,6 +157,36 @@ public class ClientService {
 	    }
     }
 
+	public Map<LocalDate, Integer> getAvailabilitySummary(UUID providerId, LocalDate fromDate, LocalDate toDate) {
+		try {
+			if (fromDate == null || toDate == null) {
+				throw new IllegalArgumentException("fromDate and toDate are required");
+			}
+			if (toDate.isBefore(fromDate)) {
+				throw new IllegalArgumentException("toDate must be after or equal to fromDate");
+			}
+
+			Provider provider = this.providerRepo.findById(providerId)
+					.orElseThrow(() -> new RuntimeException("Provider not found with ID: " + providerId));
+	        LocalTime startTime = provider.getStartTime();
+	        LocalTime endTime = provider.getEndTime();
+	        int timeBlockMinutes = provider.getTimeBlockMinutes();
+
+	        Map<LocalDate, Integer> summary = new LinkedHashMap<>();
+	        LocalDate currentDate = fromDate;
+	        while (!currentDate.isAfter(toDate)) {
+	        	int count = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes).size();
+	        	summary.put(currentDate, count);
+	        	currentDate = currentDate.plusDays(1);
+	        }
+
+	        return summary;
+		} catch (Exception e) {
+			logger.error("Error getting availability summary for {} between {} and {}: {}", providerId, fromDate, toDate, e.getMessage(), e);
+			throw e;
+		}
+	}
+
 	private List<String> buildAvailableSlotsForDate(UUID providerId, LocalDate date, LocalTime startTime, LocalTime endTime, int timeBlockMinutes) {
 		List<String> availableSlots = new ArrayList<>();
 		LocalTime currentTime = startTime;

@@ -8,6 +8,13 @@ import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
 
 type WorkflowStep = 'provider' | 'service' | 'slots' | 'summary';
+type AvailabilityLevel = 'none' | 'low' | 'medium' | 'high';
+
+interface CalendarDayCell {
+  date: Date;
+  isoDate: string;
+  selectable: boolean;
+}
 
 @Component({
   selector: 'app-reservation-workflow',
@@ -19,7 +26,11 @@ export class ReservationWorkflowComponent implements OnInit {
   currentService!: Service;
   reservationPreview?: Reservation;
   slots: { [key: string]: string[] } = {};
+  availabilityByDate: { [key: string]: number } = {};
+  calendarCells: Array<CalendarDayCell | null> = [];
+  readonly weekDays: string[] = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
   currentDay: Date = new Date();
+  currentCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   readonly todayIsoDate: string = this.toISODateString(new Date());
   selectedCalendarDate: string = this.todayIsoDate;
   readonly providerInfoView = ObjectProfileView.INFO;
@@ -89,8 +100,11 @@ export class ReservationWorkflowComponent implements OnInit {
     this.currentService = undefined as unknown as Service;
     this.reservationPreview = undefined;
     this.slots = {};
+    this.availabilityByDate = {};
     this.currentDay = new Date();
+    this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
     this.selectedCalendarDate = this.toISODateString(this.currentDay);
+    this.buildCalendarCells();
     this.currentStep = 'service';
   }
 
@@ -98,20 +112,33 @@ export class ReservationWorkflowComponent implements OnInit {
     this.currentService = service;
     this.reservationPreview = undefined;
     this.currentStep = 'slots';
+    this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
     this.selectedCalendarDate = this.toISODateString(this.currentDay);
+    this.buildCalendarCells();
+    this.loadAvailabilitySummaryForCurrentMonth();
     this.loadAvailableSlots(this.currentDay);
   }
 
-  onCalendarDateChange(event: Event) {
-    const value = (event.target as HTMLInputElement)?.value;
-    if (!value || !this.currentProvider || this.currentStep !== 'slots') {
+  changeMonth(offset: number) {
+    if (!this.currentProvider || this.currentStep !== 'slots') {
       return;
     }
+    this.currentCalendarMonth = new Date(
+      this.currentCalendarMonth.getFullYear(),
+      this.currentCalendarMonth.getMonth() + offset,
+      1
+    );
+    this.buildCalendarCells();
+    this.loadAvailabilitySummaryForCurrentMonth();
+  }
 
-    const selectedDate = this.fromISODate(value);
-    this.currentDay = selectedDate;
-    this.selectedCalendarDate = this.toISODateString(selectedDate);
-    this.loadAvailableSlots(selectedDate);
+  selectCalendarDay(dayCell: CalendarDayCell | null) {
+    if (!dayCell || !dayCell.selectable || !this.currentProvider || this.currentStep !== 'slots') {
+      return;
+    }
+    this.currentDay = new Date(dayCell.date);
+    this.selectedCalendarDate = dayCell.isoDate;
+    this.loadAvailableSlots(dayCell.date);
   }
 
   async addReservation(slotDay: string, slotIndex: number) {
@@ -162,16 +189,33 @@ export class ReservationWorkflowComponent implements OnInit {
     });
   }
 
-  update(offset: number) {
-    const newDay = new Date(this.currentDay);
-    newDay.setDate(newDay.getDate() + offset);
-    this.currentDay = newDay;
-    this.selectedCalendarDate = this.toISODateString(newDay);
-    this.loadAvailableSlots(newDay);
+  get currentMonthLabel(): string {
+    return this.currentCalendarMonth.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
   }
 
-  isNotToday(date: string): boolean {
-    return new Date().toDateString() !== new Date(date).toDateString();
+  get canGoToPreviousMonth(): boolean {
+    const currentMonthStart = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth(), 1);
+    const todayMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    return currentMonthStart > todayMonthStart;
+  }
+
+  getAvailabilityLevel(isoDate: string): AvailabilityLevel {
+    const availableCount = this.availabilityByDate[isoDate];
+    if (availableCount == null) {
+      return 'none';
+    }
+
+    const requiredSlots = this.getRequiredSlots();
+    if (availableCount < requiredSlots) {
+      return 'none';
+    }
+    if (availableCount < requiredSlots * 2) {
+      return 'low';
+    }
+    if (availableCount < requiredSlots * 4) {
+      return 'medium';
+    }
+    return 'high';
   }
 
   hasRequiredConsecutiveSlots(slotDay: string, slotIndex: number): boolean {
@@ -189,6 +233,44 @@ export class ReservationWorkflowComponent implements OnInit {
     this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, day).subscribe(slots => this.slots = slots);
   }
 
+  private loadAvailabilitySummaryForCurrentMonth() {
+    if (!this.currentProvider) {
+      this.availabilityByDate = {};
+      return;
+    }
+
+    const fromDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth(), 1);
+    const toDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth() + 1, 0);
+    this.clientService.getAvailabilitySummary(this.currentProvider.providerId, fromDate, toDate)
+      .subscribe(summary => this.availabilityByDate = summary || {});
+  }
+
+  private buildCalendarCells() {
+    const year = this.currentCalendarMonth.getFullYear();
+    const month = this.currentCalendarMonth.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const mondayBasedOffset = (firstOfMonth.getDay() + 6) % 7;
+    const cells: Array<CalendarDayCell | null> = Array.from({ length: mondayBasedOffset }, () => null);
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const isoDate = this.toISODateString(date);
+      cells.push({
+        date,
+        isoDate,
+        selectable: isoDate >= this.todayIsoDate
+      });
+    }
+
+    while (cells.length % 7 !== 0) {
+      cells.push(null);
+    }
+
+    this.calendarCells = cells;
+  }
+
   private toISODateString(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -196,8 +278,4 @@ export class ReservationWorkflowComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  private fromISODate(value: string): Date {
-    const [year, month, day] = value.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }
 }

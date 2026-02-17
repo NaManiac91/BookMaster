@@ -21,6 +21,14 @@ export class ClientService {
       `&date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
   }
 
+  getAvailabilitySummary(providerId: string, from: Date, to: Date): Observable<{ [key: string]: number }> {
+    const fromIso = `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`;
+    const toIso = `${to.getFullYear()}-${String(to.getMonth() + 1).padStart(2, '0')}-${String(to.getDate()).padStart(2, '0')}`;
+    return <Observable<{ [key: string]: number }>>this.httpClient.get(
+      this.api + `getAvailabilitySummary?providerId=${providerId}&from=${fromIso}&to=${toIso}`
+    );
+  }
+
   removeReservation(reservationId: string): Observable<boolean> {
     return <Observable<boolean>>this.httpClient.get(this.api + 'removeReservation?reservationId=' + reservationId);
   }
