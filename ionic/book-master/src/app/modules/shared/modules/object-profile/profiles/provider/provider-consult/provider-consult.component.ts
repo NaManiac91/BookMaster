@@ -5,6 +5,7 @@ import {AlertController, NavController} from "@ionic/angular";
 import {AdminService} from "../../../../../../admin/services/admin.service";
 import {ObjectProfileView, Operation} from "../../../../../enum";
 import {ServicesListComponent} from "../../service/services-list/services-list.component";
+import {AuthService} from "../../../../../services/auth/auth.service";
 
 @ObjectProfile({
   view: ObjectProfileView.CONSULT,
@@ -21,6 +22,7 @@ export class ProviderConsultComponent {
 
   constructor(private navCtrl: NavController,
               private adminService: AdminService,
+              private authService: AuthService,
               private alertController: AlertController) { }
 
   serviceSelected(service: Service, operation: Operation) {
@@ -36,6 +38,7 @@ export class ProviderConsultComponent {
         if (removed) {
           this.object.services.splice(this.object.services.findIndex(s => s.serviceId === service.serviceId), 1);
           this.serviceListComponent.services = this.object.services;
+          this.authService.updateLoggedUserProvider(this.object);
 
           const alert = await this.alertController.create({
             message: 'Service removed successfully.',

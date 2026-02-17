@@ -41,6 +41,7 @@ export class Reservation extends IModel {
   slots: string;
   note: string;
   providerName: string;
+  providerTimeBlockMinutes: number;
   listSlot: string[];
   service: Service;
   users: User[];

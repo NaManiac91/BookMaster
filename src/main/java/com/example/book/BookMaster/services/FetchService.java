@@ -130,15 +130,22 @@ public class FetchService {
 	
 	public Optional<User> getUserByUsername(String username) {
 		try {
-			Optional<User> user = Optional.of(this.userRepo.findByUsername(username));
+			Optional<User> user = Optional.ofNullable(this.userRepo.findByUsername(username));
 			
 			if (user.isPresent() && user.get().getReservations().size() > 0) {
 				Set<Reservation> reservations = user.get().getReservations();
 				for (Reservation reservation : reservations) {
-			        // Fetch and set service details
-					Service service = this.serviceRepo.findById(reservation.getServiceId()).get();
-					reservation.setService(service);
-					reservation.setProvider(service.getProvider());
+			        // Fetch and set service/provider details for serialization support fields.
+					Service service = this.serviceRepo.findById(reservation.getServiceId()).orElse(null);
+					if (service != null) {
+						reservation.setService(service);
+						reservation.setProvider(service.getProvider());
+					}
+
+					if (reservation.getProvider() == null && reservation.getProviderId() != null) {
+						Provider provider = this.providerRepo.findById(reservation.getProviderId()).orElse(null);
+						reservation.setProvider(provider);
+					}
 				}
 			}
 			

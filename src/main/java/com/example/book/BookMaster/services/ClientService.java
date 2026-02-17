@@ -114,32 +114,40 @@ public class ClientService {
 	public Map<LocalDate, List<String>> getAvailableTimeSlots(UUID providerId, LocalDate date) {
 		try {
 			// Retrieve provider information to check time slot
-			Provider provider = this.providerRepo.findById(providerId).get();
+			Provider provider = this.providerRepo.findById(providerId)
+					.orElseThrow(() -> new RuntimeException("Provider not found with ID: " + providerId));
 	        LocalTime startTime = provider.getStartTime();
 	        LocalTime endTime = provider.getEndTime();
 	        int timeBlockMinutes = provider.getTimeBlockMinutes();
 
 	        Map<LocalDate, List<String>> availableSlotsByDate = new LinkedHashMap<>();
-	        
-	        // Loop through 4 days (current day + 3 days after)
-	        for (int i = 0; i < 4; i++) {
-	            LocalDate currentDate = date.plusDays(i);
-	            List<String> availableSlots = new ArrayList<>();
-	            LocalTime currentTime = startTime;
+	        final int windowDays = 4;
+	        final int maxSearchDays = 365;
 
-	            // Create all slots for this date
-	            while (currentTime.isBefore(endTime)) {
-	                LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
-	                String timeSlot = currentTime.toString();
-	                availableSlots.add(timeSlot);
-	                currentTime = nextTime;
-	            }
+	        // Move forward day-by-day until we find the first date with at least one free slot.
+	        LocalDate firstAvailableDate = date;
+	        boolean found = false;
+	        for (int i = 0; i < maxSearchDays; i++) {
+	        	LocalDate currentDate = date.plusDays(i);
+	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes);
+	        	if (!availableSlots.isEmpty()) {
+	        		firstAvailableDate = currentDate;
+	        		found = true;
+	        		break;
+	        	}
+	        }
 
-	            // Remove the slots already booked for this date
-	            availableSlots.removeAll(this.getSlotBooked(providerId, currentDate));
-	            availableSlotsByDate.put(currentDate, availableSlots);
-	            
-	            logger.info("Available slots for {} on {}: {}", providerId, currentDate, availableSlots);
+	        // If nothing is available in the search horizon, keep original behavior from requested date.
+	        if (!found) {
+	        	firstAvailableDate = date;
+	        }
+
+	        // Return the standard 4-day window starting from the first useful date.
+	        for (int i = 0; i < windowDays; i++) {
+	        	LocalDate currentDate = firstAvailableDate.plusDays(i);
+	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes);
+	        	availableSlotsByDate.put(currentDate, availableSlots);
+	        	logger.info("Available slots for {} on {}: {}", providerId, currentDate, availableSlots);
 	        }
 
 	        return availableSlotsByDate;
@@ -148,6 +156,21 @@ public class ClientService {
 	        throw e; 
 	    }
     }
+
+	private List<String> buildAvailableSlotsForDate(UUID providerId, LocalDate date, LocalTime startTime, LocalTime endTime, int timeBlockMinutes) {
+		List<String> availableSlots = new ArrayList<>();
+		LocalTime currentTime = startTime;
+
+		while (currentTime.isBefore(endTime)) {
+			LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
+			String timeSlot = currentTime.toString();
+			availableSlots.add(timeSlot);
+			currentTime = nextTime;
+		}
+
+		availableSlots.removeAll(this.getSlotBooked(providerId, date));
+		return availableSlots;
+	}
 
     public boolean isTimeSlotAvailable(List<String> slotBooked, String slot) {
         return slotBooked.contains(slot);
@@ -195,6 +218,10 @@ public class ClientService {
 				if (service != null) {
 					reservation.setService(service);
 					reservation.setProvider(service.getProvider());
+				}
+				if (reservation.getProvider() == null && reservation.getProviderId() != null) {
+					Provider provider = this.providerRepo.findById(reservation.getProviderId()).orElse(null);
+					reservation.setProvider(provider);
 				}
 			}
 

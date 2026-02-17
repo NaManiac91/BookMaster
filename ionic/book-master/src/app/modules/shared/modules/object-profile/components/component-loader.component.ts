@@ -18,6 +18,7 @@ export class ComponentLoaderComponent  implements OnChanges, AfterViewInit, OnDe
   private isViewInitialized: boolean = false;
 
   @Input() object: any;
+  @Input() view: any;
 
   private _component: any;
   @Input() set component(cmp: any) {
@@ -47,9 +48,11 @@ export class ComponentLoaderComponent  implements OnChanges, AfterViewInit, OnDe
 
     if (!this.cmpRef) {
       this.cmpRef = this.containerRef.createComponent(this.component);
-      this.cmpRef.instance.object = this.object;
-      this.instance.emit(this.cmpRef.instance);
     }
+
+    this.cmpRef.instance.object = this.object;
+    this.cmpRef.instance.view = this.view;
+    this.instance.emit(this.cmpRef.instance);
   }
 
   ngOnChanges() {

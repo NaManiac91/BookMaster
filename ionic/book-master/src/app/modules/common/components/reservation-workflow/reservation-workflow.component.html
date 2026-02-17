@@ -4,6 +4,15 @@
   </ion-button>
 
   <ion-label class="ion-text-center">{{ stepLabel }}</ion-label>
+
+  <div *ngIf="currentStep === 'slots'" class="workflow-date-picker">
+    <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+    <input class="workflow-date-input"
+           type="date"
+           [value]="selectedCalendarDate"
+           [min]="todayIsoDate"
+           (change)="onCalendarDateChange($event)">
+  </div>
 </ion-item>
 
 <app-providers-list *ngIf="currentStep === 'provider'" (selected)="providerSelected($event)"></app-providers-list>
@@ -36,4 +45,18 @@
       </ion-button>
     </ion-item>
   </ion-list>
+</div>
+
+<div *ngIf="currentStep === 'summary' && reservationPreview" class="reservation-summary">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Riepilogo prenotazione</ion-card-title>
+    </ion-card-header>
+
+    <app-object-profile [view]="reservationConsultView" [object]="reservationPreview"></app-object-profile>
+  </ion-card>
+
+  <ion-button expand="block" color="primary" (click)="confirmReservation()">
+    Conferma prenotazione
+  </ion-button>
 </div>

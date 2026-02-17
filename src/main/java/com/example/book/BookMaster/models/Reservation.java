@@ -35,7 +35,7 @@ public class Reservation implements Serializable, IModel {
 	@NonNull()
 	private LocalDate date = LocalDate.now();
 
-	@Column(nullable = false, length = 5)
+	@Column(nullable = false, length = 255)
 	@NonNull()
     private String slots = "09:00";		//	list of slots in this format "09:00", "10:00"
 
@@ -165,7 +165,11 @@ public class Reservation implements Serializable, IModel {
 	}
 	
 	public String getProviderName() {
-		return this.getProvider().getName();
+		return this.getProvider() != null ? this.getProvider().getName() : null;
+	}
+	
+	public Integer getProviderTimeBlockMinutes() {
+		return this.getProvider() != null ? this.getProvider().getTimeBlockMinutes() : null;
 	}
 
 	@Override

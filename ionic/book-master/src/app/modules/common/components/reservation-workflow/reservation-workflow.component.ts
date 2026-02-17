@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Provider, Service} from "../../../shared/rest-api-client";
+import {Provider, Reservation, Service} from "../../../shared/rest-api-client";
 import {ClientService} from "../../services/client-service/client.service";
 import {AuthService} from "../../../shared/services/auth/auth.service";
 import {AlertController, NavController} from "@ionic/angular";
@@ -7,7 +7,7 @@ import {ObjectProfileView} from "../../../shared/enum";
 import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
 
-type WorkflowStep = 'provider' | 'service' | 'slots';
+type WorkflowStep = 'provider' | 'service' | 'slots' | 'summary';
 
 @Component({
   selector: 'app-reservation-workflow',
@@ -17,9 +17,13 @@ type WorkflowStep = 'provider' | 'service' | 'slots';
 export class ReservationWorkflowComponent implements OnInit {
   currentProvider!: Provider;
   currentService!: Service;
+  reservationPreview?: Reservation;
   slots: { [key: string]: string[] } = {};
-  currentDay: Date = new Date;
+  currentDay: Date = new Date();
+  readonly todayIsoDate: string = this.toISODateString(new Date());
+  selectedCalendarDate: string = this.todayIsoDate;
   readonly providerInfoView = ObjectProfileView.INFO;
+  readonly reservationConsultView = ObjectProfileView.CREATE;
   currentStep: WorkflowStep = 'provider';
 
   constructor(private clientService: ClientService,
@@ -53,6 +57,7 @@ export class ReservationWorkflowComponent implements OnInit {
       case 'provider': return 'Provider';
       case 'service': return 'Lista dei Servizi Disponibili';
       case 'slots': return 'Orari';
+      case 'summary': return 'Riepilogo Prenotazione';
     }
   }
 
@@ -66,9 +71,15 @@ export class ReservationWorkflowComponent implements OnInit {
       return;
     }
 
+    if (this.currentStep === 'summary') {
+      this.currentStep = 'slots';
+      return;
+    }
+
     if (this.currentStep === 'service') {
       this.currentStep = 'provider';
       this.currentService = undefined as unknown as Service;
+      this.reservationPreview = undefined;
       this.slots = {};
     }
   }
@@ -76,15 +87,31 @@ export class ReservationWorkflowComponent implements OnInit {
   providerSelected(provider: Provider) {
     this.currentProvider = Object.assign(new Provider(), provider);
     this.currentService = undefined as unknown as Service;
+    this.reservationPreview = undefined;
     this.slots = {};
     this.currentDay = new Date();
+    this.selectedCalendarDate = this.toISODateString(this.currentDay);
     this.currentStep = 'service';
   }
 
   serviceSelected(service: Service) {
     this.currentService = service;
+    this.reservationPreview = undefined;
     this.currentStep = 'slots';
-    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, this.currentDay).subscribe(slots => this.slots = slots);
+    this.selectedCalendarDate = this.toISODateString(this.currentDay);
+    this.loadAvailableSlots(this.currentDay);
+  }
+
+  onCalendarDateChange(event: Event) {
+    const value = (event.target as HTMLInputElement)?.value;
+    if (!value || !this.currentProvider || this.currentStep !== 'slots') {
+      return;
+    }
+
+    const selectedDate = this.fromISODate(value);
+    this.currentDay = selectedDate;
+    this.selectedCalendarDate = this.toISODateString(selectedDate);
+    this.loadAvailableSlots(selectedDate);
   }
 
   async addReservation(slotDay: string, slotIndex: number) {
@@ -101,13 +128,30 @@ export class ReservationWorkflowComponent implements OnInit {
       return;
     }
 
-    const params: any = {
+    this.reservationPreview = Object.assign(new Reservation(), {
       date: new Date(slotDay),
       slots: selectedSlots.join(','),
+      providerName: this.currentProvider.name,
+      providerTimeBlockMinutes: this.currentProvider.timeBlockMinutes,
+      service: this.currentService,
+      providerId: this.currentProvider.providerId
+    });
+
+    this.currentStep = 'summary';
+  }
+
+  confirmReservation() {
+    if (!this.reservationPreview) {
+      return;
+    }
+
+    const params: any = {
+      date: this.reservationPreview.date,
+      slots: this.reservationPreview.slots,
       userId: this.authService.loggedUser.userId,
       serviceId: this.currentService.serviceId,
       providerId: this.currentProvider.providerId,
-      note: 'Simple reservation'
+      note: this.reservationPreview.note
     }
 
     this.clientService.createReservation(params).subscribe(reservation => {
@@ -121,10 +165,9 @@ export class ReservationWorkflowComponent implements OnInit {
   update(offset: number) {
     const newDay = new Date(this.currentDay);
     newDay.setDate(newDay.getDate() + offset);
-    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, newDay).subscribe(slots => {
-      this.slots = slots;
-      this.currentDay = newDay;
-    });
+    this.currentDay = newDay;
+    this.selectedCalendarDate = this.toISODateString(newDay);
+    this.loadAvailableSlots(newDay);
   }
 
   isNotToday(date: string): boolean {
@@ -140,5 +183,21 @@ export class ReservationWorkflowComponent implements OnInit {
   private getRequiredSlots(): number {
     const required = Number(this.currentService?.time);
     return Number.isFinite(required) && required > 0 ? required : 1;
+  }
+
+  private loadAvailableSlots(day: Date) {
+    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, day).subscribe(slots => this.slots = slots);
+  }
+
+  private toISODateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private fromISODate(value: string): Date {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 }

@@ -66,8 +66,8 @@
 
   <app-reservations-list [list]="user.reservations"></app-reservations-list>
 
-  <div class="provider-admin">
-      <ion-button *ngIf="provider" expand="block" (click)="goToProviderAdmin()">Area Admin</ion-button>
+  <div class="provider-admin" *ngIf="provider">
+      <ion-button expand="block" (click)="goToProviderAdmin()">Area Admin</ion-button>
   </div>
 
 </div>

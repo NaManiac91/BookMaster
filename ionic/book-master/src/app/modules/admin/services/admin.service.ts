@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import {Injectable, Type} from '@angular/core';
 import {IModel, Provider, Service} from "../../shared/rest-api-client";
-import {Observable, map, of, throwError} from "rxjs";
+import {Observable, map, of, tap, throwError} from "rxjs";
 import {AuthService} from "../../shared/services/auth/auth.service";
 
 @Injectable({
@@ -28,14 +28,18 @@ export class AdminService {
 
   createProvider(object: Provider, userId: string): Observable<Provider> {
     return <Observable<Provider>>this.httpClient.post(this.api + 'createProvider', Object.assign(object, { userId : userId}))
-      .pipe(map((response: any) => Object.assign(new Provider(), response)));
+      .pipe(
+        map((response: any) => Object.assign(new Provider(), response)),
+        tap((provider: Provider) => this.authService.updateLoggedUserProvider(provider))
+      );
   }
 
   createService(service: Service, providerId: string): Observable<Provider> {
     return <Observable<Provider>>this.httpClient.post(this.api + 'createService', Object.assign(service, { providerId : providerId}))
-      .pipe(map((response: any) => {
-        return this.convertProviderToClient(response);
-      }));
+      .pipe(
+        map((response: any) => this.convertProviderToClient(response)),
+        tap((provider: Provider) => this.authService.updateLoggedUserProvider(provider))
+      );
   }
 
   private convertProviderToClient(response: any) {
@@ -54,7 +58,12 @@ export class AdminService {
           case Service.$t: return Object.assign(new type(), response);
         }
         return response;
-      }));
+      }),
+        tap((model: IModel) => {
+          if (model?.$t === Provider.$t) {
+            this.authService.updateLoggedUserProvider(model as Provider);
+          }
+        }));
   }
 
   private toProviderEditPayload(provider: Provider) {

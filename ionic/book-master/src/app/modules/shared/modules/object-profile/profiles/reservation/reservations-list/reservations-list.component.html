@@ -12,6 +12,10 @@
       <ion-button color="danger" (click)="remove(reservation.reservationId)">
         <ion-icon name="close"></ion-icon>
       </ion-button>
+
+      <ion-button (click)="show(reservation)">
+        <ion-icon name="eye"></ion-icon>
+      </ion-button>
     </ion-item>
     <ion-item *ngIf="futureReservations.length === 0">Nessuna prenotazione futura.</ion-item>
   </ion-list>

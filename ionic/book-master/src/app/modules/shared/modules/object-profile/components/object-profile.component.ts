@@ -16,7 +16,15 @@ import {ObjectProfileView} from "../../../enum";
 })
 export class ObjectProfileComponent {
   profileComponent!: any;
-  @Input() view: ObjectProfileView = ObjectProfileView.CONSULT;
+  private _view: ObjectProfileView = ObjectProfileView.CONSULT;
+  @Input() set view(value: ObjectProfileView) {
+    this._view = value;
+    this.updateProfile();
+  }
+
+  get view(): ObjectProfileView {
+    return this._view;
+  }
 
   private _type!: string;
   private _object!: any;
@@ -41,6 +49,9 @@ export class ObjectProfileComponent {
   constructor(private objectProfileService: ObjectProfileService){}
 
   updateProfile() {
+    if (!this._type) {
+      return;
+    }
     this.profileComponent = this.objectProfileService.getObjectProfile(this._type, this.view);
   }
 }

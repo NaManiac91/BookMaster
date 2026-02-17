@@ -15,7 +15,8 @@ describe('AdminService', () => {
       provider: {
         providerId: 'provider-42'
       }
-    }
+    },
+    updateLoggedUserProvider: jasmine.createSpy('updateLoggedUserProvider')
   };
 
   beforeEach(() => {

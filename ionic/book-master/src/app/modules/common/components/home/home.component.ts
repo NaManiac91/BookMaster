@@ -91,13 +91,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       const provider = object && object.$t === Provider.$t ? object : this.user.provider;
       this.provider = this.user.provider = Object.assign(new Provider(), provider);
     }
+
+    this.authService.loggedUser = this.user;
   }
 
   goToProviderAdmin() {
-    if (!this.provider) {
-      return;
-    }
-
     this.navCtrl.navigateRoot('ProviderAdmin');
   }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../rest-api-client';
+import { Provider, User } from '../../rest-api-client';
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 
@@ -17,6 +17,14 @@ export class AuthService {
 
   set loggedUser(user: User) {
     localStorage.setItem('loggedUser', JSON.stringify(user));
+  }
+
+  updateLoggedUserProvider(provider: Provider): void {
+    const loggedUser = this.loggedUser;
+    if (!loggedUser) {
+      return;
+    }
+    this.loggedUser = Object.assign(new User(), loggedUser, { provider });
   }
 
   getAuthStatus(): Observable<any> {

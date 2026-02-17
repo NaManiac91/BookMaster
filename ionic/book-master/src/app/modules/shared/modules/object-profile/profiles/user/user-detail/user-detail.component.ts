@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FetchService } from 'src/app/modules/common/services/fetch-service/fetch.service';
+import {ObjectProfile} from "../../../services/object-profile.service";
+import {ObjectProfileView} from "../../../../../enum";
+import {User} from "../../../../../rest-api-client";
 
+@ObjectProfile({
+  view: ObjectProfileView.CONSULT,
+  type: User
+})
 @Component({
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',

@@ -2,6 +2,8 @@
   --background: color-mix(in srgb, var(--ion-color-light) 75%, #ffffff);
   --border-radius: 12px;
   margin: 0 0 8px;
+  display: flex;
+  align-items: center;
 }
 
 .workflow-nav ion-button[disabled] {
@@ -13,4 +15,28 @@
   --border-style: solid;
   --border-width: 1px;
   --border-radius: 10px;
+}
+
+.workflow-date-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workflow-date-picker ion-icon {
+  color: var(--ion-color-medium);
+}
+
+.workflow-date-input {
+  border: 1px solid var(--ion-color-medium-tint);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background-color: var(--ion-color-light);
+  color: var(--ion-color-dark);
+  font-size: 14px;
+  max-width: 120px;
+}
+
+.reservation-summary {
+  padding: 8px 0;
 }

@@ -1,7 +1,8 @@
 import {Component, Input} from '@angular/core';
 import {Reservation} from 'src/app/modules/shared/rest-api-client';
 import {ClientService} from "../../../../../../common/services/client-service/client.service";
-import {AlertController} from "@ionic/angular";
+import {AlertController, NavController} from "@ionic/angular";
+import {ObjectProfileView} from "../../../../../enum";
 
 @Component({
   selector: 'app-reservations-list',
@@ -12,10 +13,13 @@ export class ReservationsListComponent {
   @Input() list: Reservation[] = [];
 
   constructor(private clientService: ClientService,
-              private alertController: AlertController) { }
+              private alertController: AlertController,
+              private navCtrl: NavController) {
+  }
 
   get futureReservations(): Reservation[] {
-    return this.list.filter(reservation => this.isFutureOrToday(reservation));
+    return this.list.filter(reservation => this.isFutureOrToday(reservation))
+      .map(reservation => Object.assign(reservation, new Reservation()));
   }
 
   remove(reservationId: string) {
@@ -32,6 +36,15 @@ export class ReservationsListComponent {
         });
 
         await alert.present();
+      }
+    });
+  }
+
+  show(reservation: Reservation) {
+    this.navCtrl.navigateRoot('Editor', {
+      queryParams: {
+        object: reservation,
+        view: ObjectProfileView.CONSULT
       }
     });
   }

@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 
 import { ProviderConsultComponent } from './provider-consult.component';
 import { AdminService } from '../../../../../../admin/services/admin.service';
+import { AuthService } from '../../../../../services/auth/auth.service';
 
 describe('ProviderConsultComponent', () => {
   let component: ProviderConsultComponent;
@@ -14,6 +15,7 @@ describe('ProviderConsultComponent', () => {
   };
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
   const alertControllerMock = jasmine.createSpyObj('AlertController', ['create']);
+  const authServiceMock = jasmine.createSpyObj('AuthService', ['updateLoggedUserProvider']);
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -23,6 +25,7 @@ describe('ProviderConsultComponent', () => {
       providers: [
         { provide: NavController, useValue: navCtrlMock },
         { provide: AdminService, useValue: adminServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
         { provide: AlertController, useValue: alertControllerMock }
       ]
     }).compileComponents();

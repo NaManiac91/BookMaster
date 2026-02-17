@@ -8,6 +8,6 @@
 
       <app-object-profile [view]="view" [object]="object ? object : type" (instance)="object = $event"></app-object-profile>
     </ion-card>
-    <ion-button (click)="save()">Save</ion-button>
+    <ion-button *ngIf="!readonly" (click)="save()">Save</ion-button>
   </div>
 </form>

@@ -91,7 +91,20 @@ public class AdminService {
 	
 	public Service editService(Service service) {
 		try {
-			Service entity = this.serviceRepo.save(service);
+			if (service.getServiceId() == null) {
+				throw new IllegalArgumentException("serviceId is required");
+			}
+
+			Service current = this.serviceRepo.findById(service.getServiceId())
+					.orElseThrow(() -> new IllegalArgumentException("Service not found with ID: " + service.getServiceId()));
+
+			// Update editable service fields only. Keep provider relation untouched.
+			current.setName(service.getName());
+			current.setDescription(service.getDescription());
+			current.setPrice(service.getPrice());
+			current.setTime(service.getTime());
+
+			Service entity = this.serviceRepo.save(current);
 			logger.info("Service edited: {}", entity);
 			return entity;
 		} catch (Exception e) {

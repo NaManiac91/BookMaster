@@ -16,6 +16,7 @@ export class EditorComponent implements OnInit {
   type!: Type<IModel>;
   view: ObjectProfileView = ObjectProfileView.CREATE;
   object!: IModel;
+  readonly: boolean = false;
 
   constructor(private adminService: AdminService,
               private modelInitializerService: ModelInitializerService,
@@ -28,8 +29,12 @@ export class EditorComponent implements OnInit {
     const view = this.activatedRoute.snapshot.queryParams['view'];
     const typeToken = this.object?.$t || this.activatedRoute.snapshot.queryParams['type'];
 
-    if (view) {
+    if (!Number.isNaN(view)) {
       this.view = view;
+
+      if (view === ObjectProfileView.CONSULT) {
+        this.readonly = true;
+      }
     }
 
     this.type = this.modelInitializerService.getTypeByToken(typeToken);
@@ -40,8 +45,7 @@ export class EditorComponent implements OnInit {
   }
 
   get title(): string {
-    const action = this.view === ObjectProfileView.EDIT ? 'Modifica' : 'Crea';
-    return `${action} ${this.objectTypeLabel}`;
+    return `${ObjectProfileView[this.view]}_${this.objectTypeLabel}`;
   }
 
   private get objectTypeLabel(): string {
