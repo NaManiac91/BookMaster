@@ -6,14 +6,14 @@
     <ion-toolbar color="light">
       <ion-buttons slot="start" class="menu-buttons">
 
-        <ion-button *ngFor="let p of appPages; let i = index" routerDirection="root" [routerLink]="[p.url]"
+        <ion-button *ngFor="let p of appPages" routerDirection="root" [routerLink]="[p.url]"
                     lines="none" detail="false" routerLinkActive="selected">
           <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon + '-sharp'"></ion-icon>
-          <ion-label>{{p.title}}</ion-label>
+          <ion-label>{{ p.titleKey | t }}</ion-label>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-footer>
 </ion-app>
 
-<app-login *ngIf="!isLogged" (logged)="isLogged = true"></app-login>
+<app-login *ngIf="!isLogged" (logged)="onLogged()"></app-login>

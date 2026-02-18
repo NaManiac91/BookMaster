@@ -1,6 +1,6 @@
 <ion-card>
   <ion-card-header color="tertiary">
-    <ion-card-title>Storico Prenotazioni</ion-card-title>
+    <ion-card-title>{{ 'reservationHistory.title' | t }}</ion-card-title>
   </ion-card-header>
 
   <ion-list>
@@ -9,6 +9,6 @@
         - {{ reservation.service.name }}
       </ion-label>
     </ion-item>
-    <ion-item *ngIf="pastReservations.length === 0">Nessuna prenotazione passata.</ion-item>
+    <ion-item *ngIf="pastReservations.length === 0">{{ 'reservationHistory.empty' | t }}</ion-item>
   </ion-list>
 </ion-card>

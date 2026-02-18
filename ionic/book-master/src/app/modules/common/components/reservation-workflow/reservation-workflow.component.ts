@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Provider, Reservation, Service} from "../../../shared/rest-api-client";
 import {ClientService} from "../../services/client-service/client.service";
 import {AuthService} from "../../../shared/services/auth/auth.service";
@@ -6,6 +6,8 @@ import {AlertController, NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../../shared/enum";
 import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
+import {TranslationService} from "../../../shared/modules/translation/services/translation.service";
+import {Subscription} from "rxjs";
 
 type WorkflowStep = 'provider' | 'service' | 'slots' | 'summary';
 type AvailabilityLevel = 'none' | 'low' | 'medium' | 'high';
@@ -21,30 +23,37 @@ interface CalendarDayCell {
   templateUrl: './reservation-workflow.component.html',
   styleUrls: ['./reservation-workflow.component.scss'],
 })
-export class ReservationWorkflowComponent implements OnInit {
+export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   currentProvider!: Provider;
   currentService!: Service;
   reservationPreview?: Reservation;
   slots: { [key: string]: string[] } = {};
   availabilityByDate: { [key: string]: number } = {};
   calendarCells: Array<CalendarDayCell | null> = [];
-  readonly weekDays: string[] = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
   currentDay: Date = new Date();
   currentCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   readonly todayIsoDate: string = this.toISODateString(new Date());
   selectedCalendarDate: string = this.todayIsoDate;
+  currentLocale: string = 'en-US';
   readonly providerInfoView = ObjectProfileView.INFO;
   readonly reservationConsultView = ObjectProfileView.CREATE;
   currentStep: WorkflowStep = 'provider';
+  private languageSub?: Subscription;
 
   constructor(private clientService: ClientService,
               private authService: AuthService,
               private navCtrl: NavController,
               private router: Router,
               private fetchService: FetchService,
+              private translationService: TranslationService,
               private alertController: AlertController) { }
 
   ngOnInit() {
+    this.currentLocale = this.resolveLocale(this.translationService.currentLanguage);
+    this.languageSub = this.translationService.language$.subscribe(language => {
+      this.currentLocale = this.resolveLocale(language);
+    });
+
     const currentNavigation = this.router.getCurrentNavigation();
     const provider = currentNavigation?.extras?.state?.['provider'] as Provider;
     const service = currentNavigation?.extras?.state?.['service'] as Service;
@@ -65,11 +74,24 @@ export class ReservationWorkflowComponent implements OnInit {
 
   get stepLabel(): string {
     switch (this.currentStep) {
-      case 'provider': return 'Provider';
-      case 'service': return 'Lista dei Servizi Disponibili';
-      case 'slots': return 'Orari';
-      case 'summary': return 'Riepilogo Prenotazione';
+      case 'provider': return this.translationService.translate('reservationWorkflow.step.provider');
+      case 'service': return this.translationService.translate('reservationWorkflow.step.service');
+      case 'slots': return this.translationService.translate('reservationWorkflow.step.slots');
+      case 'summary': return this.translationService.translate('reservationWorkflow.step.summary');
+      default: return '';
     }
+  }
+
+  get weekDays(): string[] {
+    return [
+      this.translationService.translate('weekday.mon'),
+      this.translationService.translate('weekday.tue'),
+      this.translationService.translate('weekday.wed'),
+      this.translationService.translate('weekday.thu'),
+      this.translationService.translate('weekday.fri'),
+      this.translationService.translate('weekday.sat'),
+      this.translationService.translate('weekday.sun')
+    ];
   }
 
   get canGoBack(): boolean {
@@ -148,8 +170,8 @@ export class ReservationWorkflowComponent implements OnInit {
 
     if (selectedSlots.length < requiredSlots) {
       const alert = await this.alertController.create({
-        message: 'Gli slot consecutivi disponibili non sono sufficienti per la durata del servizio.',
-        buttons: ['OK'],
+        message: this.translationService.translate('reservationWorkflow.insufficientSlots'),
+        buttons: [this.translationService.translate('common.ok')],
       });
       await alert.present();
       return;
@@ -190,7 +212,7 @@ export class ReservationWorkflowComponent implements OnInit {
   }
 
   get currentMonthLabel(): string {
-    return this.currentCalendarMonth.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+    return this.currentCalendarMonth.toLocaleDateString(this.currentLocale, { month: 'long', year: 'numeric' });
   }
 
   get canGoToPreviousMonth(): boolean {
@@ -276,6 +298,21 @@ export class ReservationWorkflowComponent implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private resolveLocale(language: string): string {
+    switch ((language || '').toLowerCase()) {
+      case 'it':
+        return 'it-IT';
+      case 'fr':
+        return 'fr-FR';
+      default:
+        return 'en-US';
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.languageSub?.unsubscribe();
   }
 
 }

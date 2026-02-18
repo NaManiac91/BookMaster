@@ -16,6 +16,15 @@ export class AuthService {
   }
 
   set loggedUser(user: User) {
+    if (!user) {
+      localStorage.removeItem('loggedUser');
+      return;
+    }
+
+    if (!user.language) {
+      user.language = 'en';
+    }
+
     localStorage.setItem('loggedUser', JSON.stringify(user));
   }
 

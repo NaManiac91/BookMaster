@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 
 import { ProvidersListComponent } from './providers-list.component';
 import { FetchService } from '../../../../../../common/services/fetch-service/fetch.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ProvidersListComponent', () => {
   let component: ProvidersListComponent;
@@ -16,7 +17,7 @@ describe('ProvidersListComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ProvidersListComponent ],
-      imports: [IonicModule.forRoot(), FormsModule],
+      imports: [IonicModule.forRoot(), FormsModule, TranslationTestingModule],
       providers: [{ provide: FetchService, useValue: fetchServiceMock }]
     }).compileComponents();
 

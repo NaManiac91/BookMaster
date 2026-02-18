@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 
 import { ReservationsListComponent } from './reservations-list.component';
 import { ClientService } from '../../../../../../common/services/client-service/client.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ReservationsListComponent', () => {
   let component: ReservationsListComponent;
@@ -16,7 +17,7 @@ describe('ReservationsListComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ReservationsListComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       providers: [
         { provide: ClientService, useValue: clientServiceMock },
         { provide: AlertController, useValue: alertControllerMock }

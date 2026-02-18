@@ -3,6 +3,7 @@ import {Reservation} from 'src/app/modules/shared/rest-api-client';
 import {ClientService} from "../../../../../../common/services/client-service/client.service";
 import {AlertController, NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../../../../enum";
+import {TranslationService} from "../../../../translation/services/translation.service";
 
 @Component({
   selector: 'app-reservations-list',
@@ -14,7 +15,8 @@ export class ReservationsListComponent {
 
   constructor(private clientService: ClientService,
               private alertController: AlertController,
-              private navCtrl: NavController) {
+              private navCtrl: NavController,
+              private translationService: TranslationService) {
   }
 
   get futureReservations(): Reservation[] {
@@ -31,8 +33,8 @@ export class ReservationsListComponent {
         }
 
         const alert = await this.alertController.create({
-          message: 'Reservation removed successfully.',
-          buttons: ['OK'],
+          message: this.translationService.translate('reservations.removedSuccess'),
+          buttons: [this.translationService.translate('common.ok')],
         });
 
         await alert.present();

@@ -7,6 +7,7 @@ import { Browser } from '@capacitor/browser';
 
 import { AuthCallbackComponent } from './auth-callback.component';
 import { AuthService } from '../../services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('AuthCallbackComponent', () => {
   let component: AuthCallbackComponent;
@@ -22,7 +23,7 @@ describe('AuthCallbackComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ AuthCallbackComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: authServiceMock },

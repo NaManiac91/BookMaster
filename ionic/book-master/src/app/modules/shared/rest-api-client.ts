@@ -70,6 +70,7 @@ export class User extends IModel {
   email: string;
   lastName: string;
   firstName: string;
+  language: string;
   reservations: Reservation[];
   provider: Provider;
   override readonly $t: string = 'User';

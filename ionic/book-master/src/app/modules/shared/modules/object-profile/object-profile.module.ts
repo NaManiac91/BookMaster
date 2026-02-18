@@ -15,6 +15,7 @@ import {ServicesListComponent} from "./profiles/service/services-list/services-l
 import {UserCreateComponent} from "./profiles/user/user-create/user-create.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IonicModule} from "@ionic/angular";
+import {TranslationModule} from "../translation/translation.module";
 
 const components = [
   ObjectProfileComponent,
@@ -36,7 +37,8 @@ const components = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule
+    IonicModule,
+    TranslationModule
   ],
   declarations: components,
   exports: components,

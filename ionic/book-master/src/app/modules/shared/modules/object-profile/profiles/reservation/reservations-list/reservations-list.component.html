@@ -1,6 +1,6 @@
 <ion-card>
   <ion-card-header color="tertiary">
-    <ion-card-title>Prenotazioni Future</ion-card-title>
+    <ion-card-title>{{ 'reservations.futureTitle' | t }}</ion-card-title>
   </ion-card-header>
 
   <ion-list>
@@ -17,6 +17,6 @@
         <ion-icon name="eye"></ion-icon>
       </ion-button>
     </ion-item>
-    <ion-item *ngIf="futureReservations.length === 0">Nessuna prenotazione futura.</ion-item>
+    <ion-item *ngIf="futureReservations.length === 0">{{ 'reservations.emptyFuture' | t }}</ion-item>
   </ion-list>
 </ion-card>

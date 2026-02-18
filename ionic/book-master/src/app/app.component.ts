@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { AuthService } from './modules/shared/services/auth/auth.service';
+import { TranslationService } from './modules/shared/modules/translation/services/translation.service';
 
 @Component({
   selector: 'app-root',
@@ -8,18 +9,25 @@ import { AuthService } from './modules/shared/services/auth/auth.service';
 })
 export class AppComponent implements OnInit {
   appPages = [
-    { title: 'Home', url: '/Home', icon: 'home' },
-    { title: 'Providers', url: '/ReservationWorkflow', icon: 'storefront' },
-    { title: 'History', url: '/ReservationHistory', icon: 'time' }
+    { titleKey: 'menu.home', url: '/Home', icon: 'home' },
+    { titleKey: 'menu.providers', url: '/ReservationWorkflow', icon: 'storefront' },
+    { titleKey: 'menu.history', url: '/ReservationHistory', icon: 'time' }
   ];
 
   isLogged: boolean = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService,
+              private translationService: TranslationService) { }
 
   ngOnInit() {
-    if (this.authService.loggedUser) {
+    const loggedUser = this.authService.loggedUser;
+    this.translationService.applyUserLanguage(loggedUser).subscribe();
+    this.isLogged = !!loggedUser;
+  }
+
+  onLogged() {
+    this.translationService.applyUserLanguage(this.authService.loggedUser).subscribe(() => {
       this.isLogged = true;
-    }
+    });
   }
 }

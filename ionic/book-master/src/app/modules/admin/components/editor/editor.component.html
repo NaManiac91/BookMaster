@@ -3,11 +3,11 @@
 
     <ion-card>
       <ion-card-header color="tertiary">
-        <ion-card-title>{{ title }}</ion-card-title>
+        <ion-card-title>{{ titleKey | t }}</ion-card-title>
       </ion-card-header>
 
       <app-object-profile [view]="view" [object]="object ? object : type" (instance)="object = $event"></app-object-profile>
     </ion-card>
-    <ion-button *ngIf="!readonly" (click)="save()">Save</ion-button>
+    <ion-button *ngIf="!readonly" (click)="save()">{{ 'editor.save' | t }}</ion-button>
   </div>
 </form>

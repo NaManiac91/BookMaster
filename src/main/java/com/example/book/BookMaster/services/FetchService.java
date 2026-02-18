@@ -3,6 +3,7 @@ package com.example.book.BookMaster.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,11 +25,16 @@ public class FetchService {
 	private UserRepositoryInterface userRepo;
 	private ServiceRepositoryInterface serviceRepo;
 	private ProviderRepositoryInterface providerRepo;
+	private TranslationService translationService;
 	
-	public FetchService(UserRepositoryInterface userRepo, ServiceRepositoryInterface serviceRepo, ProviderRepositoryInterface providerRepo) {
+	public FetchService(UserRepositoryInterface userRepo,
+						ServiceRepositoryInterface serviceRepo,
+						ProviderRepositoryInterface providerRepo,
+						TranslationService translationService) {
 		this.userRepo = userRepo;
 		this.serviceRepo = serviceRepo;
 		this.providerRepo = providerRepo;
+		this.translationService = translationService;
 	}
 	
 	public List<User> getUsers() {
@@ -209,6 +215,17 @@ public class FetchService {
 	        logger.error("Error fetching user: {}", e.getMessage(), e);
 	        throw e; 
 	    }
+	}
+
+	public Map<String, String> getTranslations(String language) {
+		try {
+			Map<String, String> translations = this.translationService.getTranslationsForLanguage(language);
+			logger.info("Translations fetched for language '{}': {}", language, translations.size());
+			return translations;
+		} catch (Exception e) {
+			logger.error("Error fetching translations for language '{}': {}", language, e.getMessage(), e);
+			throw e;
+		}
 	}
 
 }

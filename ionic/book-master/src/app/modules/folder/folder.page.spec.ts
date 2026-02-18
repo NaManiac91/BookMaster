@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 
 import { FolderPage } from './folder.page';
 import { AuthService } from '../shared/services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('FolderPage', () => {
   let component: FolderPage;
@@ -19,7 +20,7 @@ describe('FolderPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FolderPage],
-      imports: [IonicModule.forRoot(), RouterModule.forRoot([])],
+      imports: [IonicModule.forRoot(), RouterModule.forRoot([]), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: authServiceMock },

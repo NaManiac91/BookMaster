@@ -2,13 +2,13 @@
   <app-object-profile [object]="provider" [view]="view"></app-object-profile>
 
   <div class="actions">
-    <ion-button (click)="editProvider()">Modifica Profilo</ion-button>
-    <ion-button (click)="createService()">Crea Servizio</ion-button>
+    <ion-button (click)="editProvider()">{{ 'providerAdmin.editProfile' | t }}</ion-button>
+    <ion-button (click)="createService()">{{ 'providerAdmin.createService' | t }}</ion-button>
   </div>
 </ng-container>
 
 <ng-template #noProviderCard>
   <ion-item lines="none">
-    <ion-label>Questa sezione e' disponibile solo per utenti provider.</ion-label>
+    <ion-label>{{ 'providerAdmin.onlyProviders' | t }}</ion-label>
   </ion-item>
 </ng-template>

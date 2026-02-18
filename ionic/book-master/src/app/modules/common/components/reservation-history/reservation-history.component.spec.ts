@@ -6,6 +6,7 @@ import {of} from "rxjs";
 import { ReservationHistoryComponent } from './reservation-history.component';
 import { AuthService } from '../../../shared/services/auth/auth.service';
 import {ClientService} from "../../services/client-service/client.service";
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ReservationHistoryComponent', () => {
   let component: ReservationHistoryComponent;
@@ -20,7 +21,7 @@ describe('ReservationHistoryComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ReservationHistoryComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: authServiceMock },

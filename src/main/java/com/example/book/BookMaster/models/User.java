@@ -10,11 +10,14 @@ import org.springframework.lang.NonNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,6 +39,10 @@ public class User implements Serializable, IModel {
 	@Column(nullable = false)
 	@NonNull()
 	private String email;
+
+	@Column(length = 5)
+	@Enumerated(EnumType.STRING)
+	private Language language;
 	
 	private String lastName;
 	
@@ -54,6 +61,7 @@ public class User implements Serializable, IModel {
 	public User(String username, String email) {
 		this.username = username;
 		this.email = email;
+		this.language = Language.EN;
 	}
 	
 	public User(String username, String lastName, String firstName, String email) {
@@ -61,6 +69,7 @@ public class User implements Serializable, IModel {
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.email = email;
+		this.language = Language.EN;
 	}
 	
 	public User(String username, String lastName, String firstName, String email, Provider provider) {
@@ -69,6 +78,14 @@ public class User implements Serializable, IModel {
 		this.firstName = firstName;
 		this.email = email;
 		this.provider = provider;
+		this.language = Language.EN;
+	}
+
+	@PrePersist
+	public void prePersist() {
+		if (this.language == null) {
+			this.language = Language.EN;
+		}
 	}
 
 	/* Getters and setters */
@@ -103,6 +120,14 @@ public class User implements Serializable, IModel {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public Language getLanguage() {
+		return language != null ? language : Language.EN;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language != null ? language : Language.EN;
+	}
 	
 	public Set<Reservation> getReservations() {
 		return reservations;
@@ -135,6 +160,6 @@ public class User implements Serializable, IModel {
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", username=" + username + ", lastName=" + lastName + ", firstName="
-				+ firstName + ", email=" + email + "]";
+				+ firstName + ", email=" + email + ", language=" + getLanguage() + "]";
 	}
 }

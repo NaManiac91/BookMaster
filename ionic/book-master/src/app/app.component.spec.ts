@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './modules/shared/services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 import { AppComponent } from './app.component';
 
@@ -14,8 +15,10 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [RouterModule.forRoot([])],
-      providers: [{ provide: AuthService, useValue: authServiceMock }]
+      imports: [RouterModule.forRoot([]), TranslationTestingModule],
+      providers: [
+        { provide: AuthService, useValue: authServiceMock }
+      ]
     }).compileComponents();
   });
 
@@ -29,9 +32,9 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.appPages.length).toBe(3);
-    expect(app.appPages[0].title).toBe('Home');
-    expect(app.appPages[1].title).toBe('Providers');
-    expect(app.appPages[2].title).toBe('History');
+    expect(app.appPages[0].titleKey).toBe('menu.home');
+    expect(app.appPages[1].titleKey).toBe('menu.providers');
+    expect(app.appPages[2].titleKey).toBe('menu.history');
   });
 
   it('should have urls', () => {

@@ -1,6 +1,7 @@
 package com.example.book.BookMaster.web;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -83,5 +84,12 @@ public class FetchController {
 		List<User> response = this.fetchService.getUsers();
 
         return new ResponseEntity<List<User>>(response, HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/getTranslations")
+	public ResponseEntity<Map<String, String>> getTranslations(
+			@RequestParam(required = false, defaultValue = "en") String language) {
+		Map<String, String> response = this.fetchService.getTranslations(language);
+		return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
 	}
 }

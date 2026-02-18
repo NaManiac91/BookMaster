@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title class="center-text">{{ folder }}</ion-title>
+    <ion-title class="center-text">{{ folderTitleKey | t }}</ion-title>
     <ion-button type="button" color="danger" shape="round" slot="end" (click)="logout()">
       <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
     </ion-button>
@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title class="center-text" size="large">{{ folder }}</ion-title>
+      <ion-title class="center-text" size="large">{{ folderTitleKey | t }}</ion-title>
     </ion-toolbar>
   </ion-header>
 

@@ -18,6 +18,20 @@ export class FolderPage implements OnInit {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
   }
 
+  get folderTitleKey(): string {
+    switch (this.folder) {
+      case 'Home':
+        return 'menu.home';
+      case 'ReservationWorkflow':
+      case 'Providers':
+        return 'menu.providers';
+      case 'ReservationHistory':
+        return 'menu.history';
+      default:
+        return this.folder;
+    }
+  }
+
   logout() {
     this.authService.logout().subscribe(() => {
       this.authService.loggedUser = null;

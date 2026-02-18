@@ -1,17 +1,17 @@
 <ion-list>
   <ion-item>
-    <ion-input label="Name" name="name" [(ngModel)]="object.name"></ion-input>
+    <ion-input [label]="'service.name' | t" name="name" [(ngModel)]="object.name"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input label="Description" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
+    <ion-input [label]="'service.description' | t" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input label="Price" name="price" [(ngModel)]="object.price" type="number"></ion-input>
+    <ion-input [label]="'service.price' | t" name="price" [(ngModel)]="object.price" type="number"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input label="Time" name="time" [(ngModel)]="object.time" type="number"></ion-input>
+    <ion-input [label]="'service.time' | t" name="time" [(ngModel)]="object.time" type="number"></ion-input>
   </ion-item>
 </ion-list>

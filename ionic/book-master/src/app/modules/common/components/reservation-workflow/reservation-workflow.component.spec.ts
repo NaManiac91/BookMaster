@@ -9,6 +9,7 @@ import {FetchService} from "../../services/fetch-service/fetch.service";
 import { ReservationWorkflowComponent } from './reservation-workflow.component';
 import { ClientService } from '../../services/client-service/client.service';
 import { AuthService } from '../../../shared/services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ReservationWorkflowComponent', () => {
   let component: ReservationWorkflowComponent;
@@ -31,7 +32,7 @@ describe('ReservationWorkflowComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ReservationWorkflowComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ClientService, useValue: clientServiceMock },

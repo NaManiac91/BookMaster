@@ -3,14 +3,18 @@ import { of } from 'rxjs';
 import { LoadingController } from '@ionic/angular';
 
 import { HttpLoadingInterceptor } from './HttpLoadingInterceptor';
+import { TranslationService } from '../modules/translation/services/translation.service';
 
 describe('HttpLoadingInterceptor', () => {
   let interceptor: HttpLoadingInterceptor;
   let loadingController: jasmine.SpyObj<LoadingController>;
+  let translationService: jasmine.SpyObj<TranslationService>;
 
   beforeEach(() => {
     loadingController = jasmine.createSpyObj<LoadingController>('LoadingController', ['create']);
-    interceptor = new HttpLoadingInterceptor(loadingController);
+    translationService = jasmine.createSpyObj<TranslationService>('TranslationService', ['translate']);
+    translationService.translate.and.returnValue('Please wait...');
+    interceptor = new HttpLoadingInterceptor(loadingController, translationService);
   });
 
   it('showLoading creates and presents loading indicator', async () => {

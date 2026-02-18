@@ -3,6 +3,7 @@ import {FetchService} from "../../../../../../common/services/fetch-service/fetc
 import {Provider} from "../../../../../rest-api-client";
 import {ObjectProfile} from "../../../services/object-profile.service";
 import {ObjectProfileView} from "../../../../../enum";
+import {TranslationService} from "../../../../translation/services/translation.service";
 
 @ObjectProfile({
   view: ObjectProfileView.LIST,
@@ -26,7 +27,8 @@ export class ProvidersListComponent implements OnInit {
   citySuggestions: string[] = [];
   showCitySuggestions = false;
 
-  constructor(private fetchService: FetchService) { }
+  constructor(private fetchService: FetchService,
+              private translationService: TranslationService) { }
 
   ngOnInit() {
     this.fetchService.getProviders().subscribe((providers: Provider[]) => {
@@ -80,11 +82,7 @@ export class ProvidersListComponent implements OnInit {
   }
 
   formatProviderType(type: string): string {
-    return (type || '')
-      .toLowerCase()
-      .split('_')
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' ');
+    return this.translationService.translate(`provider.type.${type}`);
   }
 
   private updateCitySuggestions(query: string) {

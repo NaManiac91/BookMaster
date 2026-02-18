@@ -4,6 +4,7 @@ import { IonicModule, NavController } from '@ionic/angular';
 
 import { ProviderAdminComponent } from './provider-admin.component';
 import { AuthService } from '../../../shared/services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ProviderAdminComponent', () => {
   let component: ProviderAdminComponent;
@@ -16,7 +17,7 @@ describe('ProviderAdminComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ProviderAdminComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: NavController, useValue: navCtrlMock },

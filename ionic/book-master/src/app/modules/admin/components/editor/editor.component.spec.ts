@@ -10,6 +10,7 @@ import { EditorComponent } from './editor.component';
 import { AdminService } from '../../services/admin.service';
 import { ModelInitializerService } from '../../../shared/services/model-initializer/model-initializer.service';
 import { Service } from '../../../shared/rest-api-client';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -27,7 +28,7 @@ describe('EditorComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditorComponent ],
-      imports: [IonicModule.forRoot(), FormsModule],
+      imports: [IonicModule.forRoot(), FormsModule, TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AdminService, useValue: adminServiceMock },

@@ -1,5 +1,9 @@
 <ion-item *ngIf="currentStep !== 'provider'" lines="none" class="workflow-nav">
-  <ion-button class="back-button" fill="clear" (click)="goBack()" [disabled]="!canGoBack" aria-label="Step precedente">
+  <ion-button class="back-button"
+              fill="clear"
+              (click)="goBack()"
+              [disabled]="!canGoBack"
+              [attr.aria-label]="'reservationWorkflow.previousStepAria' | t">
     <ion-icon name="chevron-back-outline"></ion-icon>
   </ion-button>
 
@@ -24,11 +28,14 @@
                 size="small"
                 (click)="changeMonth(-1)"
                 [disabled]="!canGoToPreviousMonth"
-                aria-label="Mese precedente">
+                [attr.aria-label]="'reservationWorkflow.previousMonthAria' | t">
       <ion-icon *ngIf="canGoToPreviousMonth" name="chevron-back-outline"></ion-icon>
     </ion-button>
     <span class="calendar-title">{{ currentMonthLabel }}</span>
-    <ion-button fill="clear" size="small" (click)="changeMonth(1)" aria-label="Mese successivo">
+    <ion-button fill="clear"
+                size="small"
+                (click)="changeMonth(1)"
+                [attr.aria-label]="'reservationWorkflow.nextMonthAria' | t">
       <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-button>
   </div>
@@ -60,7 +67,7 @@
 <div *ngIf="currentStep === 'slots' && currentService" style="display: flex">
   <ion-list *ngFor="let slotDay of slots | keyvalue">
     <ion-item>
-      <span>{{ slotDay.key | date: 'EEEEEE dd/MM'}}</span>
+      <span>{{ slotDay.key | date: 'EEEEEE dd/MM':'':currentLocale }}</span>
     </ion-item>
 
     <ion-item *ngFor="let slot of slotDay.value; let j = index" lines="full" class="ion-text-center">
@@ -79,6 +86,6 @@
   </ion-card>
 
   <ion-button expand="block" color="primary" (click)="confirmReservation()">
-    Conferma prenotazione
+    {{ 'reservationWorkflow.confirmBooking' | t }}
   </ion-button>
 </div>

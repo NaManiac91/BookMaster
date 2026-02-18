@@ -44,12 +44,25 @@ export class EditorComponent implements OnInit {
     }
   }
 
-  get title(): string {
-    return `${ObjectProfileView[this.view]}_${this.objectTypeLabel}`;
+  get titleKey(): string {
+    const action = this.resolveActionName();
+    const typeLabel = this.objectTypeLabel.toLowerCase();
+    return `editor.title.${action}.${typeLabel || 'imodel'}`;
   }
 
   private get objectTypeLabel(): string {
     return this.object?.$t || (this.type as any)?.$t || (this.type as any)?.name || '';
+  }
+
+  private resolveActionName(): string {
+    switch (this.view) {
+      case ObjectProfileView.CREATE:
+        return 'create';
+      case ObjectProfileView.EDIT:
+        return 'edit';
+      default:
+        return 'consult';
+    }
   }
 
   save() {

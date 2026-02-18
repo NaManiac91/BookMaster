@@ -1,5 +1,6 @@
 package com.example.book.BookMaster.web;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Service;
+import com.example.book.BookMaster.models.Language;
 import com.example.book.BookMaster.services.AdminService;
 import com.example.book.BookMaster.services.FetchService;
+import com.example.book.BookMaster.services.TranslationService;
 import com.example.book.BookMaster.web.DTO.AddServiceDTO;
 import com.example.book.BookMaster.web.DTO.CreateProviderDTO;
 import com.example.book.BookMaster.web.DTO.CreateServiceDTO;
+import com.example.book.BookMaster.web.DTO.TranslationDto;
 import com.example.book.BookMaster.web.DTO.UpdateDescriptionProviderDTO;
+import com.example.book.BookMaster.web.DTO.UpsertTranslationRequest;
 
 @RestController
 @RequestMapping(path = "/admin")
@@ -29,11 +34,13 @@ import com.example.book.BookMaster.web.DTO.UpdateDescriptionProviderDTO;
 public class AdminController {
 	AdminService adminService;
 	FetchService fetchService;
+	TranslationService translationService;
 	
 	@Autowired
-	public AdminController(AdminService adminService, FetchService fetchService) {
+	public AdminController(AdminService adminService, FetchService fetchService, TranslationService translationService) {
 		this.adminService = adminService;
 		this.fetchService = fetchService;
+		this.translationService = translationService;
 	}
 	
 	@PostMapping(path = "/addService")
@@ -91,5 +98,18 @@ public class AdminController {
 		Provider provider = this.adminService.updateProvider(request);
 		Provider response = this.fetchService.getProvider(provider.getProviderId()).orElse(provider);
 		return new ResponseEntity<Provider>(response, HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/getTranslations")
+	public ResponseEntity<List<TranslationDto>> getTranslations(
+			@RequestParam(required = false, defaultValue = "en") String language) {
+		return new ResponseEntity<List<TranslationDto>>(
+				this.translationService.getTranslations(Language.fromValue(language)),
+				HttpStatus.OK);
+	}
+
+	@PostMapping(path = "/upsertTranslation")
+	public ResponseEntity<TranslationDto> upsertTranslation(@RequestBody @Validated UpsertTranslationRequest request) {
+		return new ResponseEntity<TranslationDto>(this.translationService.upsert(request), HttpStatus.OK);
 	}
 }

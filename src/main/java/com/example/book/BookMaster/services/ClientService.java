@@ -264,6 +264,8 @@ public class ClientService {
     
     public User createUser(User user) {
     	try {
+    		user.setLanguage(user.getLanguage());
+
     		if (user.getProvider() != null) {
     			Provider provider = user.getProvider();
 

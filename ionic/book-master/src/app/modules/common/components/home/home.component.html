@@ -1,10 +1,10 @@
 <ion-card>
   <ion-card-header class="header">
     <ion-avatar>
-      <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      <img [attr.alt]="'common.avatarAlt' | t" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
     </ion-avatar>
     <ion-label class="title-avatar">
-      <h1>Welcome {{user.username}}</h1>
+      <h1>{{ 'home.welcome' | t:{ username: user.username } }}</h1>
     </ion-label>
   </ion-card-header>
 </ion-card>
@@ -12,25 +12,25 @@
 <div class="content">
   <ion-card>
     <ion-card-header color="tertiary">
-      <ion-card-title>Trova Provider o Servizio</ion-card-title>
+      <ion-card-title>{{ 'home.findProviderOrService' | t }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-segment [value]="searchMode" (ionChange)="onSearchModeChange($any($event.detail).value)">
         <ion-segment-button value="provider">
-          <ion-label>Provider</ion-label>
+          <ion-label>{{ 'home.segment.provider' | t }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="service">
-          <ion-label>Servizio</ion-label>
+          <ion-label>{{ 'home.segment.service' | t }}</ion-label>
         </ion-segment-button>
       </ion-segment>
 
       <ion-searchbar [(ngModel)]="searchQuery"
                      (ionInput)="onSearchQueryChange($any($event.detail).value)"
-                     placeholder="Cerca per provider o servizio"></ion-searchbar>
+                     [placeholder]="'home.searchPlaceholder' | t"></ion-searchbar>
 
       <ion-searchbar [(ngModel)]="searchLocation"
                      (ionInput)="onSearchLocationChange($any($event.detail).value)"
-                     placeholder="Filtra per città (es. Napoli)"></ion-searchbar>
+                     [placeholder]="'home.cityFilterPlaceholder' | t"></ion-searchbar>
 
       <ion-list *ngIf="showCitySuggestions" class="city-suggestions">
         <ion-item [button]="true" detail="false" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
@@ -39,7 +39,7 @@
       </ion-list>
 
       <ion-item *ngIf="searchLocation.trim() && !selectedCity" lines="none" class="search-empty">
-        <ion-label>Seleziona una città dalla lista per applicare il filtro.</ion-label>
+        <ion-label>{{ 'home.selectCityHint' | t }}</ion-label>
       </ion-item>
 
       <ion-list *ngIf="searchMode === 'provider' && searchHasResults">
@@ -47,10 +47,10 @@
           <ion-label>
             <h2>{{ p.name }}</h2>
             <p>{{ p.description }}</p>
-            <p *ngIf="p.services?.length">{{ p.services.length }} servizi disponibili</p>
+            <p *ngIf="p.services?.length">{{ 'home.servicesAvailable' | t:{ count: p.services.length } }}</p>
           </ion-label>
           <ion-button slot="end" (click)="openReservationByProvider(p)">
-            Prenota
+            {{ 'home.book' | t }}
           </ion-button>
         </ion-item>
       </ion-list>
@@ -63,17 +63,17 @@
             <p *ngIf="result.service.description">{{ result.service.description }}</p>
           </ion-label>
           <ion-button slot="end" (click)="openReservationByService(result)">
-            Prenota
+            {{ 'home.book' | t }}
           </ion-button>
         </ion-item>
       </ion-list>
 
       <ion-item *ngIf="isSearching" lines="none" class="search-empty">
-        <ion-label>Ricerca in corso...</ion-label>
+        <ion-label>{{ 'home.searching' | t }}</ion-label>
       </ion-item>
 
       <ion-item *ngIf="searchHasNoResults" lines="none" class="search-empty">
-        <ion-label>Nessun provider o servizio trovato.</ion-label>
+        <ion-label>{{ 'home.noResults' | t }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -81,7 +81,7 @@
   <app-reservations-list [list]="user.reservations"></app-reservations-list>
 
   <div class="provider-admin" *ngIf="provider">
-      <ion-button expand="block" (click)="goToProviderAdmin()">Area Admin</ion-button>
+      <ion-button expand="block" (click)="goToProviderAdmin()">{{ 'home.adminArea' | t }}</ion-button>
   </div>
 
 </div>

@@ -9,6 +9,7 @@ import { AuthService } from '../../../shared/services/auth/auth.service';
 import {Provider} from '../../../shared/rest-api-client';
 import {FetchService} from "../../services/fetch-service/fetch.service";
 import {of} from "rxjs";
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -25,7 +26,7 @@ describe('HomeComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HomeComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: NavController, useValue: navCtrlMock },

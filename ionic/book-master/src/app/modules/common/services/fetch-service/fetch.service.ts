@@ -50,6 +50,10 @@ export class FetchService {
     return this.httpClient.get(this.api + 'getUsers');
   }
 
+  getTranslations(language: string): Observable<Record<string, string>> {
+    return this.httpClient.get<Record<string, string>>(this.api + 'getTranslations?language=' + encodeURIComponent(language || 'en'));
+  }
+
   getUserById(userId: string): Observable<any> {
     return this.httpClient.get(this.api + 'getUserById?userId=' + userId);
   }

@@ -6,6 +6,7 @@ import {AdminService} from "../../../../../../admin/services/admin.service";
 import {ObjectProfileView, Operation} from "../../../../../enum";
 import {ServicesListComponent} from "../../service/services-list/services-list.component";
 import {AuthService} from "../../../../../services/auth/auth.service";
+import {TranslationService} from "../../../../translation/services/translation.service";
 
 @ObjectProfile({
   view: ObjectProfileView.CONSULT,
@@ -23,7 +24,8 @@ export class ProviderConsultComponent {
   constructor(private navCtrl: NavController,
               private adminService: AdminService,
               private authService: AuthService,
-              private alertController: AlertController) { }
+              private alertController: AlertController,
+              private translationService: TranslationService) { }
 
   serviceSelected(service: Service, operation: Operation) {
     if (operation === Operation.EDIT) {
@@ -41,8 +43,8 @@ export class ProviderConsultComponent {
           this.authService.updateLoggedUserProvider(this.object);
 
           const alert = await this.alertController.create({
-            message: 'Service removed successfully.',
-            buttons: ['OK'],
+            message: this.translationService.translate('service.removedSuccess'),
+            buttons: [this.translationService.translate('common.ok')],
           });
 
           await alert.present();

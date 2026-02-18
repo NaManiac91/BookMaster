@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { ProviderCreateComponent } from './provider-create.component';
 import { Address, Provider } from '../../../../../rest-api-client';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ProviderCreateComponent', () => {
   let component: ProviderCreateComponent;
@@ -12,7 +13,7 @@ describe('ProviderCreateComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ProviderCreateComponent ],
-      imports: [IonicModule.forRoot(), FormsModule]
+      imports: [IonicModule.forRoot(), FormsModule, TranslationTestingModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProviderCreateComponent);

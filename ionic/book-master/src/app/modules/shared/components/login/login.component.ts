@@ -5,6 +5,7 @@ import {User} from '../../rest-api-client';
 import {Subject} from 'rxjs';
 import {NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../enum";
+import {TranslationService} from "../../modules/translation/services/translation.service";
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private httpClient: HttpClient,
               private authService: AuthService,
-              private navCtrl: NavController) {
+              private navCtrl: NavController,
+              private translationService: TranslationService) {
   }
 
   ngOnInit() {
@@ -33,14 +35,16 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.httpClient.get('api/fetch/getUserByUsername?username=' + this.username).subscribe(user => {
-      this.authService.loggedUser = <User>user;
-      this.logged.next();
+      const loggedUser = <User>user;
+      this.authService.loggedUser = loggedUser;
+      this.translationService.applyUserLanguage(loggedUser).subscribe(() => this.logged.next());
     });
   }
 
   signup() {
     this.showUserCreate = true;
     this.user = new User();
+    this.user.language = 'en';
   }
 
   loginWithGoogle() {
@@ -57,8 +61,9 @@ export class LoginComponent implements OnInit {
     }
 
     this.httpClient.post('api/client/createUser', this.user).subscribe(user => {
-      this.authService.loggedUser = <User>user;
-      this.logged.next();
+      const loggedUser = <User>user;
+      this.authService.loggedUser = loggedUser;
+      this.translationService.applyUserLanguage(loggedUser).subscribe(() => this.logged.next());
     });
   }
 }

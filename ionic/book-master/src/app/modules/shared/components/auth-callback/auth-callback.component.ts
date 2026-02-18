@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth/auth.service";
 import { Browser } from "@capacitor/browser";
 import { User } from '../../rest-api-client';
+import { TranslationService } from '../../modules/translation/services/translation.service';
 
 @Component({
   selector: 'app-auth-callback',
@@ -11,7 +12,8 @@ import { User } from '../../rest-api-client';
 })
 export class AuthCallbackComponent implements OnInit {
   constructor(private authService: AuthService,
-    private router: Router) { }
+    private router: Router,
+    private translationService: TranslationService) { }
 
   async ngOnInit() {
     // Close the browser window
@@ -25,8 +27,10 @@ export class AuthCallbackComponent implements OnInit {
             const user = new User();
             user.username = status.user.name;
             user.email = status.user.email;
+            user.language = 'en';
             // Map other fields if necessary
             this.authService.loggedUser = user;
+            this.translationService.applyUserLanguage(user).subscribe();
           }
           this.router.navigate(['/Home']);
         } else {

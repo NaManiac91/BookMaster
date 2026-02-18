@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { ProviderConsultComponent } from './provider-consult.component';
 import { AdminService } from '../../../../../../admin/services/admin.service';
 import { AuthService } from '../../../../../services/auth/auth.service';
+import { TranslationTestingModule } from 'src/app/testing/translation-testing.module';
 
 describe('ProviderConsultComponent', () => {
   let component: ProviderConsultComponent;
@@ -20,7 +21,7 @@ describe('ProviderConsultComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ProviderConsultComponent ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), TranslationTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: NavController, useValue: navCtrlMock },

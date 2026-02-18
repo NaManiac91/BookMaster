@@ -10,6 +10,7 @@ import {GlobalErrorHandler} from "./HTTPHandlers/GlobalErrorHandler";
 import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
 import {ObjectProfileModule} from "./modules/object-profile/object-profile.module";
 import {AuthCallbackComponent} from "./components/auth-callback/auth-callback.component";
+import {TranslationModule} from "./modules/translation/translation.module";
 
 const components = [
   LoginComponent,
@@ -28,7 +29,8 @@ const services = [
     ReactiveFormsModule,
     IonicModule,
     HttpClientModule,
-    ObjectProfileModule
+    ObjectProfileModule,
+    TranslationModule
   ],
   declarations: components,
   exports: [
@@ -37,7 +39,8 @@ const services = [
     IonicModule,
     HttpClientModule,
     components,
-    ObjectProfileModule
+    ObjectProfileModule,
+    TranslationModule
   ],
   providers: [
     ...services, {

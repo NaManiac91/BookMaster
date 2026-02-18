@@ -1,24 +1,24 @@
 <ion-card>
   <ion-card-header color="tertiary">
-    <ion-card-title>I nostri partners</ion-card-title>
+    <ion-card-title>{{ 'providersList.title' | t }}</ion-card-title>
   </ion-card-header>
 
   <ion-card-content style="border-bottom: 1px solid">
     <ion-searchbar [(ngModel)]="searchQuery"
                    (ionInput)="onSearchQueryChange($any($event.detail).value)"
-                   placeholder="Cerca provider o servizio"></ion-searchbar>
+                   [placeholder]="'providersList.searchPlaceholder' | t"></ion-searchbar>
 
     <ion-searchbar [(ngModel)]="searchLocation"
                    (ionInput)="onSearchLocationChange($any($event.detail).value)"
-                   placeholder="Filtra per città"></ion-searchbar>
+                   [placeholder]="'providersList.cityPlaceholder' | t"></ion-searchbar>
 
     <ion-item lines="none" class="provider-type-filter">
-      <ion-label>Tipologia</ion-label>
+      <ion-label>{{ 'providersList.typeLabel' | t }}</ion-label>
       <ion-select [(ngModel)]="selectedProviderType"
                   interface="popover"
-                  placeholder="Tutte"
+                  [placeholder]="'providersList.allTypes' | t"
                   (ionChange)="onProviderTypeChange($any($event.detail).value)">
-        <ion-select-option [value]="''">Tutte</ion-select-option>
+        <ion-select-option [value]="''">{{ 'providersList.allTypes' | t }}</ion-select-option>
         <ion-select-option *ngFor="let providerType of providerTypeOptions" [value]="providerType">
           {{ formatProviderType(providerType) }}
         </ion-select-option>
@@ -35,7 +35,7 @@
   <ion-list>
     <ion-item *ngFor="let provider of filteredProviders" class="provider-row">
       <ion-avatar slot="start" class="provider-avatar">
-        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+        <img [attr.alt]="'common.avatarAlt' | t" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
       </ion-avatar>
 
       <ion-label class="provider-text">
@@ -49,7 +49,7 @@
     </ion-item>
 
     <ion-item *ngIf="filteredProviders.length === 0" lines="none">
-      <ion-label>Nessun provider trovato.</ion-label>
+      <ion-label>{{ 'providersList.empty' | t }}</ion-label>
     </ion-item>
   </ion-list>
 </ion-card>
