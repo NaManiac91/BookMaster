@@ -28,6 +28,20 @@
                      (ionInput)="onSearchQueryChange($any($event.detail).value)"
                      placeholder="Cerca per provider o servizio"></ion-searchbar>
 
+      <ion-searchbar [(ngModel)]="searchLocation"
+                     (ionInput)="onSearchLocationChange($any($event.detail).value)"
+                     placeholder="Filtra per città (es. Napoli)"></ion-searchbar>
+
+      <ion-list *ngIf="showCitySuggestions" class="city-suggestions">
+        <ion-item [button]="true" detail="false" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
+          <ion-label>{{ city }}</ion-label>
+        </ion-item>
+      </ion-list>
+
+      <ion-item *ngIf="searchLocation.trim() && !selectedCity" lines="none" class="search-empty">
+        <ion-label>Seleziona una città dalla lista per applicare il filtro.</ion-label>
+      </ion-item>
+
       <ion-list *ngIf="searchMode === 'provider' && searchHasResults">
         <ion-item *ngFor="let p of providerResults">
           <ion-label>

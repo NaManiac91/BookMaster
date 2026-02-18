@@ -18,7 +18,8 @@ describe('HomeComponent', () => {
     loggedUser: { userId: 'u1' }
   };
   const fetchServiceMock = {
-    searchProviders: jasmine.createSpy('searchProviders').and.returnValue(of([]))
+    searchProviders: jasmine.createSpy('searchProviders').and.returnValue(of([])),
+    searchCities: jasmine.createSpy('searchCities').and.returnValue(of([]))
   };
 
   beforeEach(waitForAsync(() => {

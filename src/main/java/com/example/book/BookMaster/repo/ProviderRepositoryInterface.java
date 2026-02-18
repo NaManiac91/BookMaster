@@ -24,4 +24,16 @@ public interface ProviderRepositoryInterface extends CrudRepository<Provider, UU
 			+ "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) "
 			+ "OR LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))")
 	List<Provider> searchByNameOrServiceName(@Param("query") String query);
+
+	@Query("SELECT DISTINCT p FROM Provider p LEFT JOIN FETCH p.services s "
+			+ "WHERE p.address IS NOT NULL "
+			+ "AND LOWER(p.address.city) = LOWER(:city)")
+	List<Provider> searchByCity(@Param("city") String city);
+
+	@Query("SELECT DISTINCT p.address.city FROM Provider p "
+			+ "WHERE p.address IS NOT NULL "
+			+ "AND p.address.city IS NOT NULL "
+			+ "AND LOWER(p.address.city) LIKE LOWER(CONCAT('%', :query, '%')) "
+			+ "ORDER BY p.address.city")
+	List<String> searchCities(@Param("query") String query);
 }

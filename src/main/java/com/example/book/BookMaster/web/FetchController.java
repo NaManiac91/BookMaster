@@ -64,11 +64,18 @@ public class FetchController {
 	}
 
 	@GetMapping(path = "/searchProviders")
-	public ResponseEntity<List<Provider>> searchProviders(@RequestParam String q,
-														  @RequestParam(required = false, defaultValue = "all") String type) {
-		List<Provider> response = this.fetchService.searchProviders(q, type);
+	public ResponseEntity<List<Provider>> searchProviders(@RequestParam(required = false, defaultValue = "") String q,
+														  @RequestParam(required = false, defaultValue = "all") String type,
+														  @RequestParam(required = false) String city) {
+		List<Provider> response = this.fetchService.searchProviders(q, type, city);
 
 		return new ResponseEntity<List<Provider>>(response, HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/searchCities")
+	public ResponseEntity<List<String>> searchCities(@RequestParam(required = false, defaultValue = "") String q) {
+		List<String> response = this.fetchService.searchCities(q);
+		return new ResponseEntity<List<String>>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/getUsers")

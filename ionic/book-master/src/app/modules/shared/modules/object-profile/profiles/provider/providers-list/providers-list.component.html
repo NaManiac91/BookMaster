@@ -3,19 +3,53 @@
     <ion-card-title>I nostri partners</ion-card-title>
   </ion-card-header>
 
+  <ion-card-content style="border-bottom: 1px solid">
+    <ion-searchbar [(ngModel)]="searchQuery"
+                   (ionInput)="onSearchQueryChange($any($event.detail).value)"
+                   placeholder="Cerca provider o servizio"></ion-searchbar>
+
+    <ion-searchbar [(ngModel)]="searchLocation"
+                   (ionInput)="onSearchLocationChange($any($event.detail).value)"
+                   placeholder="Filtra per città"></ion-searchbar>
+
+    <ion-item lines="none" class="provider-type-filter">
+      <ion-label>Tipologia</ion-label>
+      <ion-select [(ngModel)]="selectedProviderType"
+                  interface="popover"
+                  placeholder="Tutte"
+                  (ionChange)="onProviderTypeChange($any($event.detail).value)">
+        <ion-select-option [value]="''">Tutte</ion-select-option>
+        <ion-select-option *ngFor="let providerType of providerTypeOptions" [value]="providerType">
+          {{ formatProviderType(providerType) }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-list *ngIf="showCitySuggestions" class="city-suggestions">
+      <ion-item [button]="true" detail="false" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
+        <ion-label>{{ city }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+
   <ion-list>
-    <ion-item *ngFor="let provider of providers">
-      <ion-avatar item-left>
+    <ion-item *ngFor="let provider of filteredProviders" class="provider-row">
+      <ion-avatar slot="start" class="provider-avatar">
         <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
       </ion-avatar>
 
-      <ion-label class="title-avatar">
-        <ion-label>{{ provider.name }} - {{ provider.description }}</ion-label>
+      <ion-label class="provider-text">
+        <h2 class="provider-name">{{ provider.name }}</h2>
+        <p class="provider-description" *ngIf="provider.description">{{ provider.description }}</p>
       </ion-label>
 
-      <ion-button item-right (click)="selected.emit(provider)">
+      <ion-button slot="end" size="small" class="provider-action" (click)="selected.emit(provider)">
         <ion-icon name="list-circle-outline"></ion-icon>
       </ion-button>
+    </ion-item>
+
+    <ion-item *ngIf="filteredProviders.length === 0" lines="none">
+      <ion-label>Nessun provider trovato.</ion-label>
     </ion-item>
   </ion-list>
 </ion-card>

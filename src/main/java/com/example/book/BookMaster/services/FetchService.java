@@ -64,36 +64,90 @@ public class FetchService {
 		}
 	}
 
-	public List<Provider> searchProviders(String query, String type) {
+	public List<String> searchCities(String query) {
 		try {
 			if (query == null || query.isBlank()) {
 				return List.of();
 			}
 
-			final String normalizedQuery = query.trim();
-			final String normalizedType = type == null ? "all" : type.trim().toLowerCase();
-			List<Provider> providers;
+			String normalizedQuery = query.trim();
+			List<String> cities = this.providerRepo.searchCities(normalizedQuery);
+			return cities.stream()
+					.filter(city -> city != null && !city.isBlank())
+					.map(String::trim)
+					.distinct()
+					.limit(10)
+					.toList();
+		} catch (Exception e) {
+			logger.error("Error searching cities for query '{}': {}", query, e.getMessage(), e);
+			throw e;
+		}
+	}
 
-			switch (normalizedType) {
-				case "provider":
-					providers = this.providerRepo.searchByProviderName(normalizedQuery);
-					break;
-				case "service":
-					providers = this.providerRepo.searchByServiceName(normalizedQuery);
-					break;
-				default:
-					providers = this.providerRepo.searchByNameOrServiceName(normalizedQuery);
-					break;
+	public List<Provider> searchProviders(String query, String type) {
+		return this.searchProviders(query, type, null);
+	}
+
+	public List<Provider> searchProviders(String query, String type, String city) {
+		try {
+			final String normalizedQuery = query == null ? "" : query.trim();
+			final String normalizedCity = city == null ? "" : city.trim();
+			final String normalizedType = type == null ? "all" : type.trim().toLowerCase();
+
+			if (normalizedQuery.isBlank() && normalizedCity.isBlank()) {
+				return List.of();
 			}
 
-			List<Provider> distinctProviders = this.distinctByProviderId(providers);
-			logger.info("Providers searched with query '{}' type '{}': {} (distinct: {})",
-					query, normalizedType, providers.size(), distinctProviders.size());
-			return distinctProviders;
+			if (normalizedCity.isBlank()) {
+				List<Provider> providers = this.searchByType(normalizedQuery, normalizedType);
+				List<Provider> distinctProviders = this.distinctByProviderId(providers);
+				logger.info("Providers searched with query '{}' type '{}': {} (distinct: {})",
+						query, normalizedType, providers.size(), distinctProviders.size());
+				return distinctProviders;
+			}
+
+			// City-only search.
+			if (normalizedQuery.isBlank()) {
+				List<Provider> cityProviders = this.providerRepo.searchByCity(normalizedCity);
+				List<Provider> results = this.distinctByProviderId(cityProviders);
+				logger.info("Providers searched by city '{}' only: {}", city, results.size());
+				return results;
+			}
+
+			// Combined text + city search: strict AND.
+			List<Provider> queryResults = this.searchByType(normalizedQuery, normalizedType);
+			List<Provider> results = this.distinctByProviderId(
+					queryResults.stream()
+							.filter(provider -> this.isInCity(provider, normalizedCity))
+							.toList());
+			logger.info("Providers searched with query '{}' type '{}' city '{}': {}", query, normalizedType, city, results.size());
+			return results;
 		} catch (Exception e) {
 			logger.error("Error searching providers for query '{}': {}", query, e.getMessage(), e);
 			throw e;
 		}
+	}
+
+	private List<Provider> searchByType(String normalizedQuery, String normalizedType) {
+		if (normalizedQuery == null || normalizedQuery.isBlank()) {
+			return List.of();
+		}
+
+		switch (normalizedType) {
+			case "provider":
+				return this.providerRepo.searchByProviderName(normalizedQuery);
+			case "service":
+				return this.providerRepo.searchByServiceName(normalizedQuery);
+			default:
+				return this.providerRepo.searchByNameOrServiceName(normalizedQuery);
+		}
+	}
+
+	private boolean isInCity(Provider provider, String normalizedCity) {
+		if (provider == null || provider.getAddress() == null || provider.getAddress().getCity() == null) {
+			return false;
+		}
+		return provider.getAddress().getCity().trim().equalsIgnoreCase(normalizedCity);
 	}
 
 	private List<Provider> distinctByProviderId(List<Provider> providers) {

@@ -24,11 +24,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   provider!: Provider;
   searchMode: SearchMode = 'provider';
   searchQuery = '';
+  searchLocation = '';
+  selectedCity = '';
+  citySuggestions: string[] = [];
+  showCitySuggestions = false;
   providerResults: Provider[] = [];
   serviceResults: ServiceSearchResult[] = [];
   isSearching = false;
-  private search$ = new Subject<{query: string, mode: SearchMode}>();
+  private search$ = new Subject<{query: string, mode: SearchMode, location: string}>();
   private searchSub?: Subscription;
+  private citySearch$ = new Subject<string>();
+  private citySearchSub?: Subscription;
   private activatedRoute = inject(ActivatedRoute);
 
   constructor(private authService: AuthService,
@@ -42,17 +48,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.initUser(this.authService.loggedUser, object);
 
     this.searchSub = this.search$.pipe(
-      debounceTime(250),
-      distinctUntilChanged((a, b) => a.query === b.query && a.mode === b.mode),
+      debounceTime(500),
+      distinctUntilChanged((a, b) =>
+        a.mode === b.mode &&
+        a.query.trim().toLowerCase() === b.query.trim().toLowerCase() &&
+        a.location.trim().toLowerCase() === b.location.trim().toLowerCase()
+      ),
       switchMap(payload => {
         const normalized = payload.query.trim();
-        if (!normalized) {
+        const normalizedLocation = payload.location.trim();
+        if (!normalized && !normalizedLocation) {
           this.isSearching = false;
           return of([]);
         }
 
         this.isSearching = true;
-        return this.fetchService.searchProviders(normalized, payload.mode).pipe(
+        return this.fetchService.searchProviders(normalized, payload.mode, normalizedLocation).pipe(
           catchError(() => of([]))
         );
       })
@@ -78,10 +89,28 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       this.isSearching = false;
     });
+
+    this.citySearchSub = this.citySearch$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((value: string) => {
+        const normalized = value.trim();
+        if (normalized.length < 3) {
+          return of([]);
+        }
+        return this.fetchService.searchCities(normalized).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((cities: string[]) => {
+      this.citySuggestions = cities || [];
+      this.showCitySuggestions = !!this.searchLocation.trim() && !this.selectedCity && this.citySuggestions.length > 0;
+    });
   }
 
   ngOnDestroy() {
     this.searchSub?.unsubscribe();
+    this.citySearchSub?.unsubscribe();
   }
 
   private initUser(user: User, object: IModel) {
@@ -100,7 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   get searchHasResults(): boolean {
-    if (!this.searchQuery.trim()) {
+    if (!this.searchQuery.trim() && !this.selectedCity.trim()) {
       return false;
     }
 
@@ -110,7 +139,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   get searchHasNoResults(): boolean {
-    if (!this.searchQuery.trim() || this.isSearching) {
+    if ((!this.searchQuery.trim() && !this.selectedCity.trim()) || this.isSearching) {
       return false;
     }
 
@@ -137,23 +166,71 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onSearchQueryChange(query: string | null | undefined) {
-    const value = query || '';
-    this.searchQuery = value;
+    this.searchQuery = query || '';
+    this.runSearchIfReady();
+  }
+
+  onSearchLocationChange(location: string | null | undefined) {
+    const value = location || '';
+    this.searchLocation = value;
 
     if (!value.trim()) {
-      this.providerResults = [];
-      this.serviceResults = [];
-      this.isSearching = false;
+      this.selectedCity = '';
+      this.citySuggestions = [];
+      this.showCitySuggestions = false;
+      this.runSearchIfReady();
+      return;
     }
 
-    this.search$.next({query: value, mode: this.searchMode});
+    if (this.selectedCity && this.selectedCity.trim().toLowerCase() === value.trim().toLowerCase()) {
+      return;
+    }
+
+    this.selectedCity = '';
+    this.clearSearchResults();
+    this.citySearch$.next(value);
+  }
+
+  selectCity(city: string) {
+    this.selectedCity = city;
+    this.searchLocation = city;
+    this.citySuggestions = [];
+    this.showCitySuggestions = false;
+    this.runSearchIfReady();
+  }
+
+  private runSearchIfReady() {
+    const normalizedQuery = this.searchQuery.trim();
+    const normalizedLocationInput = this.searchLocation.trim();
+    const normalizedSelectedCity = this.selectedCity.trim();
+
+    // City filtering is applied only after explicit city selection from dropdown.
+    if (normalizedLocationInput && !normalizedSelectedCity) {
+      this.clearSearchResults();
+      return;
+    }
+
+    if (!normalizedQuery && !normalizedSelectedCity) {
+      this.clearSearchResults();
+      return;
+    }
+
+    this.search$.next({
+      query: this.searchQuery,
+      mode: this.searchMode,
+      location: this.selectedCity
+    });
   }
 
   onSearchModeChange(value: SearchMode) {
     this.searchMode = value;
+    this.runSearchIfReady();
+  }
+
+  private clearSearchResults() {
     this.providerResults = [];
     this.serviceResults = [];
-    this.search$.next({query: this.searchQuery, mode: this.searchMode});
+    this.isSearching = false;
   }
 
   private mapProviders(providers: Provider[]): Provider[] {
