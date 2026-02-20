@@ -78,7 +78,22 @@
     </ion-card-content>
   </ion-card>
 
-  <app-reservations-list [list]="user.reservations"></app-reservations-list>
+  <app-status-calendar *ngIf="isProviderUser"
+                       [month]="providerCalendarMonth"
+                       [monthLabel]="providerCurrentMonthLabel"
+                       [weekDayKeys]="weekDayKeys"
+                       [selectedDateIso]="providerSelectedDate"
+                       [todayIsoDate]="todayIsoDate"
+                       [dotLevelsByDate]="providerDotLevelsByDate"
+                       [defaultDotLevel]="providerCalendarDefaultDotLevel"
+                       [canGoToPreviousMonth]="canGoToPreviousProviderMonth"
+                       (monthChange)="changeProviderMonth($event)"
+                       (daySelected)="selectProviderReservationDay($event)"></app-status-calendar>
+
+  <app-reservations-list [list]="user.reservations"
+                         [filterBySelectedDate]="isProviderUser"
+                         [filterDateIso]="providerSelectedDate"
+                         (reservationRemoved)="onProviderReservationRemoved()"></app-reservations-list>
 
   <div class="provider-admin" *ngIf="provider">
       <ion-button expand="block" (click)="goToProviderAdmin()">{{ 'home.adminArea' | t }}</ion-button>

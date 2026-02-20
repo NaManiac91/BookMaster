@@ -4,7 +4,7 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 
 import { AdminService } from './admin.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
-import { IModel, Provider, Service } from '../../shared/rest-api-client';
+import { IModel, Provider, Service, User } from '../../shared/rest-api-client';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -121,6 +121,38 @@ describe('AdminService', () => {
 
     expect(result instanceof Service).toBeTrue();
     expect((result as Service).serviceId).toBe('s3');
+  });
+
+  it('edit user maps response to User instance and updates logged user', () => {
+    const user = new User();
+    user.userId = 'user-42';
+    user.username = 'Vick';
+    user.email = 'vick@mail.com';
+    user.language = 'it';
+    user.reservations = [{ reservationId: 'r1' } as any];
+    user.provider = Object.assign(new Provider(), {
+      providerId: 'provider-42',
+      name: 'Vick Provider',
+      services: [{ serviceId: 's1' }]
+    });
+    let result: IModel | undefined;
+
+    service.edit(user, User).subscribe((response) => {
+      result = response;
+    });
+
+    const req = httpMock.expectOne('api/admin/editUser');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.userId).toBe('user-42');
+    expect(req.request.body.language).toBe('it');
+    expect(req.request.body.reservations).toBeUndefined();
+    expect(req.request.body.provider.services).toBeUndefined();
+    req.flush({ userId: 'user-42', username: 'updated' });
+
+    expect(result instanceof User).toBeTrue();
+    expect((result as User).username).toBe('updated');
+    expect((authServiceMock.loggedUser as any).username).toBe('updated');
+    expect((authServiceMock.loggedUser as any).provider.providerId).toBe('provider-42');
   });
 
   it('calls removeService endpoint with service id', () => {

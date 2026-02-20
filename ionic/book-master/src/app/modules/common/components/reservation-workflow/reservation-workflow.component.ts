@@ -8,15 +8,18 @@ import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
 import {TranslationService} from "../../../shared/modules/translation/services/translation.service";
 import {Subscription} from "rxjs";
+import {
+  availabilityRatioToDotLevel,
+  calculateMaxSlotsPerDay,
+  CalendarDayCell,
+  CalendarDotLevel,
+  resolveLocale,
+  toISODateString
+} from "../../../shared/utils/date-time.utils";
+import {readNavigationState} from "../../../shared/utils/navigation-state.utils";
 
 type WorkflowStep = 'provider' | 'service' | 'slots' | 'summary';
 type AvailabilityLevel = 'none' | 'low' | 'medium' | 'high';
-
-interface CalendarDayCell {
-  date: Date;
-  isoDate: string;
-  selectable: boolean;
-}
 
 @Component({
   selector: 'app-reservation-workflow',
@@ -29,10 +32,19 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   reservationPreview?: Reservation;
   slots: { [key: string]: string[] } = {};
   availabilityByDate: { [key: string]: number } = {};
-  calendarCells: Array<CalendarDayCell | null> = [];
+  calendarDotLevelsByDate: Record<string, CalendarDotLevel> = {};
   currentDay: Date = new Date();
   currentCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  readonly todayIsoDate: string = this.toISODateString(new Date());
+  readonly todayIsoDate: string = toISODateString(new Date());
+  readonly weekDayKeys: string[] = [
+    'weekday.mon',
+    'weekday.tue',
+    'weekday.wed',
+    'weekday.thu',
+    'weekday.fri',
+    'weekday.sat',
+    'weekday.sun'
+  ];
   selectedCalendarDate: string = this.todayIsoDate;
   currentLocale: string = 'en-US';
   readonly providerInfoView = ObjectProfileView.INFO;
@@ -49,14 +61,14 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
               private alertController: AlertController) { }
 
   ngOnInit() {
-    this.currentLocale = this.resolveLocale(this.translationService.currentLanguage);
+    this.currentLocale = resolveLocale(this.translationService.currentLanguage);
     this.languageSub = this.translationService.language$.subscribe(language => {
-      this.currentLocale = this.resolveLocale(language);
+      this.currentLocale = resolveLocale(language);
     });
 
-    const currentNavigation = this.router.getCurrentNavigation();
-    const provider = currentNavigation?.extras?.state?.['provider'] as Provider;
-    const service = currentNavigation?.extras?.state?.['service'] as Service;
+    const navigationState = readNavigationState<{provider?: Provider; service?: Service}>(this.router);
+    const provider = navigationState.provider as Provider;
+    const service = navigationState.service as Service;
     if (provider) {
       this.providerSelected(provider);
       this.fetchService.getProviderById(provider.providerId).subscribe((fullProvider: Provider) => {
@@ -80,18 +92,6 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
       case 'summary': return this.translationService.translate('reservationWorkflow.step.summary');
       default: return '';
     }
-  }
-
-  get weekDays(): string[] {
-    return [
-      this.translationService.translate('weekday.mon'),
-      this.translationService.translate('weekday.tue'),
-      this.translationService.translate('weekday.wed'),
-      this.translationService.translate('weekday.thu'),
-      this.translationService.translate('weekday.fri'),
-      this.translationService.translate('weekday.sat'),
-      this.translationService.translate('weekday.sun')
-    ];
   }
 
   get canGoBack(): boolean {
@@ -123,10 +123,10 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     this.reservationPreview = undefined;
     this.slots = {};
     this.availabilityByDate = {};
+    this.calendarDotLevelsByDate = {};
     this.currentDay = new Date();
     this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
-    this.selectedCalendarDate = this.toISODateString(this.currentDay);
-    this.buildCalendarCells();
+    this.selectedCalendarDate = toISODateString(this.currentDay);
     this.currentStep = 'service';
   }
 
@@ -135,8 +135,7 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     this.reservationPreview = undefined;
     this.currentStep = 'slots';
     this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
-    this.selectedCalendarDate = this.toISODateString(this.currentDay);
-    this.buildCalendarCells();
+    this.selectedCalendarDate = toISODateString(this.currentDay);
     this.loadAvailabilitySummaryForCurrentMonth();
     this.loadAvailableSlots(this.currentDay);
   }
@@ -150,12 +149,11 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
       this.currentCalendarMonth.getMonth() + offset,
       1
     );
-    this.buildCalendarCells();
     this.loadAvailabilitySummaryForCurrentMonth();
   }
 
-  selectCalendarDay(dayCell: CalendarDayCell | null) {
-    if (!dayCell || !dayCell.selectable || !this.currentProvider || this.currentStep !== 'slots') {
+  selectCalendarDay(dayCell: CalendarDayCell) {
+    if (!dayCell.selectable || !this.currentProvider || this.currentStep !== 'slots') {
       return;
     }
     this.currentDay = new Date(dayCell.date);
@@ -221,25 +219,6 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     return currentMonthStart > todayMonthStart;
   }
 
-  getAvailabilityLevel(isoDate: string): AvailabilityLevel {
-    const availableCount = this.availabilityByDate[isoDate];
-    if (availableCount == null) {
-      return 'none';
-    }
-
-    const requiredSlots = this.getRequiredSlots();
-    if (availableCount < requiredSlots) {
-      return 'none';
-    }
-    if (availableCount < requiredSlots * 2) {
-      return 'low';
-    }
-    if (availableCount < requiredSlots * 4) {
-      return 'medium';
-    }
-    return 'high';
-  }
-
   hasRequiredConsecutiveSlots(slotDay: string, slotIndex: number): boolean {
     const requiredSlots = this.getRequiredSlots();
     const daySlots = this.slots[slotDay] || [];
@@ -258,57 +237,54 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   private loadAvailabilitySummaryForCurrentMonth() {
     if (!this.currentProvider) {
       this.availabilityByDate = {};
+      this.calendarDotLevelsByDate = {};
       return;
     }
 
     const fromDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth(), 1);
     const toDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth() + 1, 0);
     this.clientService.getAvailabilitySummary(this.currentProvider.providerId, fromDate, toDate)
-      .subscribe(summary => this.availabilityByDate = summary || {});
-  }
-
-  private buildCalendarCells() {
-    const year = this.currentCalendarMonth.getFullYear();
-    const month = this.currentCalendarMonth.getMonth();
-    const firstOfMonth = new Date(year, month, 1);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const mondayBasedOffset = (firstOfMonth.getDay() + 6) % 7;
-    const cells: Array<CalendarDayCell | null> = Array.from({ length: mondayBasedOffset }, () => null);
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      const isoDate = this.toISODateString(date);
-      cells.push({
-        date,
-        isoDate,
-        selectable: isoDate >= this.todayIsoDate
+      .subscribe(summary => {
+        this.availabilityByDate = summary || {};
+        this.calendarDotLevelsByDate = this.buildCalendarDotLevels(this.availabilityByDate);
       });
-    }
-
-    while (cells.length % 7 !== 0) {
-      cells.push(null);
-    }
-
-    this.calendarCells = cells;
   }
 
-  private toISODateString(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  private buildCalendarDotLevels(summaryByDate: Record<string, number>): Record<string, CalendarDotLevel> {
+    const levels: Record<string, CalendarDotLevel> = {};
+    for (const isoDate of Object.keys(summaryByDate || {})) {
+      levels[isoDate] = this.toAvailabilityLevel(summaryByDate[isoDate]);
+    }
+    return levels;
   }
 
-  private resolveLocale(language: string): string {
-    switch ((language || '').toLowerCase()) {
-      case 'it':
-        return 'it-IT';
-      case 'fr':
-        return 'fr-FR';
-      default:
-        return 'en-US';
+  private toAvailabilityLevel(availableCount: number): AvailabilityLevel {
+    if (availableCount == null) {
+      return 'none';
     }
+
+    const requiredSlots = this.getRequiredSlots();
+    if (availableCount < requiredSlots) {
+      return 'none';
+    }
+
+    const maxSlotsPerDay = calculateMaxSlotsPerDay(
+      this.currentProvider?.startTime,
+      this.currentProvider?.endTime,
+      Number(this.currentProvider?.timeBlockMinutes)
+    );
+    if (maxSlotsPerDay <= 0) {
+      if (availableCount < requiredSlots * 2) {
+        return 'low';
+      }
+      if (availableCount < requiredSlots * 4) {
+        return 'medium';
+      }
+      return 'high';
+    }
+
+    const availabilityRatio = Math.min(1, Math.max(0, availableCount / maxSlotsPerDay));
+    return availabilityRatioToDotLevel(availabilityRatio);
   }
 
   ngOnDestroy(): void {

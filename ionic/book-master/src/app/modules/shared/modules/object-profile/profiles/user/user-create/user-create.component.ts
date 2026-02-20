@@ -4,7 +4,7 @@ import {Address, Provider, User} from "../../../../../rest-api-client";
 import {ObjectProfileView} from "../../../../../enum";
 
 @ObjectProfile({
-  view: ObjectProfileView.CREATE,
+  view: [ObjectProfileView.CREATE, ObjectProfileView.EDIT],
   type: User
 })
 @Component({

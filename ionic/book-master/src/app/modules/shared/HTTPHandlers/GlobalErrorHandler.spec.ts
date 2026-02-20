@@ -64,4 +64,15 @@ describe('GlobalErrorHandler', () => {
     expect(presentSpy).toHaveBeenCalledWith(error);
     expect(consoleSpy).toHaveBeenCalledWith('Error from global error handler', error);
   });
+
+  it('handleError does not present alert for non-http errors', () => {
+    const presentSpy = spyOn(handler, 'presentAlert').and.returnValue(Promise.resolve());
+    const consoleSpy = spyOn(console, 'error');
+    const genericError = new Error('boom');
+
+    handler.handleError(genericError);
+
+    expect(presentSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith('Error from global error handler', genericError);
+  });
 });

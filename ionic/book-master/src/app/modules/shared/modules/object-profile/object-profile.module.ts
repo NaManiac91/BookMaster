@@ -7,7 +7,6 @@ import {ServiceCreateComponent} from "./profiles/service/service-create/service-
 import {ProviderCreateComponent} from "./profiles/provider/provider-create/provider-create.component";
 import {ProviderConsultComponent} from "./profiles/provider/provider-consult/provider-consult.component";
 import {ProviderReservationInfoComponent} from "./profiles/provider/provider-reservation-info/provider-reservation-info.component";
-import {UserDetailComponent} from "./profiles/user/user-detail/user-detail.component";
 import {ReservationsListComponent} from "./profiles/reservation/reservations-list/reservations-list.component";
 import {ReservationConsultComponent} from "./profiles/reservation/reservation-consult/reservation-consult.component";
 import {ProvidersListComponent} from "./profiles/provider/providers-list/providers-list.component";
@@ -24,7 +23,6 @@ const components = [
   ProviderCreateComponent,
   ProviderConsultComponent,
   ProviderReservationInfoComponent,
-  UserDetailComponent,
   ReservationsListComponent,
   ReservationConsultComponent,
   ProvidersListComponent,

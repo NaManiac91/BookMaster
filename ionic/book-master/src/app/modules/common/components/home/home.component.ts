@@ -1,11 +1,14 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {IModel, Provider, Service, User} from 'src/app/modules/shared/rest-api-client';
-import {AuthService} from 'src/app/modules/shared/services/auth/auth.service';
-import {NavController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
-import {FetchService} from "../../services/fetch-service/fetch.service";
-import {Subject, Subscription, of} from "rxjs";
-import {catchError, debounceTime, distinctUntilChanged, switchMap} from "rxjs/operators";
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
+import { Subject, Subscription, of } from "rxjs";
+import { catchError, debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
+import { IModel, Provider, Reservation, Service, User } from 'src/app/modules/shared/rest-api-client';
+import { AuthService } from 'src/app/modules/shared/services/auth/auth.service';
+import { CalendarDotLevel, CalendarDayCell, resolveLocale, toISODateString } from "../../../shared/utils/date-time.utils";
+import { readNavigationState } from "../../../shared/utils/navigation-state.utils";
+import { FetchService } from "../../services/fetch-service/fetch.service";
+import { ProviderReservationCalendarService } from "../../services/provider-reservation-calendar/provider-reservation-calendar.service";
 
 type SearchMode = 'provider' | 'service';
 
@@ -22,6 +25,21 @@ interface ServiceSearchResult {
 export class HomeComponent implements OnInit, OnDestroy {
   user!: User;
   provider!: Provider;
+  currentLocale: string = 'en-US';
+  readonly weekDayKeys: string[] = [
+    'weekday.mon',
+    'weekday.tue',
+    'weekday.wed',
+    'weekday.thu',
+    'weekday.fri',
+    'weekday.sat',
+    'weekday.sun'
+  ];
+  readonly todayIsoDate: string = toISODateString(new Date());
+  providerSelectedDate: string = this.todayIsoDate;
+  providerCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  providerDotLevelsByDate: Record<string, CalendarDotLevel> = {};
+  providerCalendarDefaultDotLevel: CalendarDotLevel = 'none';
   searchMode: SearchMode = 'provider';
   searchQuery = '';
   searchLocation = '';
@@ -31,81 +49,28 @@ export class HomeComponent implements OnInit, OnDestroy {
   providerResults: Provider[] = [];
   serviceResults: ServiceSearchResult[] = [];
   isSearching = false;
-  private search$ = new Subject<{query: string, mode: SearchMode, location: string}>();
-  private searchSub?: Subscription;
+
+  private search$ = new Subject<{ query: string, mode: SearchMode, location: string }>();
   private citySearch$ = new Subject<string>();
+  private searchSub?: Subscription;
   private citySearchSub?: Subscription;
   private activatedRoute = inject(ActivatedRoute);
 
   constructor(private authService: AuthService,
               private fetchService: FetchService,
+              private providerReservationCalendarService: ProviderReservationCalendarService,
+              private router: Router,
               private navCtrl: NavController) {
   }
 
   ngOnInit() {
-    const object: IModel = this.activatedRoute.snapshot.queryParams['object'];
+    const navigationState = readNavigationState<{ object?: IModel }>(this.router);
+    const object = (navigationState.object as IModel) || this.activatedRoute.snapshot.queryParams['object'];
 
     this.initUser(this.authService.loggedUser, object);
-
-    this.searchSub = this.search$.pipe(
-      debounceTime(500),
-      distinctUntilChanged((a, b) =>
-        a.mode === b.mode &&
-        a.query.trim().toLowerCase() === b.query.trim().toLowerCase() &&
-        a.location.trim().toLowerCase() === b.location.trim().toLowerCase()
-      ),
-      switchMap(payload => {
-        const normalized = payload.query.trim();
-        const normalizedLocation = payload.location.trim();
-        if (!normalized && !normalizedLocation) {
-          this.isSearching = false;
-          return of([]);
-        }
-
-        this.isSearching = true;
-        return this.fetchService.searchProviders(normalized, payload.mode, normalizedLocation).pipe(
-          catchError(() => of([]))
-        );
-      })
-    ).subscribe((providers: Provider[]) => {
-      const mappedProviders = this.mapProviders(providers);
-
-      if (this.searchMode === 'provider') {
-        this.providerResults = mappedProviders;
-        this.serviceResults = [];
-      } else {
-        const query = this.searchQuery.trim().toLowerCase();
-        const results: ServiceSearchResult[] = [];
-        for (const provider of mappedProviders) {
-          for (const service of (provider.services || [])) {
-            if ((service.name || '').toLowerCase().includes(query)) {
-              results.push({provider, service});
-            }
-          }
-        }
-        this.serviceResults = results;
-        this.providerResults = [];
-      }
-
-      this.isSearching = false;
-    });
-
-    this.citySearchSub = this.citySearch$.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap((value: string) => {
-        const normalized = value.trim();
-        if (normalized.length < 3) {
-          return of([]);
-        }
-        return this.fetchService.searchCities(normalized).pipe(
-          catchError(() => of([]))
-        );
-      })
-    ).subscribe((cities: string[]) => {
-      this.citySuggestions = cities || [];
-      this.showCitySuggestions = !!this.searchLocation.trim() && !this.selectedCity && this.citySuggestions.length > 0;
-    });
+    this.currentLocale = resolveLocale(this.user?.language);
+    this.initializeProviderCalendar();
+    this.initSearchSubscriptions();
   }
 
   ngOnDestroy() {
@@ -113,19 +78,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.citySearchSub?.unsubscribe();
   }
 
-  private initUser(user: User, object: IModel) {
-    this.user = Object.assign(new User(), user);
-
-    if (this.user.provider) {
-      const provider = object && object.$t === Provider.$t ? object : this.user.provider;
-      this.provider = this.user.provider = Object.assign(new Provider(), provider);
-    }
-
-    this.authService.loggedUser = this.user;
+  get isProviderUser(): boolean {
+    return !!this.provider;
   }
 
-  goToProviderAdmin() {
-    this.navCtrl.navigateRoot('ProviderAdmin');
+  get providerCurrentMonthLabel(): string {
+    return this.providerCalendarMonth.toLocaleDateString(this.currentLocale, { month: 'long', year: 'numeric' });
+  }
+
+  get canGoToPreviousProviderMonth(): boolean {
+    const currentMonthStart = new Date(this.providerCalendarMonth.getFullYear(), this.providerCalendarMonth.getMonth(), 1);
+    const todayMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    return currentMonthStart > todayMonthStart;
   }
 
   get searchHasResults(): boolean {
@@ -148,10 +112,42 @@ export class HomeComponent implements OnInit, OnDestroy {
       : this.serviceResults.length === 0;
   }
 
+  goToProviderAdmin() {
+    this.navCtrl.navigateRoot('ProviderAdmin');
+  }
+
+  changeProviderMonth(offset: number) {
+    if (!this.isProviderUser) {
+      return;
+    }
+
+    this.providerCalendarMonth = new Date(
+      this.providerCalendarMonth.getFullYear(),
+      this.providerCalendarMonth.getMonth() + offset,
+      1
+    );
+  }
+
+  selectProviderReservationDay(dayCell: CalendarDayCell) {
+    if (!dayCell || !dayCell.selectable || !this.isProviderUser) {
+      return;
+    }
+
+    this.providerSelectedDate = dayCell.isoDate;
+  }
+
+  onProviderReservationRemoved() {
+    if (!this.isProviderUser) {
+      return;
+    }
+
+    this.refreshProviderReservationCalendarData();
+  }
+
   openReservationByProvider(provider: Provider) {
     this.navCtrl.navigateRoot('ReservationWorkflow', {
       state: {
-        provider: provider
+        provider
       }
     });
   }
@@ -199,12 +195,112 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.runSearchIfReady();
   }
 
+  onSearchModeChange(value: SearchMode) {
+    this.searchMode = value;
+    this.runSearchIfReady();
+  }
+
+  private initSearchSubscriptions() {
+    this.searchSub = this.search$.pipe(
+      debounceTime(500),
+      distinctUntilChanged((a, b) =>
+        a.mode === b.mode &&
+        a.query.trim().toLowerCase() === b.query.trim().toLowerCase() &&
+        a.location.trim().toLowerCase() === b.location.trim().toLowerCase()
+      ),
+      switchMap(payload => {
+        const normalized = payload.query.trim();
+        const normalizedLocation = payload.location.trim();
+        if (!normalized && !normalizedLocation) {
+          this.isSearching = false;
+          return of([]);
+        }
+
+        this.isSearching = true;
+        return this.fetchService.searchProviders(normalized, payload.mode, normalizedLocation).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((providers: Provider[]) => {
+      const mappedProviders = this.mapProviders(providers);
+
+      if (this.searchMode === 'provider') {
+        this.providerResults = mappedProviders;
+        this.serviceResults = [];
+      } else {
+        const query = this.searchQuery.trim().toLowerCase();
+        const results: ServiceSearchResult[] = [];
+        for (const provider of mappedProviders) {
+          for (const service of (provider.services || [])) {
+            if ((service.name || '').toLowerCase().includes(query)) {
+              results.push({ provider, service });
+            }
+          }
+        }
+        this.serviceResults = results;
+        this.providerResults = [];
+      }
+
+      this.isSearching = false;
+    });
+
+    this.citySearchSub = this.citySearch$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((value: string) => {
+        const normalized = value.trim();
+        if (normalized.length < 3) {
+          return of([]);
+        }
+        return this.fetchService.searchCities(normalized).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((cities: string[]) => {
+      this.citySuggestions = cities || [];
+      this.showCitySuggestions = !!this.searchLocation.trim() && !this.selectedCity && this.citySuggestions.length > 0;
+    });
+  }
+
+  private initUser(user: User, object: IModel) {
+    const candidateUser = object && object.$t === User.$t ? object as User : user;
+    this.user = Object.assign(new User(), candidateUser);
+    this.user.reservations = (candidateUser?.reservations || [])
+      .map(reservation => Object.assign(new Reservation(), reservation));
+
+    if (this.user.provider) {
+      const provider = object && object.$t === Provider.$t ? object : this.user.provider;
+      this.provider = this.user.provider = Object.assign(new Provider(), provider as Provider);
+      this.provider.services = (this.provider.services || []).map((service: Service) => Object.assign(new Service(), service));
+    } else {
+      this.provider = undefined as unknown as Provider;
+    }
+
+    this.authService.loggedUser = this.user;
+  }
+
+  private initializeProviderCalendar() {
+    if (!this.isProviderUser) {
+      return;
+    }
+
+    this.providerSelectedDate = this.todayIsoDate;
+    this.providerCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    this.refreshProviderReservationCalendarData();
+  }
+
+  private refreshProviderReservationCalendarData() {
+    const reservations = this.user?.reservations || [];
+    const calendar = this.providerReservationCalendarService.buildAvailabilityLevels(reservations, this.provider);
+    this.providerDotLevelsByDate = calendar.dotLevelsByDate;
+    this.providerCalendarDefaultDotLevel = calendar.defaultDotLevel;
+  }
+
   private runSearchIfReady() {
     const normalizedQuery = this.searchQuery.trim();
     const normalizedLocationInput = this.searchLocation.trim();
     const normalizedSelectedCity = this.selectedCity.trim();
 
-    // City filtering is applied only after explicit city selection from dropdown.
     if (normalizedLocationInput && !normalizedSelectedCity) {
       this.clearSearchResults();
       return;
@@ -220,11 +316,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       mode: this.searchMode,
       location: this.selectedCity
     });
-  }
-
-  onSearchModeChange(value: SearchMode) {
-    this.searchMode = value;
-    this.runSearchIfReady();
   }
 
   private clearSearchResults() {

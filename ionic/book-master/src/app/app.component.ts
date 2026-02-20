@@ -10,8 +10,7 @@ import { TranslationService } from './modules/shared/modules/translation/service
 export class AppComponent implements OnInit {
   appPages = [
     { titleKey: 'menu.home', url: '/Home', icon: 'home' },
-    { titleKey: 'menu.providers', url: '/ReservationWorkflow', icon: 'storefront' },
-    { titleKey: 'menu.history', url: '/ReservationHistory', icon: 'time' }
+    { titleKey: 'menu.providers', url: '/ReservationWorkflow', icon: 'storefront' }
   ];
 
   isLogged: boolean = false;

@@ -26,7 +26,7 @@ export class ProviderAdminComponent implements OnInit {
 
   editProvider() {
     this.navCtrl.navigateRoot('Editor', {
-      queryParams: {
+      state: {
         object: this.provider,
         view: ObjectProfileView.EDIT
       }
@@ -35,7 +35,7 @@ export class ProviderAdminComponent implements OnInit {
 
   createService() {
     this.navCtrl.navigateRoot('Editor', {
-      queryParams: {
+      state: {
         type: Service.$t,
         view: ObjectProfileView.CREATE
       }

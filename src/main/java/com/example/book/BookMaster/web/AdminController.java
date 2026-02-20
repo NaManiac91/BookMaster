@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Service;
+import com.example.book.BookMaster.models.User;
 import com.example.book.BookMaster.models.Language;
 import com.example.book.BookMaster.services.AdminService;
 import com.example.book.BookMaster.services.FetchService;
@@ -24,6 +25,7 @@ import com.example.book.BookMaster.services.TranslationService;
 import com.example.book.BookMaster.web.DTO.AddServiceDTO;
 import com.example.book.BookMaster.web.DTO.CreateProviderDTO;
 import com.example.book.BookMaster.web.DTO.CreateServiceDTO;
+import com.example.book.BookMaster.web.DTO.EditUserDTO;
 import com.example.book.BookMaster.web.DTO.TranslationDto;
 import com.example.book.BookMaster.web.DTO.UpdateDescriptionProviderDTO;
 import com.example.book.BookMaster.web.DTO.UpsertTranslationRequest;
@@ -98,6 +100,12 @@ public class AdminController {
 		Provider provider = this.adminService.updateProvider(request);
 		Provider response = this.fetchService.getProvider(provider.getProviderId()).orElse(provider);
 		return new ResponseEntity<Provider>(response, HttpStatus.OK);
+	}
+
+	@PostMapping(path = "/editUser")
+	public ResponseEntity<User> editUser(@RequestBody @Validated EditUserDTO request) {
+		User user = this.adminService.updateUser(request);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/getTranslations")

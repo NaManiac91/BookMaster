@@ -2,6 +2,11 @@ ion-menu-button {
   color: var(--ion-color-primary);
 }
 
+ion-menu ion-item {
+  --border-radius: 10px;
+  margin: 4px 8px;
+}
+
 #container {
   text-align: center;
 }

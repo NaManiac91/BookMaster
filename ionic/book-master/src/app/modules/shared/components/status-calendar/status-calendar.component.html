@@ -1,0 +1,39 @@
+<div class="status-calendar">
+  <div class="calendar-header">
+    <ion-button fill="clear"
+                size="small"
+                (click)="monthChange.emit(-1)"
+                [disabled]="!canGoToPreviousMonth">
+      <ion-icon *ngIf="canGoToPreviousMonth" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    <span class="calendar-title">{{ monthLabel }}</span>
+    <ion-button fill="clear"
+                size="small"
+                (click)="monthChange.emit(1)">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="calendar-grid calendar-weekdays">
+    <span *ngFor="let weekDayKey of weekDayKeys">{{ weekDayKey | t }}</span>
+  </div>
+
+  <div class="calendar-grid">
+    <button *ngFor="let dayCell of calendarCells"
+            type="button"
+            class="calendar-day"
+            [class.empty]="!dayCell"
+            [class.selected]="dayCell?.isoDate === selectedDateIso"
+            [class.disabled]="dayCell && !dayCell.selectable"
+            [disabled]="!dayCell || !dayCell.selectable"
+            (click)="selectCalendarDay(dayCell)">
+      <span class="calendar-day-number">{{ dayCell?.date?.getDate() }}</span>
+      <span *ngIf="dayCell?.selectable"
+            class="calendar-dot"
+            [class.level-none]="getDotLevel(dayCell.isoDate) === 'none'"
+            [class.level-low]="getDotLevel(dayCell.isoDate) === 'low'"
+            [class.level-medium]="getDotLevel(dayCell.isoDate) === 'medium'"
+            [class.level-high]="getDotLevel(dayCell.isoDate) === 'high'"></span>
+    </button>
+  </div>
+</div>

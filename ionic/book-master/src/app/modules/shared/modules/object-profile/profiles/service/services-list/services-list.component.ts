@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {NavController} from "@ionic/angular";
 import {ObjectProfile} from "../../../services/object-profile.service";
 import {ObjectProfileView, Operation} from "../../../../../enum";
+import {readNavigationState} from "../../../../../utils/navigation-state.utils";
 
 @ObjectProfile({
   view: ObjectProfileView.LIST,
@@ -30,21 +31,17 @@ export class ServicesListComponent  implements OnInit {
               private navCtrl: NavController) { }
 
   ngOnInit() {
-    const currentNavigation = this.router.getCurrentNavigation();
+    const state = readNavigationState<Record<string, unknown>>(this.router);
+    if (state['provider']) {
+      this.provider = state['provider'] as Provider;
+    }
 
-    if (currentNavigation && currentNavigation.extras && currentNavigation.extras.state) {
-      const state = currentNavigation.extras.state;
-      if (state['provider']) {
-        this.provider = state['provider'];
-      }
+    if (typeof state['selectable'] === 'boolean') {
+      this.selectable = state['selectable'];
+    }
 
-      if (typeof state['selectable'] === 'boolean') {
-        this.selectable = state['selectable'];
-      }
-
-      if (typeof state['previousNavigation'] === 'string') {
-        this.previousNavigation = state['previousNavigation'];
-      }
+    if (typeof state['previousNavigation'] === 'string') {
+      this.previousNavigation = state['previousNavigation'];
     }
 
     if (this.provider) {

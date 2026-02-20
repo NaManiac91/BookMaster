@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { of } from 'rxjs';
@@ -24,6 +24,9 @@ describe('EditorComponent', () => {
     getTypeByClassName: jasmine.createSpy('getTypeByClassName').and.returnValue(undefined)
   };
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
+  const routerMock = {
+    getCurrentNavigation: jasmine.createSpy('getCurrentNavigation').and.returnValue(null)
+  };
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -33,8 +36,9 @@ describe('EditorComponent', () => {
       providers: [
         { provide: AdminService, useValue: adminServiceMock },
         { provide: ModelInitializerService, useValue: modelInitializerServiceMock },
+        { provide: Router, useValue: routerMock },
         { provide: NavController, useValue: navCtrlMock },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { type: Service.$t } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { type: Service.$t } }, queryParams: of({ type: Service.$t }) } }
       ]
     }).compileComponents();
 

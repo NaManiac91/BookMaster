@@ -11,10 +11,12 @@ import {HttpLoadingInterceptor} from "./HTTPHandlers/HttpLoadingInterceptor";
 import {ObjectProfileModule} from "./modules/object-profile/object-profile.module";
 import {AuthCallbackComponent} from "./components/auth-callback/auth-callback.component";
 import {TranslationModule} from "./modules/translation/translation.module";
+import {StatusCalendarComponent} from "./components/status-calendar/status-calendar.component";
 
 const components = [
   LoginComponent,
-  AuthCallbackComponent
+  AuthCallbackComponent,
+  StatusCalendarComponent
 ];
 
 const services = [

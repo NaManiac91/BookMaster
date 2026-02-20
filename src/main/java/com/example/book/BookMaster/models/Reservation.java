@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -160,14 +161,17 @@ public class Reservation implements Serializable, IModel {
 		this.provider = provider;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<String> getListSlot() {
 		return List.of(this.getSlots().split(","));
 	}
 	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getProviderName() {
 		return this.getProvider() != null ? this.getProvider().getName() : null;
 	}
 	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public Integer getProviderTimeBlockMinutes() {
 		return this.getProvider() != null ? this.getProvider().getTimeBlockMinutes() : null;
 	}

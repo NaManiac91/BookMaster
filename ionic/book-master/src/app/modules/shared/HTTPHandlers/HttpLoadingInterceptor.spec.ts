@@ -25,8 +25,7 @@ describe('HttpLoadingInterceptor', () => {
 
     expect(loadingController.create).toHaveBeenCalledWith({
       message: 'Please wait...',
-      spinner: 'circles',
-      duration: 2000
+      spinner: 'circles'
     });
     expect(loadingElement.present).toHaveBeenCalled();
   });

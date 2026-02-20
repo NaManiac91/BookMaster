@@ -1,18 +1,21 @@
-import {Component, inject, OnInit, Type} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, Type} from '@angular/core';
 import {AdminService} from '../../services/admin.service';
 import {IModel} from 'src/app/modules/shared/rest-api-client';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ModelInitializerService} from "../../../shared/services/model-initializer/model-initializer.service";
 import {NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../../shared/enum";
+import {readNavigationState} from "../../../shared/utils/navigation-state.utils";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
   private activatedRoute = inject(ActivatedRoute);
+  private queryParamsSub?: Subscription;
   type!: Type<IModel>;
   view: ObjectProfileView = ObjectProfileView.CREATE;
   object!: IModel;
@@ -20,22 +23,32 @@ export class EditorComponent implements OnInit {
 
   constructor(private adminService: AdminService,
               private modelInitializerService: ModelInitializerService,
+              private router: Router,
               private navCtrl: NavController
   ) {
   }
 
   ngOnInit() {
-    this.object = this.activatedRoute.snapshot.queryParams['object'];
-    const view = this.activatedRoute.snapshot.queryParams['view'];
-    const typeToken = this.object?.$t || this.activatedRoute.snapshot.queryParams['type'];
+    this.initializeEditorState();
+    this.queryParamsSub = this.activatedRoute.queryParams.subscribe(() => this.initializeEditorState());
+  }
 
-    if (!Number.isNaN(view)) {
-      this.view = view;
+  ngOnDestroy() {
+    this.queryParamsSub?.unsubscribe();
+  }
 
-      if (view === ObjectProfileView.CONSULT) {
-        this.readonly = true;
-      }
+  private initializeEditorState() {
+    const navigationState = readNavigationState<{object?: IModel; view?: ObjectProfileView; type?: string}>(this.router);
+    this.object = (navigationState.object as IModel) || this.activatedRoute.snapshot.queryParams['object'];
+    const view = navigationState.view ?? this.activatedRoute.snapshot.queryParams['view'];
+    const typeToken = this.object?.$t || navigationState.type || this.activatedRoute.snapshot.queryParams['type'];
+
+    if (view !== undefined && view !== null && !Number.isNaN(Number(view))) {
+      this.view = Number(view);
+    } else {
+      this.view = ObjectProfileView.CREATE;
     }
+    this.readonly = this.view === ObjectProfileView.CONSULT;
 
     this.type = this.modelInitializerService.getTypeByToken(typeToken);
 
@@ -69,12 +82,12 @@ export class EditorComponent implements OnInit {
     if (this.view === ObjectProfileView.CREATE) {
       this.adminService.create(this.object).subscribe(model =>
         this.navCtrl.navigateRoot('Home', {
-          queryParams: {object: model}
+          state: {object: model}
         }));
     } else {
         this.adminService.edit(this.object, this.type).subscribe(model =>
           this.navCtrl.navigateRoot('Home', {
-            queryParams: {object: model}
+            state: {object: model}
           }));
     }
   }

@@ -22,47 +22,16 @@
                    [closable]="false"
                    (selected)="serviceSelected($event.service)"></app-services-list>
 
-<div *ngIf="currentStep === 'slots' && currentService" class="availability-calendar">
-  <div class="calendar-header">
-    <ion-button fill="clear"
-                size="small"
-                (click)="changeMonth(-1)"
-                [disabled]="!canGoToPreviousMonth"
-                [attr.aria-label]="'reservationWorkflow.previousMonthAria' | t">
-      <ion-icon *ngIf="canGoToPreviousMonth" name="chevron-back-outline"></ion-icon>
-    </ion-button>
-    <span class="calendar-title">{{ currentMonthLabel }}</span>
-    <ion-button fill="clear"
-                size="small"
-                (click)="changeMonth(1)"
-                [attr.aria-label]="'reservationWorkflow.nextMonthAria' | t">
-      <ion-icon name="chevron-forward-outline"></ion-icon>
-    </ion-button>
-  </div>
-
-  <div class="calendar-grid calendar-weekdays">
-    <span *ngFor="let weekDay of weekDays">{{ weekDay }}</span>
-  </div>
-
-  <div class="calendar-grid">
-    <button *ngFor="let dayCell of calendarCells"
-            type="button"
-            class="calendar-day"
-            [class.empty]="!dayCell"
-            [class.selected]="dayCell?.isoDate === selectedCalendarDate"
-            [class.disabled]="dayCell && !dayCell.selectable"
-            [disabled]="!dayCell || !dayCell.selectable"
-            (click)="selectCalendarDay(dayCell)">
-      <span class="calendar-day-number">{{ dayCell?.date?.getDate() }}</span>
-      <span *ngIf="dayCell?.selectable"
-            class="calendar-dot"
-            [class.level-none]="getAvailabilityLevel(dayCell.isoDate) === 'none'"
-            [class.level-low]="getAvailabilityLevel(dayCell.isoDate) === 'low'"
-            [class.level-medium]="getAvailabilityLevel(dayCell.isoDate) === 'medium'"
-            [class.level-high]="getAvailabilityLevel(dayCell.isoDate) === 'high'"></span>
-    </button>
-  </div>
-</div>
+<app-status-calendar *ngIf="currentStep === 'slots' && currentService"
+                     [month]="currentCalendarMonth"
+                     [monthLabel]="currentMonthLabel"
+                     [weekDayKeys]="weekDayKeys"
+                     [selectedDateIso]="selectedCalendarDate"
+                     [todayIsoDate]="todayIsoDate"
+                     [dotLevelsByDate]="calendarDotLevelsByDate"
+                     [canGoToPreviousMonth]="canGoToPreviousMonth"
+                     (monthChange)="changeMonth($event)"
+                     (daySelected)="selectCalendarDay($event)"></app-status-calendar>
 
 <div *ngIf="currentStep === 'slots' && currentService" style="display: flex">
   <ion-list *ngFor="let slotDay of slots | keyvalue">

@@ -10,14 +10,6 @@ export class FetchService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getServices() : Observable<any> {
-    return this.httpClient.get(this.api + 'getServices');
-  }
-
-  getServiceById(serviceId: string): Observable<any> {
-    return this.httpClient.get(this.api + 'getService?serviceId=' + serviceId);
-  }
-
   getProviders() : Observable<any> {
     return this.httpClient.get(this.api + 'getProviders');
   }
@@ -44,17 +36,5 @@ export class FetchService {
 
   getProviderById(providerId: string): Observable<any> {
     return this.httpClient.get(this.api + 'getProvider?providerId=' + providerId);
-  }
-
-  getUsers() : Observable<any> {
-    return this.httpClient.get(this.api + 'getUsers');
-  }
-
-  getTranslations(language: string): Observable<Record<string, string>> {
-    return this.httpClient.get<Record<string, string>>(this.api + 'getTranslations?language=' + encodeURIComponent(language || 'en'));
-  }
-
-  getUserById(userId: string): Observable<any> {
-    return this.httpClient.get(this.api + 'getUserById?userId=' + userId);
   }
 }

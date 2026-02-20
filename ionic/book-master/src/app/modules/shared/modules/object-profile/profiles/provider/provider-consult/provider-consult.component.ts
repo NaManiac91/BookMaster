@@ -30,7 +30,7 @@ export class ProviderConsultComponent {
   serviceSelected(service: Service, operation: Operation) {
     if (operation === Operation.EDIT) {
       this.navCtrl.navigateRoot('Editor', {
-        queryParams: {
+        state: {
           object: service,
           view: ObjectProfileView.EDIT
         }

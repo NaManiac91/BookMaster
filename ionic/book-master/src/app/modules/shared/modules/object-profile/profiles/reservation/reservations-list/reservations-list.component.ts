@@ -1,9 +1,10 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Reservation} from 'src/app/modules/shared/rest-api-client';
 import {ClientService} from "../../../../../../common/services/client-service/client.service";
 import {AlertController, NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../../../../enum";
 import {TranslationService} from "../../../../translation/services/translation.service";
+import {isFutureOrToday, toISODateString} from "../../../../../utils/date-time.utils";
 
 @Component({
   selector: 'app-reservations-list',
@@ -11,7 +12,39 @@ import {TranslationService} from "../../../../translation/services/translation.s
   styleUrls: ['./reservations-list.component.scss'],
 })
 export class ReservationsListComponent {
-  @Input() list: Reservation[] = [];
+  private _list: Reservation[] = [];
+  private _filterBySelectedDate: boolean = false;
+  private _filterDateIso: string = '';
+  private filteredReservations: Reservation[] = [];
+
+  @Input() set list(value: Reservation[]) {
+    this._list = value || [];
+    this.rebuildFilteredReservations();
+  }
+
+  get list(): Reservation[] {
+    return this._list;
+  }
+
+  @Input() set filterBySelectedDate(value: boolean) {
+    this._filterBySelectedDate = !!value;
+    this.rebuildFilteredReservations();
+  }
+
+  get filterBySelectedDate(): boolean {
+    return this._filterBySelectedDate;
+  }
+
+  @Input() set filterDateIso(value: string) {
+    this._filterDateIso = (value || '').trim();
+    this.rebuildFilteredReservations();
+  }
+
+  get filterDateIso(): string {
+    return this._filterDateIso;
+  }
+
+  @Output() reservationRemoved = new EventEmitter<string>();
 
   constructor(private clientService: ClientService,
               private alertController: AlertController,
@@ -20,8 +53,7 @@ export class ReservationsListComponent {
   }
 
   get futureReservations(): Reservation[] {
-    return this.list.filter(reservation => this.isFutureOrToday(reservation))
-      .map(reservation => Object.assign(reservation, new Reservation()));
+    return this.filteredReservations;
   }
 
   remove(reservationId: string) {
@@ -30,7 +62,9 @@ export class ReservationsListComponent {
         const index = this.list.findIndex(r => r.reservationId === reservationId);
         if (index >= 0) {
           this.list.splice(index, 1);
+          this.rebuildFilteredReservations();
         }
+        this.reservationRemoved.emit(reservationId);
 
         const alert = await this.alertController.create({
           message: this.translationService.translate('reservations.removedSuccess'),
@@ -44,18 +78,28 @@ export class ReservationsListComponent {
 
   show(reservation: Reservation) {
     this.navCtrl.navigateRoot('Editor', {
-      queryParams: {
+      state: {
         object: reservation,
         view: ObjectProfileView.CONSULT
       }
     });
   }
 
-  private isFutureOrToday(reservation: Reservation): boolean {
-    const reservationDate = new Date(reservation.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    reservationDate.setHours(0, 0, 0, 0);
-    return reservationDate >= today;
+  trackByReservationId(_: number, reservation: Reservation): string {
+    return reservation.reservationId;
+  }
+
+  private rebuildFilteredReservations() {
+    this.filteredReservations = this.list
+      .filter((reservation: Reservation) => isFutureOrToday(reservation.date))
+      .filter((reservation: Reservation) => this.matchesSelectedDate(reservation));
+  }
+
+  private matchesSelectedDate(reservation: Reservation): boolean {
+    if (!this.filterBySelectedDate || !this.filterDateIso) {
+      return true;
+    }
+
+    return toISODateString(new Date(reservation.date)) === this.filterDateIso;
   }
 }

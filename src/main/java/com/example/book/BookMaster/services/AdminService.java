@@ -14,9 +14,11 @@ import com.example.book.BookMaster.models.Provider;
 import com.example.book.BookMaster.models.Reservation;
 import com.example.book.BookMaster.models.Service;
 import com.example.book.BookMaster.models.User;
+import com.example.book.BookMaster.models.Language;
 import com.example.book.BookMaster.repo.ProviderRepositoryInterface;
 import com.example.book.BookMaster.repo.ServiceRepositoryInterface;
 import com.example.book.BookMaster.repo.UserRepositoryInterface;
+import com.example.book.BookMaster.web.DTO.EditUserDTO;
 
 @org.springframework.stereotype.Service
 public class AdminService {
@@ -207,6 +209,91 @@ public class AdminService {
 		} catch (Exception e) {
 			logger.error("SQL error: {}", e.getMessage(), e);
 			throw e;
+		}
+	}
+
+	public User updateUser(EditUserDTO request) {
+		try {
+			if (request == null || request.userId == null || request.userId.isBlank()) {
+				throw new IllegalArgumentException("userId is required");
+			}
+
+			UUID userId = UUID.fromString(request.userId);
+			User current = this.userRepo.findById(userId)
+					.orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.userId));
+
+			current.setUsername(request.username);
+			current.setEmail(request.email);
+			current.setFirstName(request.firstName);
+			current.setLastName(request.lastName);
+			current.setLanguage(Language.fromValue(request.language));
+
+			EditUserDTO.ProviderPayload requestProvider = request.provider;
+			if (requestProvider != null) {
+				Provider provider = this.resolveProviderForUpdate(current, requestProvider);
+				if (provider != null) {
+					provider.setName(requestProvider.name);
+					provider.setDescription(requestProvider.description);
+					provider.setAddress(requestProvider.address);
+					provider.setEmail(requestProvider.email);
+					provider.setPhone(requestProvider.phone);
+					provider.setType(requestProvider.type);
+					provider.setStartTime(requestProvider.startTime);
+					provider.setEndTime(requestProvider.endTime);
+					provider.setTimeBlockMinutes(requestProvider.timeBlockMinutes);
+					provider.setUser(current);
+					current.setProvider(this.providerRepo.save(provider));
+				}
+			}
+
+			User entity = this.userRepo.save(current);
+			this.hydrateReservationSupportFields(entity);
+			logger.info("User edited: {}", entity);
+			return entity;
+		} catch (Exception e) {
+			logger.error("SQL error: {}", e.getMessage(), e);
+			throw e;
+		}
+	}
+
+	private Provider resolveProviderForUpdate(User current, EditUserDTO.ProviderPayload requestProvider) {
+		if (requestProvider.providerId != null && !requestProvider.providerId.isBlank()) {
+			UUID providerId = UUID.fromString(requestProvider.providerId);
+			return this.providerRepo.findById(providerId)
+					.orElseThrow(() -> new IllegalArgumentException("Provider not found with ID: " + requestProvider.providerId));
+		}
+
+		if (current.getProvider() != null) {
+			return current.getProvider();
+		}
+
+		if (requestProvider.name != null && !requestProvider.name.isBlank()) {
+			return new Provider();
+		}
+
+		return null;
+	}
+
+	private void hydrateReservationSupportFields(User user) {
+		if (user == null || user.getReservations() == null || user.getReservations().isEmpty()) {
+			return;
+		}
+
+		for (Reservation reservation : user.getReservations()) {
+			if (reservation == null) {
+				continue;
+			}
+
+			Service service = this.serviceRepo.findById(reservation.getServiceId()).orElse(null);
+			if (service != null) {
+				reservation.setService(service);
+				reservation.setProvider(service.getProvider());
+			}
+
+			if (reservation.getProvider() == null && reservation.getProviderId() != null) {
+				Provider provider = this.providerRepo.findById(reservation.getProviderId()).orElse(null);
+				reservation.setProvider(provider);
+			}
 		}
 	}
 	
