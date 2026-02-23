@@ -29,6 +29,8 @@ export class Provider extends IModel {
   startTime: Date;
   endTime: Date;
   timeBlockMinutes: number;
+  closedDays: string[];
+  closedDates: string[];
   services: Service[];
   override readonly $t: string = 'Provider';
   static $t: string = 'Provider';

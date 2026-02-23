@@ -20,6 +20,8 @@ export class StatusCalendarComponent implements OnChanges {
   @Input() dotLevelsByDate: Record<string, CalendarDotLevel> = {};
   @Input() defaultDotLevel: CalendarDotLevel = 'none';
   @Input() canGoToPreviousMonth: boolean = true;
+  @Input() disabledWeekDays: number[] = [];
+  @Input() disabledDatesIso: string[] = [];
 
   @Output() monthChange = new EventEmitter<number>();
   @Output() daySelected = new EventEmitter<CalendarDayCell>();
@@ -27,7 +29,7 @@ export class StatusCalendarComponent implements OnChanges {
   calendarCells: Array<CalendarDayCell | null> = [];
 
   ngOnChanges(_: SimpleChanges): void {
-    this.calendarCells = buildMonthCalendarCells(this.month, this.todayIsoDate);
+    this.calendarCells = buildMonthCalendarCells(this.month, this.todayIsoDate, this.disabledWeekDays, this.disabledDatesIso);
   }
 
   getDotLevel(isoDate: string): CalendarDotLevel {

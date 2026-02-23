@@ -204,6 +204,8 @@ public class AdminService {
 			current.setStartTime(provider.getStartTime());
 			current.setEndTime(provider.getEndTime());
 			current.setTimeBlockMinutes(provider.getTimeBlockMinutes());
+			current.setClosedDays(provider.getClosedDays());
+			current.setClosedDates(provider.getClosedDates());
 
 			return this.providerRepo.save(current);
 		} catch (Exception e) {
@@ -241,6 +243,8 @@ public class AdminService {
 					provider.setStartTime(requestProvider.startTime);
 					provider.setEndTime(requestProvider.endTime);
 					provider.setTimeBlockMinutes(requestProvider.timeBlockMinutes);
+					provider.setClosedDays(requestProvider.closedDays);
+					provider.setClosedDates(requestProvider.closedDates);
 					provider.setUser(current);
 					current.setProvider(this.providerRepo.save(provider));
 				}

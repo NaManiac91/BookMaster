@@ -79,6 +79,8 @@ public class AdminController {
 	@PostMapping(path = "/createProvider", consumes = "application/json")
 	public ResponseEntity<Provider> createProvider(@RequestBody @Validated CreateProviderDTO request) {
 		Provider provider = new Provider(request.name, request.description, request.address, request.email, request.phone, request.type, request.startTime, request.endTime, request.timeBlockMinutes);
+		provider.setClosedDays(request.closedDays);
+		provider.setClosedDates(request.closedDates);
 		Provider result = this.adminService.createProvider(provider, UUID.fromString(request.userId));
 
         return new ResponseEntity<Provider>(result, HttpStatus.OK);

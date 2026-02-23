@@ -1,6 +1,9 @@
 package com.example.book.BookMaster.web.DTO;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Set;
 
 import com.example.book.BookMaster.models.Address;
 import com.example.book.BookMaster.models.ProviderType;
@@ -15,5 +18,7 @@ public class CreateProviderDTO {
 	public LocalTime startTime;
 	public LocalTime endTime;
 	public int timeBlockMinutes;
+	public Set<DayOfWeek> closedDays;
+	public Set<LocalDate> closedDates;
 	public String userId;
 }

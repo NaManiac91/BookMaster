@@ -1,6 +1,8 @@
 package com.example.book.BookMaster.models;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,10 +14,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -56,6 +60,15 @@ public class Provider implements Serializable, IModel {
 	private LocalTime endTime = LocalTime.of(9, 0);	// 18:00
 	
 	private Integer timeBlockMinutes = 30;	//in minutes	
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@Column(name = "closed_day")
+	private Set<DayOfWeek> closedDays = new HashSet<>();
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Column(name = "closed_date")
+	private Set<LocalDate> closedDates = new HashSet<>();
 
 	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
     private Set<Service> services = new HashSet<>();
@@ -201,10 +214,27 @@ public class Provider implements Serializable, IModel {
 	public void setTimeBlockMinutes(Integer timeBlockMinutes) {
 		this.timeBlockMinutes = timeBlockMinutes ;
 	}
+
+	public Set<DayOfWeek> getClosedDays() {
+		return closedDays != null ? closedDays : new HashSet<>();
+	}
+
+	public void setClosedDays(Set<DayOfWeek> closedDays) {
+		this.closedDays = closedDays != null ? new HashSet<>(closedDays) : new HashSet<>();
+	}
+
+	public Set<LocalDate> getClosedDates() {
+		return closedDates != null ? closedDates : new HashSet<>();
+	}
+
+	public void setClosedDates(Set<LocalDate> closedDates) {
+		this.closedDates = closedDates != null ? new HashSet<>(closedDates) : new HashSet<>();
+	}
 	
 	@Override
 	public String toString() {
 		return "Provider [providerId=" + providerId + ", name=" + name + ", description=" + description + ", address="
-				+ address + ", email=" + email + ", phone=" + phone + ", type=" + type + "]";
+				+ address + ", email=" + email + ", phone=" + phone + ", type=" + type + ", closedDays=" + closedDays
+				+ ", closedDates=" + closedDates + "]";
 	}
 }

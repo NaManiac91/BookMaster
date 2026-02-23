@@ -29,7 +29,7 @@ export class AdminService {
   createProvider(object: Provider, userId: string): Observable<Provider> {
     return <Observable<Provider>>this.httpClient.post(this.api + 'createProvider', Object.assign(object, { userId : userId}))
       .pipe(
-        map((response: any) => Object.assign(new Provider(), response)),
+        map((response: any) => this.convertProviderToClient(response)),
         tap((provider: Provider) => this.authService.updateLoggedUserProvider(provider))
       );
   }
@@ -44,6 +44,8 @@ export class AdminService {
 
   private convertProviderToClient(response: any) {
     const provider: Provider = Object.assign(new Provider(), response);
+    provider.closedDays = Array.isArray(response?.closedDays) ? [...response.closedDays] : [];
+    provider.closedDates = Array.isArray(response?.closedDates) ? [...response.closedDates] : [];
     provider.services = (response.services || []).map((service: Service) => Object.assign(new Service(), service))
     return provider;
   }
@@ -112,7 +114,9 @@ export class AdminService {
       type: provider.type,
       startTime: provider.startTime,
       endTime: provider.endTime,
-      timeBlockMinutes: provider.timeBlockMinutes
+      timeBlockMinutes: provider.timeBlockMinutes,
+      closedDays: provider.closedDays || [],
+      closedDates: provider.closedDates || []
     };
   }
 

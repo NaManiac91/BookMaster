@@ -17,6 +17,12 @@ import {
   toISODateString
 } from "../../../shared/utils/date-time.utils";
 import {readNavigationState} from "../../../shared/utils/navigation-state.utils";
+import {
+  normalizeProviderClosedDates,
+  normalizeProviderClosedDays,
+  toClosedWeekdayJsIndexes,
+  toClosedWeekdayTranslationKeys
+} from "../../../shared/utils/provider-weekday.utils";
 
 type WorkflowStep = 'provider' | 'service' | 'slots' | 'summary';
 type AvailabilityLevel = 'none' | 'low' | 'medium' | 'high';
@@ -33,6 +39,8 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   slots: { [key: string]: string[] } = {};
   availabilityByDate: { [key: string]: number } = {};
   calendarDotLevelsByDate: Record<string, CalendarDotLevel> = {};
+  providerClosedWeekDays: number[] = [];
+  providerClosedDatesIso: string[] = [];
   currentDay: Date = new Date();
   currentCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   readonly todayIsoDate: string = toISODateString(new Date());
@@ -72,8 +80,7 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     if (provider) {
       this.providerSelected(provider);
       this.fetchService.getProviderById(provider.providerId).subscribe((fullProvider: Provider) => {
-        this.currentProvider = Object.assign(new Provider(), fullProvider);
-        this.currentProvider.services = (fullProvider.services || []).map(s => Object.assign(new Service(), s));
+        this.applyProvider(fullProvider);
 
         if (service) {
           const fullService = (this.currentProvider.services || [])
@@ -114,17 +121,19 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
       this.currentService = undefined as unknown as Service;
       this.reservationPreview = undefined;
       this.slots = {};
+      this.providerClosedWeekDays = [];
+      this.providerClosedDatesIso = [];
     }
   }
 
   providerSelected(provider: Provider) {
-    this.currentProvider = Object.assign(new Provider(), provider);
+    this.applyProvider(provider);
     this.currentService = undefined as unknown as Service;
     this.reservationPreview = undefined;
     this.slots = {};
     this.availabilityByDate = {};
     this.calendarDotLevelsByDate = {};
-    this.currentDay = new Date();
+    this.currentDay = this.resolveNextSelectableDate(new Date());
     this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
     this.selectedCalendarDate = toISODateString(this.currentDay);
     this.currentStep = 'service';
@@ -134,6 +143,7 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     this.currentService = service;
     this.reservationPreview = undefined;
     this.currentStep = 'slots';
+    this.currentDay = this.resolveNextSelectableDate(this.currentDay);
     this.currentCalendarMonth = new Date(this.currentDay.getFullYear(), this.currentDay.getMonth(), 1);
     this.selectedCalendarDate = toISODateString(this.currentDay);
     this.loadAvailabilitySummaryForCurrentMonth();
@@ -225,6 +235,27 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
     return daySlots.slice(slotIndex, slotIndex + requiredSlots).filter(Boolean).length === requiredSlots;
   }
 
+  get providerClosedDaysLabel(): string {
+    const translationKeys = toClosedWeekdayTranslationKeys(this.currentProvider?.closedDays);
+    return translationKeys
+      .map((translationKey) => this.translationService.translate(translationKey))
+      .join(', ');
+  }
+
+  get providerClosedDatesLabel(): string {
+    return this.providerClosedDatesIso
+      .map((dateIso) => {
+        const [year, month, day] = dateIso.split('-').map(Number);
+        const localDate = new Date(year, (month || 1) - 1, day || 1);
+        return localDate.toLocaleDateString(this.currentLocale, {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+      })
+      .join(', ');
+  }
+
   private getRequiredSlots(): number {
     const required = Number(this.currentService?.time);
     return Number.isFinite(required) && required > 0 ? required : 1;
@@ -232,6 +263,36 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
 
   private loadAvailableSlots(day: Date) {
     this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, day).subscribe(slots => this.slots = slots);
+  }
+
+  private applyProvider(provider: Provider) {
+    const mappedProvider = Object.assign(new Provider(), provider);
+    mappedProvider.services = (provider?.services || []).map((service) => Object.assign(new Service(), service));
+    mappedProvider.closedDays = normalizeProviderClosedDays(provider?.closedDays);
+    mappedProvider.closedDates = normalizeProviderClosedDates(provider?.closedDates);
+
+    this.currentProvider = mappedProvider;
+    this.providerClosedWeekDays = toClosedWeekdayJsIndexes(mappedProvider.closedDays);
+    this.providerClosedDatesIso = [...mappedProvider.closedDates];
+  }
+
+  private resolveNextSelectableDate(date: Date): Date {
+    const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const blockedWeekDays = new Set(this.providerClosedWeekDays || []);
+    const blockedDatesIso = new Set(this.providerClosedDatesIso || []);
+    if ((!blockedWeekDays.size && !blockedDatesIso.size) || blockedWeekDays.size >= 7) {
+      return normalizedDate;
+    }
+
+    for (let i = 0; i <= 370; i++) {
+      const candidate = new Date(normalizedDate.getFullYear(), normalizedDate.getMonth(), normalizedDate.getDate() + i);
+      const candidateIso = toISODateString(candidate);
+      if (!blockedWeekDays.has(candidate.getDay()) && !blockedDatesIso.has(candidateIso)) {
+        return candidate;
+      }
+    }
+
+    return normalizedDate;
   }
 
   private loadAvailabilitySummaryForCurrentMonth() {

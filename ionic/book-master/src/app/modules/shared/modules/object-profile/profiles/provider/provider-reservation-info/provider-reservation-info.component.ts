@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ObjectProfileView} from '../../../../../enum';
 import {Provider} from '../../../../../rest-api-client';
 import {ObjectProfile} from '../../../services/object-profile.service';
+import {normalizeProviderClosedDates, toClosedWeekdayTranslationKeys} from "../../../../../utils/provider-weekday.utils";
 
 @ObjectProfile({
   view: ObjectProfileView.INFO,
@@ -38,5 +39,13 @@ export class ProviderReservationInfoComponent {
 
   get mailHref(): string {
     return `mailto:${this.object?.email || ''}`;
+  }
+
+  get closedDayTranslationKeys(): string[] {
+    return toClosedWeekdayTranslationKeys(this.object?.closedDays);
+  }
+
+  get closedDateIsoValues(): string[] {
+    return normalizeProviderClosedDates(this.object?.closedDates);
   }
 }

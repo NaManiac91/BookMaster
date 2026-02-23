@@ -36,7 +36,9 @@ export function isFutureOrToday(dateValue: Date | string | number): boolean {
 
 export function buildMonthCalendarCells(
   monthDate: Date,
-  todayIsoDate: string
+  todayIsoDate: string,
+  disabledWeekDays: number[] = [],
+  disabledDatesIso: string[] = []
 ): Array<CalendarDayCell | null> {
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();
@@ -46,6 +48,17 @@ export function buildMonthCalendarCells(
   const mondayBasedOffset = (firstOfMonth.getDay() + 6) % 7;
   const cells: Array<CalendarDayCell | null> = Array.from({ length: mondayBasedOffset }, () => null);
 
+  const disabledWeekDaysSet = new Set(
+    (disabledWeekDays || [])
+      .filter((weekDay) => Number.isInteger(weekDay))
+      .map((weekDay) => (weekDay + 7) % 7)
+  );
+  const disabledDatesIsoSet = new Set(
+    (disabledDatesIso || [])
+      .map((isoDate) => String(isoDate || '').trim())
+      .filter((isoDate) => /^\d{4}-\d{2}-\d{2}$/.test(isoDate))
+  );
+
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     const isoDate = toISODateString(date);
@@ -53,6 +66,8 @@ export function buildMonthCalendarCells(
       date,
       isoDate,
       selectable: isoDate >= todayIsoDate
+        && !disabledWeekDaysSet.has(date.getDay())
+        && !disabledDatesIsoSet.has(isoDate)
     });
   }
 

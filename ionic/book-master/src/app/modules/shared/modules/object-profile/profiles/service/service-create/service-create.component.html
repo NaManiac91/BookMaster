@@ -1,17 +1,17 @@
 <ion-list>
   <ion-item>
-    <ion-input [label]="'service.name' | t" name="name" [(ngModel)]="object.name"></ion-input>
+    <ion-input [label]="'service.name' | t" name="serviceName" [(ngModel)]="object.name" [required]="true"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input [label]="'service.description' | t" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
+    <ion-input [label]="'service.description' | t" name="serviceDescription" [(ngModel)]="object.description" type="textarea"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input [label]="'service.price' | t" name="price" [(ngModel)]="object.price" type="number"></ion-input>
+    <ion-input [label]="'service.price' | t" name="servicePrice" [(ngModel)]="object.price" type="number" [required]="true" min="0"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input [label]="'service.time' | t" name="time" [(ngModel)]="object.time" type="number"></ion-input>
+    <ion-input [label]="'service.time' | t" name="serviceTime" [(ngModel)]="object.time" type="number" [required]="true" min="1" step="1"></ion-input>
   </ion-item>
 </ion-list>

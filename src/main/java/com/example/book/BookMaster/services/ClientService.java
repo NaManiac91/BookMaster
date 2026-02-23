@@ -47,9 +47,17 @@ public class ClientService {
 	        // Fetch user and provider
 	        User consumer = this.userRepo.findById(userId)
 	            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-	        User provider = this.userRepo.findByProviderProviderId(providerId);
-	        if (provider == null) {
+	        User providerUser = this.userRepo.findByProviderProviderId(providerId);
+	        if (providerUser == null) {
 	            throw new RuntimeException("Provider not found with ID: " + providerId);
+	        }
+	        Provider providerProfile = providerUser.getProvider();
+	        if (providerProfile == null) {
+	        	throw new RuntimeException("Provider profile not found with ID: " + providerId);
+	        }
+
+	        if (this.isProviderClosedOnDate(providerProfile, date)) {
+	        	throw new RuntimeException("Provider is closed on selected date");
 	        }
 
 	        // Check if slot is already booked
@@ -61,10 +69,10 @@ public class ClientService {
 	        // Create and save new reservation
 	        Reservation reservation = new Reservation(date, slots, serviceId, providerId, note);
 	        consumer.addReservation(reservation);
-	        provider.addReservation(reservation);
+	        providerUser.addReservation(reservation);
 	        Set<User> participants = new LinkedHashSet<>();
 	        participants.add(consumer);
-	        participants.add(provider);
+	        participants.add(providerUser);
 	        reservation.setUsers(participants);
 	        Reservation response = this.reservationRepo.save(reservation);
 	        logger.info("Reservation created: {}", response);
@@ -116,9 +124,6 @@ public class ClientService {
 			// Retrieve provider information to check time slot
 			Provider provider = this.providerRepo.findById(providerId)
 					.orElseThrow(() -> new RuntimeException("Provider not found with ID: " + providerId));
-	        LocalTime startTime = provider.getStartTime();
-	        LocalTime endTime = provider.getEndTime();
-	        int timeBlockMinutes = provider.getTimeBlockMinutes();
 
 	        Map<LocalDate, List<String>> availableSlotsByDate = new LinkedHashMap<>();
 	        final int windowDays = 4;
@@ -129,7 +134,7 @@ public class ClientService {
 	        boolean found = false;
 	        for (int i = 0; i < maxSearchDays; i++) {
 	        	LocalDate currentDate = date.plusDays(i);
-	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes);
+	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, provider, currentDate);
 	        	if (!availableSlots.isEmpty()) {
 	        		firstAvailableDate = currentDate;
 	        		found = true;
@@ -145,7 +150,7 @@ public class ClientService {
 	        // Return the standard 4-day window starting from the first useful date.
 	        for (int i = 0; i < windowDays; i++) {
 	        	LocalDate currentDate = firstAvailableDate.plusDays(i);
-	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes);
+	        	List<String> availableSlots = this.buildAvailableSlotsForDate(providerId, provider, currentDate);
 	        	availableSlotsByDate.put(currentDate, availableSlots);
 	        	logger.info("Available slots for {} on {}: {}", providerId, currentDate, availableSlots);
 	        }
@@ -168,14 +173,11 @@ public class ClientService {
 
 			Provider provider = this.providerRepo.findById(providerId)
 					.orElseThrow(() -> new RuntimeException("Provider not found with ID: " + providerId));
-	        LocalTime startTime = provider.getStartTime();
-	        LocalTime endTime = provider.getEndTime();
-	        int timeBlockMinutes = provider.getTimeBlockMinutes();
 
 	        Map<LocalDate, Integer> summary = new LinkedHashMap<>();
 	        LocalDate currentDate = fromDate;
 	        while (!currentDate.isAfter(toDate)) {
-	        	int count = this.buildAvailableSlotsForDate(providerId, currentDate, startTime, endTime, timeBlockMinutes).size();
+	        	int count = this.buildAvailableSlotsForDate(providerId, provider, currentDate).size();
 	        	summary.put(currentDate, count);
 	        	currentDate = currentDate.plusDays(1);
 	        }
@@ -187,9 +189,19 @@ public class ClientService {
 		}
 	}
 
-	private List<String> buildAvailableSlotsForDate(UUID providerId, LocalDate date, LocalTime startTime, LocalTime endTime, int timeBlockMinutes) {
+	private List<String> buildAvailableSlotsForDate(UUID providerId, Provider provider, LocalDate date) {
 		List<String> availableSlots = new ArrayList<>();
-		LocalTime currentTime = startTime;
+		if (provider == null || this.isProviderClosedOnDate(provider, date)) {
+			return availableSlots;
+		}
+
+		final int timeBlockMinutes = provider.getTimeBlockMinutes();
+		if (timeBlockMinutes <= 0) {
+			return availableSlots;
+		}
+
+		LocalTime currentTime = provider.getStartTime();
+		LocalTime endTime = provider.getEndTime();
 
 		while (currentTime.isBefore(endTime)) {
 			LocalTime nextTime = currentTime.plusMinutes(timeBlockMinutes);
@@ -200,6 +212,15 @@ public class ClientService {
 
 		availableSlots.removeAll(this.getSlotBooked(providerId, date));
 		return availableSlots;
+	}
+
+	private boolean isProviderClosedOnDate(Provider provider, LocalDate date) {
+		if (provider == null || date == null) {
+			return false;
+		}
+
+		return provider.getClosedDays().contains(date.getDayOfWeek())
+				|| provider.getClosedDates().contains(date);
 	}
 
     public boolean isTimeSlotAvailable(List<String> slotBooked, String slot) {

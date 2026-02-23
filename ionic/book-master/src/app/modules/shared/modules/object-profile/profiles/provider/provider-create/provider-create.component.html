@@ -1,56 +1,110 @@
-<ion-list>
-  <ion-item>
-    <ion-input [label]="'provider.name' | t" name="name" [(ngModel)]="object.name"></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-input [label]="'provider.description' | t" name="description" [(ngModel)]="object.description" type="textarea"></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-label>{{ 'provider.type' | t }}</ion-label>
-    <ion-select [(ngModel)]="object.type">
-      <ion-select-option *ngFor="let type of types" [value]="type">
-        {{ ('provider.type.' + type) | t }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-
-  <ion-item>
-    <ion-input [label]="'provider.phone' | t" name="phone" [(ngModel)]="object.phone" type="tel"></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-input [label]="'provider.email' | t" name="email" [(ngModel)]="object.email" type="mail"></ion-input>
-  </ion-item>
-
-  <ion-card>
+<ion-card>
+  <ion-list>
     <ion-item>
-      <ion-input [label]="'provider.streetAddress' | t" name="Country" [(ngModel)]="object.address.street" type="text" required></ion-input>
+      <ion-input [label]="'provider.name' | t" name="providerName" [(ngModel)]="object.name" [required]="true"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]="'provider.city' | t" name="Country" [(ngModel)]="object.address.city" type="text" required></ion-input>
+      <ion-input [label]="'provider.description' | t" name="providerDescription" [(ngModel)]="object.description"
+                 type="textarea"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]="'provider.postalCode' | t" name="Country" [(ngModel)]="object.address.postalCode" type="text" required></ion-input>
+      <ion-label>{{ 'provider.type' | t }}</ion-label>
+      <ion-select [(ngModel)]="object.type" name="providerType">
+        <ion-select-option *ngFor="let type of types" [value]="type">
+          {{ ('provider.type.' + type) | t }}
+        </ion-select-option>
+      </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]="'provider.country' | t" name="Country" [(ngModel)]="object.address.country" type="text" required></ion-input>
+      <ion-input [label]="'provider.phone' | t" name="providerPhone" [(ngModel)]="object.phone" type="tel"></ion-input>
     </ion-item>
-  </ion-card>
 
-  <ion-item>
-    <ion-input [label]="'provider.startTime' | t" name="startTime" [(ngModel)]="object.startTime" type="time"></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-input [label]="'provider.email' | t" name="providerEmail" [(ngModel)]="object.email"
+                 type="email"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input [label]="'provider.endTime' | t" name="endTime" [(ngModel)]="object.endTime" type="time"></ion-input>
-  </ion-item>
+    <ion-card>
+      <ion-card-header color="tertiary">
+        <ion-card-title>{{ 'Address' | t }}</ion-card-title>
+      </ion-card-header>
+      <ion-item>
+        <ion-input [label]="'provider.streetAddress' | t" name="providerStreetAddress"
+                   [(ngModel)]="object.address.street"
+                   type="text" [required]="true"></ion-input>
+      </ion-item>
 
-  <ion-item>
-    <ion-input [label]="'provider.timeBlockMinutes' | t" name="timeBlockMinutes" [(ngModel)]="object.timeBlockMinutes" type="number" max="60" min="0"></ion-input>
-  </ion-item>
-</ion-list>
+      <ion-item>
+        <ion-input [label]="'provider.city' | t" name="providerCity" [(ngModel)]="object.address.city" type="text"
+                   [required]="true"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input [label]="'provider.postalCode' | t" name="providerPostalCode" [(ngModel)]="object.address.postalCode"
+                   type="text" [required]="true"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input [label]="'provider.country' | t" name="providerCountry" [(ngModel)]="object.address.country"
+                   type="text" [required]="true"></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header color="tertiary">
+        <ion-card-title>{{ 'Timetable' | t }}</ion-card-title>
+      </ion-card-header>
+      <ion-item>
+        <ion-input [label]="'provider.startTime' | t" name="providerStartTime" [(ngModel)]="object.startTime"
+                   type="time"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input [label]="'provider.endTime' | t" name="providerEndTime" [(ngModel)]="object.endTime"
+                   type="time"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input [label]="'provider.timeBlockMinutes' | t" name="providerTimeBlockMinutes"
+                   [(ngModel)]="object.timeBlockMinutes" type="number" max="60" min="1"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>{{ 'provider.closedDays' | t }}</ion-label>
+        <ion-select [(ngModel)]="object.closedDays"
+                    name="providerClosedDays"
+                    [multiple]="true"
+                    interface="popover"
+                    [placeholder]="'provider.closedDaysPlaceholder' | t">
+          <ion-select-option *ngFor="let dayOption of closedDayOptions" [value]="dayOption.value">
+            {{ dayOption.translationKey | t }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input [label]="'provider.closedDates' | t"
+                   [placeholder]="'provider.closedDatesPlaceholder' | t"
+                   name="providerClosedDateInput"
+                   type="date"
+                   [(ngModel)]="specialClosureDateInput"></ion-input>
+        <ion-button slot="end"
+                    fill="outline"
+                    (click)="addSpecialClosedDate()"
+                    [disabled]="!specialClosureDateInput">
+          {{ 'provider.addClosedDate' | t }}
+        </ion-button>
+      </ion-item>
+
+      <ion-item *ngFor="let specialDate of specialClosedDates">
+        <ion-label>{{ specialDate + 'T00:00:00' | date:'dd/MM/yyyy' }}</ion-label>
+        <ion-button slot="end" color="danger" fill="clear" (click)="removeSpecialClosedDate(specialDate)">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+</ion-card>

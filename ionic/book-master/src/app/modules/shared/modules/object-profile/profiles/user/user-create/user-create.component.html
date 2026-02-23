@@ -1,15 +1,15 @@
 <ion-card>
   <ion-item>
-    <ion-input [label]="'user.username' | t" name="Username" [(ngModel)]="object.username" type="text" required></ion-input>
+    <ion-input [label]="'user.username' | t" name="userUsername" [(ngModel)]="object.username" type="text" [required]="true"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input [label]="'user.email' | t" name="Email" [(ngModel)]="object.email" type="email" required></ion-input>
+    <ion-input [label]="'user.email' | t" name="userEmail" [(ngModel)]="object.email" type="email" [required]="true"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label>{{ 'user.language' | t }}</ion-label>
-    <ion-select [(ngModel)]="object.language">
+    <ion-select [(ngModel)]="object.language" name="userLanguage" [required]="true">
       <ion-select-option *ngFor="let option of languageOptions" [value]="option.value">
         {{ option.labelKey | t }}
       </ion-select-option>
@@ -18,7 +18,7 @@
 
   <ion-item>
     <ion-label>{{ 'user.isProvider' | t }}</ion-label>
-    <ion-toggle [(ngModel)]="isProvider" (ionChange)="onProviderChange()"></ion-toggle>
+    <ion-toggle [(ngModel)]="isProvider" name="userIsProvider" (ionChange)="onProviderChange()"></ion-toggle>
   </ion-item>
 </ion-card>
 

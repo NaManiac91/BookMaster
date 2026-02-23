@@ -6,6 +6,7 @@ import {Subject} from 'rxjs';
 import {NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../enum";
 import {TranslationService} from "../../modules/translation/services/translation.service";
+import {isValidUser} from "../../utils/model-validation.utils";
 
 @Component({
   selector: 'app-login',
@@ -51,8 +52,12 @@ export class LoginComponent implements OnInit {
     this.authService.login();
   }
 
+  get canCreateUser(): boolean {
+    return isValidUser(this.user);
+  }
+
   createUser() {
-    if (!this.user?.username || !this.user?.email) {
+    if (!this.canCreateUser) {
       return;
     }
 

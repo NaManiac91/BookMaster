@@ -7,6 +7,7 @@ import {NavController} from "@ionic/angular";
 import {ObjectProfileView} from "../../../shared/enum";
 import {readNavigationState} from "../../../shared/utils/navigation-state.utils";
 import {Subscription} from "rxjs";
+import {isValidModel} from "../../../shared/utils/model-validation.utils";
 
 @Component({
   selector: 'app-editor',
@@ -16,6 +17,7 @@ import {Subscription} from "rxjs";
 export class EditorComponent implements OnInit, OnDestroy {
   private activatedRoute = inject(ActivatedRoute);
   private queryParamsSub?: Subscription;
+  private initialObjectSnapshot: string | null = null;
   type!: Type<IModel>;
   view: ObjectProfileView = ObjectProfileView.CREATE;
   object!: IModel;
@@ -55,6 +57,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (!this.type) {
       throw new Error(`Unknown model type token: ${typeToken}`);
     }
+
+    this.initialObjectSnapshot = this.view === ObjectProfileView.EDIT
+      ? this.toComparableSnapshot(this.object)
+      : null;
   }
 
   get titleKey(): string {
@@ -78,7 +84,23 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  get canSave(): boolean {
+    if (!isValidModel(this.object)) {
+      return false;
+    }
+
+    if (this.view !== ObjectProfileView.EDIT) {
+      return true;
+    }
+
+    return this.hasObjectChanges();
+  }
+
   save() {
+    if (!this.canSave) {
+      return;
+    }
+
     if (this.view === ObjectProfileView.CREATE) {
       this.adminService.create(this.object).subscribe(model =>
         this.navCtrl.navigateRoot('Home', {
@@ -90,5 +112,49 @@ export class EditorComponent implements OnInit, OnDestroy {
             state: {object: model}
           }));
     }
+  }
+
+  private hasObjectChanges(): boolean {
+    if (!this.initialObjectSnapshot) {
+      return true;
+    }
+
+    return this.initialObjectSnapshot !== this.toComparableSnapshot(this.object);
+  }
+
+  private toComparableSnapshot(value: unknown): string {
+    return JSON.stringify(this.normalizeForSnapshot(value));
+  }
+
+  private normalizeForSnapshot(value: unknown): unknown {
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((entry) => this.normalizeForSnapshot(entry));
+    }
+
+    if (typeof value === 'object') {
+      const normalized: Record<string, unknown> = {};
+      for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+        const nestedValue = (value as Record<string, unknown>)[key];
+        if (nestedValue === undefined || typeof nestedValue === 'function') {
+          continue;
+        }
+        normalized[key] = this.normalizeForSnapshot(nestedValue);
+      }
+      return normalized;
+    }
+
+    if (typeof value === 'number' && !Number.isFinite(value)) {
+      return String(value);
+    }
+
+    return value;
   }
 }

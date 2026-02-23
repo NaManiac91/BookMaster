@@ -41,6 +41,26 @@
           <a [href]="mailHref" class="contact-link">{{ object.email }}</a>
         </ion-label>
       </ion-item>
+
+      <ion-item *ngIf="closedDayTranslationKeys.length" class="contact-item">
+        <ion-icon name="calendar-clear-outline" slot="start" class="contact-icon"></ion-icon>
+        <ion-label>
+          {{ 'provider.closedDays' | t }}:
+          <span *ngFor="let key of closedDayTranslationKeys; let last = last">
+            {{ key | t }}<span *ngIf="!last">, </span>
+          </span>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="closedDateIsoValues.length" class="contact-item">
+        <ion-icon name="calendar-number-outline" slot="start" class="contact-icon"></ion-icon>
+        <ion-label>
+          {{ 'provider.closedDates' | t }}:
+          <span *ngFor="let dateIso of closedDateIsoValues; let last = last">
+            {{ dateIso + 'T00:00:00' | date:'dd/MM/yyyy' }}<span *ngIf="!last">, </span>
+          </span>
+        </ion-label>
+      </ion-item>
     </ion-list>
   </ion-card-content>
 </ion-card>

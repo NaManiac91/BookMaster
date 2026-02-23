@@ -167,6 +167,8 @@ public class TranslationService {
 				new TranslationSeed("reservationWorkflow.nextMonthAria", "Next month", "Mese successivo", "Mois suivant"),
 				new TranslationSeed("reservationWorkflow.confirmBooking", "Confirm reservation", "Conferma prenotazione", "Confirmer la reservation"),
 				new TranslationSeed("reservationWorkflow.insufficientSlots", "There are not enough consecutive slots available for this service duration.", "Gli slot consecutivi disponibili non sono sufficienti per la durata del servizio.", "Les creneaux consecutifs disponibles ne sont pas suffisants pour la duree du service."),
+				new TranslationSeed("reservationWorkflow.closedDaysInfo", "Closed days: {{days}}", "Giorni di chiusura: {{days}}", "Jours de fermeture: {{days}}"),
+				new TranslationSeed("reservationWorkflow.closedDatesInfo", "Closed specific dates: {{dates}}", "Date di chiusura specifiche: {{dates}}", "Dates de fermeture specifiques: {{dates}}"),
 
 				new TranslationSeed("providersList.title", "Our partners", "I nostri partners", "Nos partenaires"),
 				new TranslationSeed("providersList.searchPlaceholder", "Search provider or service", "Cerca provider o servizio", "Rechercher prestataire ou service"),
@@ -195,6 +197,11 @@ public class TranslationService {
 				new TranslationSeed("provider.startTime", "Start Time", "Orario Inizio", "Heure debut"),
 				new TranslationSeed("provider.endTime", "End Time", "Orario Fine", "Heure fin"),
 				new TranslationSeed("provider.timeBlockMinutes", "Time Block (minutes)", "Blocco Temporale (minuti)", "Bloc de temps (minutes)"),
+				new TranslationSeed("provider.closedDays", "Closed Days", "Giorni di chiusura", "Jours de fermeture"),
+				new TranslationSeed("provider.closedDaysPlaceholder", "Select weekly closing days", "Seleziona i giorni di chiusura settimanali", "Selectionnez les jours de fermeture hebdomadaire"),
+				new TranslationSeed("provider.closedDates", "Closed Dates", "Date di chiusura", "Dates de fermeture"),
+				new TranslationSeed("provider.closedDatesPlaceholder", "Select a date", "Seleziona una data", "Selectionnez une date"),
+				new TranslationSeed("provider.addClosedDate", "Add date", "Aggiungi data", "Ajouter une date"),
 
 				new TranslationSeed("reservation.provider", "Provider", "Provider", "Prestataire"),
 				new TranslationSeed("reservation.service", "Service", "Servizio", "Service"),

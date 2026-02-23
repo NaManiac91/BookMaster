@@ -29,10 +29,10 @@
       </ion-button>
     </div>
 
-    <div *ngIf="showUserCreate">
+    <form *ngIf="showUserCreate" #signupForm="ngForm">
       <app-object-profile [view]="view" [object]="user"></app-object-profile>
-      <ion-button color="light" class="margin-20" (click)="createUser()">{{ 'common.save' | t }}</ion-button>
-    </div>
+      <ion-button color="light" class="margin-20" (click)="createUser()" [disabled]="signupForm.invalid || !canCreateUser">{{ 'common.save' | t }}</ion-button>
+    </form>
 
   </ion-card>
 </ion-content>
