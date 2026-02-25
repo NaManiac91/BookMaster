@@ -60,6 +60,13 @@ describe('FolderPage', () => {
     expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('ReservationHistory');
   });
 
+  it('opens home from side menu', async () => {
+    await component.openHome();
+
+    expect(menuControllerMock.close).toHaveBeenCalledWith('folder-side-menu');
+    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('Home');
+  });
+
   it('opens account editor from side menu', async () => {
     authServiceMock.loggedUser = { userId: 'u1', username: 'tester', $t: 'User' };
 

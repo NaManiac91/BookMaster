@@ -58,6 +58,7 @@ describe('HomeComponent', () => {
   });
 
   it('navigates to reservation workflow from search result', () => {
+    component.provider = undefined as any;
     const selectedProvider = Object.assign(new Provider(), { providerId: 'p-search' });
 
     component.openReservationByProvider(selectedProvider);
@@ -67,6 +68,16 @@ describe('HomeComponent', () => {
         provider: selectedProvider
       }
     });
+  });
+
+  it('does not navigate to reservation workflow for provider users', () => {
+    navCtrlMock.navigateRoot.calls.reset();
+    component.provider = Object.assign(new Provider(), { providerId: 'p-provider' });
+    const selectedProvider = Object.assign(new Provider(), { providerId: 'p-search' });
+
+    component.openReservationByProvider(selectedProvider);
+
+    expect(navCtrlMock.navigateRoot).not.toHaveBeenCalledWith('ReservationWorkflow', jasmine.anything());
   });
 
   it('initializes provider calendar and reservation counters for provider users', () => {

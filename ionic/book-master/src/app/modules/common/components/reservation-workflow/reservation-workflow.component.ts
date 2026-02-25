@@ -7,7 +7,8 @@ import {ObjectProfileView} from "../../../shared/enum";
 import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
 import {TranslationService} from "../../../shared/modules/translation/services/translation.service";
-import {Subscription} from "rxjs";
+import {of, Subject, Subscription} from "rxjs";
+import {catchError, switchMap} from "rxjs/operators";
 import {
   availabilityRatioToDotLevel,
   calculateMaxSlotsPerDay,
@@ -58,7 +59,12 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   readonly providerInfoView = ObjectProfileView.INFO;
   readonly reservationConsultView = ObjectProfileView.CREATE;
   currentStep: WorkflowStep = 'provider';
+  canAccessWorkflow = true;
   private languageSub?: Subscription;
+  private slotsSub?: Subscription;
+  private availabilitySub?: Subscription;
+  private readonly slotsRequest$ = new Subject<{ providerId: string; day: Date }>();
+  private readonly availabilityRequest$ = new Subject<{ providerId: string; fromDate: Date; toDate: Date }>();
 
   constructor(private clientService: ClientService,
               private authService: AuthService,
@@ -69,6 +75,13 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
               private alertController: AlertController) { }
 
   ngOnInit() {
+    if (this.authService.loggedUser?.provider) {
+      this.canAccessWorkflow = false;
+      void this.redirectProviderUserToHome();
+      return;
+    }
+
+    this.initializeDataRequests();
     this.currentLocale = resolveLocale(this.translationService.currentLanguage);
     this.languageSub = this.translationService.language$.subscribe(language => {
       this.currentLocale = resolveLocale(language);
@@ -198,7 +211,7 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   }
 
   confirmReservation() {
-    if (!this.reservationPreview) {
+    if (!this.reservationPreview || this.authService.loggedUser?.provider) {
       return;
     }
 
@@ -217,6 +230,15 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
       this.authService.loggedUser = user;
       this.navCtrl.navigateRoot('');
     });
+  }
+
+  private async redirectProviderUserToHome(): Promise<void> {
+    const alert = await this.alertController.create({
+      message: this.translationService.translate('reservationWorkflow.onlyCustomers'),
+      buttons: [this.translationService.translate('common.ok')]
+    });
+    await alert.present();
+    await this.navCtrl.navigateRoot('Home');
   }
 
   get currentMonthLabel(): string {
@@ -262,7 +284,12 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
   }
 
   private loadAvailableSlots(day: Date) {
-    this.clientService.getAvailableTimeSlots(this.currentProvider.providerId, day).subscribe(slots => this.slots = slots);
+    if (!this.currentProvider?.providerId) {
+      this.slots = {};
+      return;
+    }
+
+    this.slotsRequest$.next({ providerId: this.currentProvider.providerId, day });
   }
 
   private applyProvider(provider: Provider) {
@@ -304,11 +331,11 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
 
     const fromDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth(), 1);
     const toDate = new Date(this.currentCalendarMonth.getFullYear(), this.currentCalendarMonth.getMonth() + 1, 0);
-    this.clientService.getAvailabilitySummary(this.currentProvider.providerId, fromDate, toDate)
-      .subscribe(summary => {
-        this.availabilityByDate = summary || {};
-        this.calendarDotLevelsByDate = this.buildCalendarDotLevels(this.availabilityByDate);
-      });
+    this.availabilityRequest$.next({
+      providerId: this.currentProvider.providerId,
+      fromDate,
+      toDate
+    });
   }
 
   private buildCalendarDotLevels(summaryByDate: Record<string, number>): Record<string, CalendarDotLevel> {
@@ -350,6 +377,35 @@ export class ReservationWorkflowComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.languageSub?.unsubscribe();
+    this.slotsSub?.unsubscribe();
+    this.availabilitySub?.unsubscribe();
+  }
+
+  private initializeDataRequests() {
+    this.slotsSub = this.slotsRequest$
+      .pipe(
+        switchMap(({ providerId, day }) =>
+          this.clientService.getAvailableTimeSlots(providerId, day).pipe(
+            catchError(() => of({}))
+          )
+        )
+      )
+      .subscribe((slots) => {
+        this.slots = slots || {};
+      });
+
+    this.availabilitySub = this.availabilityRequest$
+      .pipe(
+        switchMap(({ providerId, fromDate, toDate }) =>
+          this.clientService.getAvailabilitySummary(providerId, fromDate, toDate).pipe(
+            catchError(() => of({}))
+          )
+        )
+      )
+      .subscribe((summary) => {
+        this.availabilityByDate = summary || {};
+        this.calendarDotLevelsByDate = this.buildCalendarDotLevels(this.availabilityByDate);
+      });
   }
 
 }

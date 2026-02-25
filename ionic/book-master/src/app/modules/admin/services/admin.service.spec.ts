@@ -133,6 +133,8 @@ describe('AdminService', () => {
     user.provider = Object.assign(new Provider(), {
       providerId: 'provider-42',
       name: 'Vick Provider',
+      closedDays: ['MONDAY', 'SUNDAY'],
+      closedDates: ['2026-12-25', '2026-04-05'],
       services: [{ serviceId: 's1' }]
     });
     let result: IModel | undefined;
@@ -147,12 +149,16 @@ describe('AdminService', () => {
     expect(req.request.body.language).toBe('it');
     expect(req.request.body.reservations).toBeUndefined();
     expect(req.request.body.provider.services).toBeUndefined();
+    expect(req.request.body.provider.closedDays).toEqual(['MONDAY', 'SUNDAY']);
+    expect(req.request.body.provider.closedDates).toEqual(['2026-12-25', '2026-04-05']);
     req.flush({ userId: 'user-42', username: 'updated' });
 
     expect(result instanceof User).toBeTrue();
     expect((result as User).username).toBe('updated');
     expect((authServiceMock.loggedUser as any).username).toBe('updated');
     expect((authServiceMock.loggedUser as any).provider.providerId).toBe('provider-42');
+    expect((authServiceMock.loggedUser as any).provider.closedDays).toEqual(['MONDAY', 'SUNDAY']);
+    expect((authServiceMock.loggedUser as any).provider.closedDates).toEqual(['2026-12-25', '2026-04-05']);
   });
 
   it('calls removeService endpoint with service id', () => {

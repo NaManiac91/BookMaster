@@ -7,7 +7,7 @@ import { TranslationTestingModule } from 'src/app/testing/translation-testing.mo
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  const authServiceMock = {
+  const authServiceMock: any = {
     loggedUser: { userId: 'u1' }
   };
 
@@ -29,6 +29,7 @@ describe('AppComponent', () => {
   });
 
   it('should have menu labels', () => {
+    authServiceMock.loggedUser = { userId: 'u1' };
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.appPages.length).toBe(2);
@@ -37,6 +38,7 @@ describe('AppComponent', () => {
   });
 
   it('should have urls', () => {
+    authServiceMock.loggedUser = { userId: 'u1' };
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.nativeElement;
@@ -44,6 +46,22 @@ describe('AppComponent', () => {
     expect(menuItems.length).toEqual(2);
     expect(menuItems[0].getAttribute('ng-reflect-router-link')).toEqual('/Home');
     expect(menuItems[1].getAttribute('ng-reflect-router-link')).toEqual('/ReservationWorkflow');
+  });
+
+  it('hides booking entry for provider users', () => {
+    authServiceMock.loggedUser = {
+      userId: 'u1',
+      provider: { providerId: 'p1' }
+    };
+
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const app = fixture.componentInstance;
+    const menuItems = fixture.nativeElement.querySelectorAll('ion-button');
+    expect(app.appPages.length).toBe(1);
+    expect(app.appPages[0].url).toBe('/Home');
+    expect(menuItems.length).toEqual(1);
   });
 
 });

@@ -6,6 +6,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.book.BookMaster.services.ProviderCannotBookException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -15,9 +17,14 @@ public class GlobalExceptionHandler {
                              .body("Resource not found: " + ex.getResourcePath());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body("An internal server error occurred: " + ex.getMessage());
-    }
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleException(Exception ex) {
+	    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                         .body("An internal server error occurred: " + ex.getMessage());
+	}
+
+	@ExceptionHandler(ProviderCannotBookException.class)
+	public ResponseEntity<String> handleProviderCannotBookException(ProviderCannotBookException ex) {
+	    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+	}
 }

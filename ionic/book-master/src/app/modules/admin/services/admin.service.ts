@@ -50,20 +50,25 @@ export class AdminService {
     return provider;
   }
 
-  private mergeUserFromResponse(response: any): User {
+  private mergeUserFromResponse(response: any, editedUser?: User): User {
     const currentUser = (this.authService.loggedUser || {}) as Partial<User>;
     const mergedUser = Object.assign(new User(), currentUser, response);
     const hasProviderInResponse = Object.prototype.hasOwnProperty.call(response || {}, 'provider');
     const hasReservationsInResponse = Object.prototype.hasOwnProperty.call(response || {}, 'reservations');
 
+    // editUser responses may not include nested provider/reservations:
+    // preserve explicit response first, then edited payload, then current session copy.
     if (hasProviderInResponse) {
       mergedUser.provider = response?.provider
         ? this.convertProviderToClient(response.provider)
         : undefined as unknown as Provider;
+    } else if (editedUser?.provider) {
+      mergedUser.provider = this.convertProviderToClient(editedUser.provider);
     } else if (currentUser?.provider) {
       mergedUser.provider = this.convertProviderToClient(currentUser.provider);
     }
 
+    // Keep reservation list coherent even when backend returns partial user payload.
     if (hasReservationsInResponse) {
       mergedUser.reservations = (response?.reservations || [])
         .map((reservation: Reservation) => Object.assign(new Reservation(), reservation));
@@ -87,7 +92,7 @@ export class AdminService {
         switch (object.$t) {
           case Provider.$t: return this.convertProviderToClient(response);
           case Service.$t: return Object.assign(new type(), response);
-          case User.$t: return this.mergeUserFromResponse(response);
+          case User.$t: return this.mergeUserFromResponse(response, object as User);
         }
         return Object.assign(new type(), response);
       }),

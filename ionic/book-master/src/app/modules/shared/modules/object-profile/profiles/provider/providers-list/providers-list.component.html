@@ -3,14 +3,22 @@
     <ion-card-title>{{ 'providersList.title' | t }}</ion-card-title>
   </ion-card-header>
 
-  <ion-card-content style="border-bottom: 1px solid">
+  <ion-card-content class="providers-filters-content">
     <ion-searchbar [(ngModel)]="searchQuery"
                    (ionInput)="onSearchQueryChange($any($event.detail).value)"
                    [placeholder]="'providersList.searchPlaceholder' | t"></ion-searchbar>
 
-    <ion-searchbar [(ngModel)]="searchLocation"
-                   (ionInput)="onSearchLocationChange($any($event.detail).value)"
-                   [placeholder]="'providersList.cityPlaceholder' | t"></ion-searchbar>
+    <div class="city-search-wrapper">
+      <ion-searchbar [(ngModel)]="searchLocation"
+                     (ionInput)="onSearchLocationChange($any($event.detail).value)"
+                     [placeholder]="'providersList.cityPlaceholder' | t"></ion-searchbar>
+
+      <ion-list *ngIf="showCitySuggestions" class="city-suggestions">
+        <ion-item [button]="true" detail="false" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
+          <ion-label>{{ city }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
 
     <ion-item lines="none" class="provider-type-filter">
       <ion-label>{{ 'providersList.typeLabel' | t }}</ion-label>
@@ -24,12 +32,6 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
-
-    <ion-list *ngIf="showCitySuggestions" class="city-suggestions">
-      <ion-item [button]="true" detail="false" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
-        <ion-label>{{ city }}</ion-label>
-      </ion-item>
-    </ion-list>
   </ion-card-content>
 
   <ion-list>

@@ -84,7 +84,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  get canSave(): boolean {
+  canSave(): boolean {
     if (!isValidModel(this.object)) {
       return false;
     }
@@ -93,11 +93,17 @@ export class EditorComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    return this.hasObjectChanges();
+    // Keep EDIT save logic exact even for nested/dynamic controls:
+    // compare against the initial snapshot instead of relying only on form dirty propagation.
+    if (!this.initialObjectSnapshot) {
+      return true;
+    }
+
+    return this.initialObjectSnapshot !== this.toComparableSnapshot(this.object);
   }
 
   save() {
-    if (!this.canSave) {
+    if (!this.canSave()) {
       return;
     }
 
@@ -110,16 +116,8 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.adminService.edit(this.object, this.type).subscribe(model =>
           this.navCtrl.navigateRoot('Home', {
             state: {object: model}
-          }));
+        }));
     }
-  }
-
-  private hasObjectChanges(): boolean {
-    if (!this.initialObjectSnapshot) {
-      return true;
-    }
-
-    return this.initialObjectSnapshot !== this.toComparableSnapshot(this.object);
   }
 
   private toComparableSnapshot(value: unknown): string {
@@ -157,4 +155,5 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     return value;
   }
+
 }

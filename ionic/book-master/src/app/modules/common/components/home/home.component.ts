@@ -9,6 +9,11 @@ import { CalendarDotLevel, CalendarDayCell, resolveLocale, toISODateString } fro
 import { readNavigationState } from "../../../shared/utils/navigation-state.utils";
 import { FetchService } from "../../services/fetch-service/fetch.service";
 import { ProviderReservationCalendarService } from "../../services/provider-reservation-calendar/provider-reservation-calendar.service";
+import {
+  normalizeProviderClosedDates,
+  normalizeProviderClosedDays,
+  toClosedWeekdayJsIndexes
+} from "../../../shared/utils/provider-weekday.utils";
 
 type SearchMode = 'provider' | 'service';
 
@@ -40,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   providerCalendarMonth: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   providerDotLevelsByDate: Record<string, CalendarDotLevel> = {};
   providerCalendarDefaultDotLevel: CalendarDotLevel = 'none';
+  providerClosedWeekDays: number[] = [];
+  providerClosedDatesIso: string[] = [];
   searchMode: SearchMode = 'provider';
   searchQuery = '';
   searchLocation = '';
@@ -70,7 +77,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.initUser(this.authService.loggedUser, object);
     this.currentLocale = resolveLocale(this.user?.language);
     this.initializeProviderCalendar();
-    this.initSearchSubscriptions();
+    if (!this.isProviderUser) {
+      this.initSearchSubscriptions();
+    }
   }
 
   ngOnDestroy() {
@@ -80,6 +89,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   get isProviderUser(): boolean {
     return !!this.provider;
+  }
+
+  get roleLabelKey(): string {
+    return this.isProviderUser ? 'home.role.provider' : 'home.role.customer';
   }
 
   get providerCurrentMonthLabel(): string {
@@ -145,6 +158,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   openReservationByProvider(provider: Provider) {
+    if (this.isProviderUser) {
+      return;
+    }
+
     this.navCtrl.navigateRoot('ReservationWorkflow', {
       state: {
         provider
@@ -153,6 +170,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   openReservationByService(result: ServiceSearchResult) {
+    if (this.isProviderUser) {
+      return;
+    }
+
     this.navCtrl.navigateRoot('ReservationWorkflow', {
       state: {
         provider: result.provider,
@@ -263,6 +284,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private initUser(user: User, object: IModel) {
+    // Prefer navigation state when present (after create/edit), fallback to session user.
     const candidateUser = object && object.$t === User.$t ? object as User : user;
     this.user = Object.assign(new User(), candidateUser);
     this.user.reservations = (candidateUser?.reservations || [])
@@ -272,8 +294,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       const provider = object && object.$t === Provider.$t ? object : this.user.provider;
       this.provider = this.user.provider = Object.assign(new Provider(), provider as Provider);
       this.provider.services = (this.provider.services || []).map((service: Service) => Object.assign(new Service(), service));
+      // Normalize closure data once and expose both formats needed by status-calendar.
+      this.provider.closedDays = normalizeProviderClosedDays(this.provider.closedDays);
+      this.provider.closedDates = normalizeProviderClosedDates(this.provider.closedDates);
+      this.providerClosedWeekDays = toClosedWeekdayJsIndexes(this.provider.closedDays);
+      this.providerClosedDatesIso = [...this.provider.closedDates];
     } else {
       this.provider = undefined as unknown as Provider;
+      this.providerClosedWeekDays = [];
+      this.providerClosedDatesIso = [];
     }
 
     this.authService.loggedUser = this.user;

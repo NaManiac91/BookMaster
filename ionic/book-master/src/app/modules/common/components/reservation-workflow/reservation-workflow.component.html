@@ -1,3 +1,4 @@
+<ng-container *ngIf="canAccessWorkflow; else customerOnlyContent">
 <ion-item *ngIf="currentStep !== 'provider'" lines="none" class="workflow-nav">
   <ion-button class="back-button"
               fill="clear"
@@ -67,3 +68,10 @@
     {{ 'reservationWorkflow.confirmBooking' | t }}
   </ion-button>
 </div>
+</ng-container>
+
+<ng-template #customerOnlyContent>
+  <ion-item lines="none">
+    <ion-label>{{ 'reservationWorkflow.onlyCustomers' | t }}</ion-label>
+  </ion-item>
+</ng-template>

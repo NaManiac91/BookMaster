@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Reservation} from "../../../shared/rest-api-client";
 import {Observable, map} from 'rxjs';
+import {toISODateString} from "../../../shared/utils/date-time.utils";
 
 @Injectable({
   providedIn: 'root'
@@ -17,24 +18,33 @@ export class ClientService {
   }
 
   getAvailableTimeSlots(providerId: string, date: Date): Observable<{ [key: string]: string[] }> {
-    return <Observable<{ [key: string]: string[] }>>this.httpClient.get(this.api + 'getAvailableTimeSlots?providerId=' + providerId +
-      `&date=${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
+    const params = new HttpParams()
+      .set('providerId', providerId)
+      .set('date', toISODateString(date));
+
+    return <Observable<{ [key: string]: string[] }>>this.httpClient.get(this.api + 'getAvailableTimeSlots', { params });
   }
 
   getAvailabilitySummary(providerId: string, from: Date, to: Date): Observable<{ [key: string]: number }> {
-    const fromIso = `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`;
-    const toIso = `${to.getFullYear()}-${String(to.getMonth() + 1).padStart(2, '0')}-${String(to.getDate()).padStart(2, '0')}`;
+    const params = new HttpParams()
+      .set('providerId', providerId)
+      .set('from', toISODateString(from))
+      .set('to', toISODateString(to));
+
     return <Observable<{ [key: string]: number }>>this.httpClient.get(
-      this.api + `getAvailabilitySummary?providerId=${providerId}&from=${fromIso}&to=${toIso}`
+      this.api + 'getAvailabilitySummary',
+      { params }
     );
   }
 
   removeReservation(reservationId: string): Observable<boolean> {
-    return <Observable<boolean>>this.httpClient.get(this.api + 'removeReservation?reservationId=' + reservationId);
+    const params = new HttpParams().set('reservationId', reservationId);
+    return <Observable<boolean>>this.httpClient.get(this.api + 'removeReservation', { params });
   }
 
   getReservationHistory(userId: string): Observable<Reservation[]> {
-    return <Observable<Reservation[]>>this.httpClient.get<any[]>(this.api + 'getReservationHistory?userId=' + userId)
+    const params = new HttpParams().set('userId', userId);
+    return <Observable<Reservation[]>>this.httpClient.get<any[]>(this.api + 'getReservationHistory', { params })
       .pipe(map((reservations: any[]) => (reservations || []).map(r => Object.assign(new Reservation(), r))));
   }
 }

@@ -34,17 +34,27 @@ describe('FetchService', () => {
 
   it('calls provider and search endpoints', () => {
     service.getProviderById('p1').subscribe();
-    const providerReq = httpMock.expectOne('api/fetch/getProvider?providerId=p1');
+    const providerReq = httpMock.expectOne((request) =>
+      request.url === 'api/fetch/getProvider'
+      && request.params.get('providerId') === 'p1'
+    );
     expect(providerReq.request.method).toBe('GET');
     providerReq.flush({});
 
     service.searchProviders('nail').subscribe();
-    const searchReq = httpMock.expectOne('api/fetch/searchProviders?q=nail&type=all');
+    const searchReq = httpMock.expectOne((request) =>
+      request.url === 'api/fetch/searchProviders'
+      && request.params.get('q') === 'nail'
+      && request.params.get('type') === 'all'
+    );
     expect(searchReq.request.method).toBe('GET');
     searchReq.flush([]);
 
     service.searchCities('na').subscribe();
-    const citySearchReq = httpMock.expectOne('api/fetch/searchCities?q=na');
+    const citySearchReq = httpMock.expectOne((request) =>
+      request.url === 'api/fetch/searchCities'
+      && request.params.get('q') === 'na'
+    );
     expect(citySearchReq.request.method).toBe('GET');
     citySearchReq.flush([]);
   });

@@ -62,6 +62,11 @@ export class FolderPage implements OnInit {
     });
   }
 
+  async openHome() {
+    await this.menuController.close('folder-side-menu');
+    this.navCtrl.navigateRoot('Home');
+  }
+
   async openHistory() {
     await this.menuController.close('folder-side-menu');
     this.navCtrl.navigateRoot('ReservationHistory');

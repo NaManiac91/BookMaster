@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Reservation implements Serializable, IModel {
@@ -60,7 +61,9 @@ public class Reservation implements Serializable, IModel {
 	private String note;
 	
 	/* Support fields */
+	@Transient
 	private Service service;
+	@Transient
 	@JsonIgnore
 	private Provider provider;
 	

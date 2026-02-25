@@ -47,6 +47,9 @@ public class ClientService {
 	        // Fetch user and provider
 	        User consumer = this.userRepo.findById(userId)
 	            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+	        if (consumer.getProvider() != null) {
+	        	throw new ProviderCannotBookException("Provider users cannot create reservations");
+	        }
 	        User providerUser = this.userRepo.findByProviderProviderId(providerId);
 	        if (providerUser == null) {
 	            throw new RuntimeException("Provider not found with ID: " + providerId);

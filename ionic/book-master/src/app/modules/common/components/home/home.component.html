@@ -5,12 +5,15 @@
     </ion-avatar>
     <ion-label class="title-avatar">
       <h1>{{ 'home.welcome' | t:{ username: user.username } }}</h1>
+      <ion-chip [color]="isProviderUser ? 'tertiary' : 'primary'" class="role-chip">
+        <ion-label>{{ roleLabelKey | t }}</ion-label>
+      </ion-chip>
     </ion-label>
   </ion-card-header>
 </ion-card>
 
 <div class="content">
-  <ion-card>
+  <ion-card *ngIf="!isProviderUser">
     <ion-card-header color="tertiary">
       <ion-card-title>{{ 'home.findProviderOrService' | t }}</ion-card-title>
     </ion-card-header>
@@ -86,6 +89,8 @@
                        [todayIsoDate]="todayIsoDate"
                        [dotLevelsByDate]="providerDotLevelsByDate"
                        [defaultDotLevel]="providerCalendarDefaultDotLevel"
+                       [disabledWeekDays]="providerClosedWeekDays"
+                       [disabledDatesIso]="providerClosedDatesIso"
                        [canGoToPreviousMonth]="canGoToPreviousProviderMonth"
                        (monthChange)="changeProviderMonth($event)"
                        (daySelected)="selectProviderReservationDay($event)"></app-status-calendar>

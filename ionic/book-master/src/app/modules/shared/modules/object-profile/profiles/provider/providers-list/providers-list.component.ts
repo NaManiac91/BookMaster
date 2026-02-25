@@ -1,9 +1,19 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {FetchService} from "../../../../../../common/services/fetch-service/fetch.service";
 import {Provider} from "../../../../../rest-api-client";
 import {ObjectProfile} from "../../../services/object-profile.service";
 import {ObjectProfileView} from "../../../../../enum";
 import {TranslationService} from "../../../../translation/services/translation.service";
+import {Subject, Subscription} from "rxjs";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+
+interface ProviderSearchRow {
+  provider: Provider;
+  city: string;
+  cityLabel: string;
+  type: string;
+  searchText: string;
+}
 
 @ObjectProfile({
   view: ObjectProfileView.LIST,
@@ -14,7 +24,7 @@ import {TranslationService} from "../../../../translation/services/translation.s
   templateUrl: './providers-list.component.html',
   styleUrls: ['./providers-list.component.scss'],
 })
-export class ProvidersListComponent implements OnInit {
+export class ProvidersListComponent implements OnInit, OnDestroy {
   @Output() selected: EventEmitter<Provider> = new EventEmitter();
 
   providers: Provider[] = [];
@@ -26,25 +36,49 @@ export class ProvidersListComponent implements OnInit {
   selectedProviderType = '';
   citySuggestions: string[] = [];
   showCitySuggestions = false;
+  private providerSearchRows: ProviderSearchRow[] = [];
+  private readonly filterTrigger$ = new Subject<void>();
+  private readonly citySuggestionsTrigger$ = new Subject<string>();
+  private filterSub?: Subscription;
+  private citySuggestionsSub?: Subscription;
 
   constructor(private fetchService: FetchService,
               private translationService: TranslationService) { }
 
   ngOnInit() {
+    this.filterSub = this.filterTrigger$
+      .pipe(debounceTime(150))
+      .subscribe(() => this.applyFilters());
+
+    this.citySuggestionsSub = this.citySuggestionsTrigger$
+      .pipe(
+        debounceTime(150),
+        distinctUntilChanged((previous, current) =>
+          previous.trim().toLowerCase() === current.trim().toLowerCase()
+        )
+      )
+      .subscribe((query) => this.updateCitySuggestions(query));
+
     this.fetchService.getProviders().subscribe((providers: Provider[]) => {
       this.providers = providers || [];
+      this.rebuildProviderSearchRows();
       this.providerTypeOptions = Array.from(new Set(
         this.providers
           .map(provider => provider?.type?.trim())
           .filter((type): type is string => !!type)
       )).sort((a, b) => a.localeCompare(b));
-      this.filteredProviders = this.providers;
+      this.applyFilters();
     });
+  }
+
+  ngOnDestroy() {
+    this.filterSub?.unsubscribe();
+    this.citySuggestionsSub?.unsubscribe();
   }
 
   onSearchQueryChange(query: string | null | undefined) {
     this.searchQuery = query || '';
-    this.applyFilters();
+    this.filterTrigger$.next();
   }
 
   onSearchLocationChange(location: string | null | undefined) {
@@ -55,7 +89,7 @@ export class ProvidersListComponent implements OnInit {
       this.selectedCity = '';
       this.citySuggestions = [];
       this.showCitySuggestions = false;
-      this.applyFilters();
+      this.filterTrigger$.next();
       return;
     }
 
@@ -64,8 +98,8 @@ export class ProvidersListComponent implements OnInit {
     }
 
     this.selectedCity = '';
-    this.updateCitySuggestions(value);
-    this.applyFilters();
+    this.citySuggestionsTrigger$.next(value);
+    this.filterTrigger$.next();
   }
 
   selectCity(city: string) {
@@ -73,12 +107,12 @@ export class ProvidersListComponent implements OnInit {
     this.searchLocation = city;
     this.citySuggestions = [];
     this.showCitySuggestions = false;
-    this.applyFilters();
+    this.filterTrigger$.next();
   }
 
   onProviderTypeChange(type: string | null | undefined) {
     this.selectedProviderType = type || '';
-    this.applyFilters();
+    this.filterTrigger$.next();
   }
 
   formatProviderType(type: string): string {
@@ -94,14 +128,9 @@ export class ProvidersListComponent implements OnInit {
     }
 
     const uniqueCities = new Map<string, string>();
-    for (const provider of this.providers) {
-      const city = provider?.address?.city?.trim();
-      if (!city) {
-        continue;
-      }
-      const key = city.toLowerCase();
-      if (key.includes(normalized) && !uniqueCities.has(key)) {
-        uniqueCities.set(key, city);
+    for (const row of this.providerSearchRows) {
+      if (row.city.includes(normalized) && !uniqueCities.has(row.city)) {
+        uniqueCities.set(row.city, row.cityLabel);
       }
     }
 
@@ -114,23 +143,34 @@ export class ProvidersListComponent implements OnInit {
     const selectedCity = this.selectedCity.trim().toLowerCase();
     const selectedProviderType = this.selectedProviderType.trim().toLowerCase();
 
-    this.filteredProviders = this.providers.filter((provider: Provider) => {
-      const providerCity = provider?.address?.city?.trim().toLowerCase() || '';
-      const cityMatch = !selectedCity || providerCity === selectedCity;
-      const providerType = (provider?.type || '').trim().toLowerCase();
-      const typeMatch = !selectedProviderType || providerType === selectedProviderType;
+    this.filteredProviders = this.providerSearchRows
+      .filter((row) => {
+        const cityMatch = !selectedCity || row.city === selectedCity;
+        const typeMatch = !selectedProviderType || row.type === selectedProviderType;
+        const queryMatch = !query || row.searchText.includes(query);
+        return cityMatch && typeMatch && queryMatch;
+      })
+      .map((row) => row.provider);
+  }
 
-      if (!query) {
-        return cityMatch && typeMatch;
-      }
+  private rebuildProviderSearchRows() {
+    this.providerSearchRows = (this.providers || []).map((provider) => {
+      const cityLabel = provider?.address?.city?.trim() || '';
+      const serviceNames = (provider?.services || [])
+        .map((service) => (service?.name || '').trim())
+        .filter(Boolean);
 
-      const providerName = provider?.name?.toLowerCase() || '';
-      const providerDescription = provider?.description?.toLowerCase() || '';
-      const servicesMatch = (provider?.services || [])
-        .some(service => (service?.name || '').toLowerCase().includes(query));
-
-      const queryMatch = providerName.includes(query) || providerDescription.includes(query) || servicesMatch;
-      return cityMatch && typeMatch && queryMatch;
+      return {
+        provider,
+        city: cityLabel.toLowerCase(),
+        cityLabel,
+        type: (provider?.type || '').trim().toLowerCase(),
+        searchText: [
+          provider?.name || '',
+          provider?.description || '',
+          ...serviceNames
+        ].join(' ').toLowerCase()
+      };
     });
   }
 }

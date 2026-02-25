@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { of } from 'rxjs';
 import {Router} from "@angular/router";
 import {FetchService} from "../../services/fetch-service/fetch.service";
@@ -22,6 +23,11 @@ describe('ReservationWorkflowComponent', () => {
     loggedUser: { userId: 'u1', reservations: [] as any[] }
   };
   const navCtrlMock = jasmine.createSpyObj('NavController', ['navigateRoot']);
+  const alertCtrlMock = {
+    create: jasmine.createSpy('create').and.returnValue(Promise.resolve({
+      present: jasmine.createSpy('present').and.returnValue(Promise.resolve())
+    }))
+  };
   const routerMock = {
     getCurrentNavigation: jasmine.createSpy('getCurrentNavigation').and.returnValue(null)
   };
@@ -30,6 +36,7 @@ describe('ReservationWorkflowComponent', () => {
   };
 
   beforeEach(waitForAsync(() => {
+    authServiceMock.loggedUser = { userId: 'u1', reservations: [] as any[] };
     TestBed.configureTestingModule({
       declarations: [ ReservationWorkflowComponent ],
       imports: [IonicModule.forRoot(), TranslationTestingModule],
@@ -38,6 +45,7 @@ describe('ReservationWorkflowComponent', () => {
         { provide: ClientService, useValue: clientServiceMock },
         { provide: AuthService, useValue: authServiceMock },
         { provide: NavController, useValue: navCtrlMock },
+        { provide: AlertController, useValue: alertCtrlMock },
         { provide: Router, useValue: routerMock },
         { provide: FetchService, useValue: fetchServiceMock }
       ]
@@ -50,5 +58,24 @@ describe('ReservationWorkflowComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('redirects provider users to home', async () => {
+    navCtrlMock.navigateRoot.calls.reset();
+    alertCtrlMock.create.calls.reset();
+    authServiceMock.loggedUser = {
+      userId: 'u-provider',
+      provider: { providerId: 'p1' },
+      reservations: []
+    };
+
+    const providerFixture = TestBed.createComponent(ReservationWorkflowComponent);
+    const providerComponent = providerFixture.componentInstance;
+    providerFixture.detectChanges();
+    await providerFixture.whenStable();
+
+    expect(providerComponent.canAccessWorkflow).toBeFalse();
+    expect(alertCtrlMock.create).toHaveBeenCalled();
+    expect(navCtrlMock.navigateRoot).toHaveBeenCalledWith('Home');
   });
 });

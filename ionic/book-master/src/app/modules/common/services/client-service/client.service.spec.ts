@@ -49,7 +49,11 @@ describe('ClientService', () => {
 
     service.getAvailableTimeSlots(providerId, date).subscribe();
 
-    const req = httpMock.expectOne('api/client/getAvailableTimeSlots?providerId=provider-1&date=2025-01-05');
+    const req = httpMock.expectOne((request) =>
+      request.url === 'api/client/getAvailableTimeSlots'
+      && request.params.get('providerId') === 'provider-1'
+      && request.params.get('date') === '2025-01-05'
+    );
     expect(req.request.method).toBe('GET');
     req.flush({});
   });
@@ -57,7 +61,10 @@ describe('ClientService', () => {
   it('calls removeReservation endpoint with reservationId', () => {
     service.removeReservation('reservation-1').subscribe();
 
-    const req = httpMock.expectOne('api/client/removeReservation?reservationId=reservation-1');
+    const req = httpMock.expectOne((request) =>
+      request.url === 'api/client/removeReservation'
+      && request.params.get('reservationId') === 'reservation-1'
+    );
     expect(req.request.method).toBe('GET');
     req.flush(true);
   });
@@ -69,7 +76,10 @@ describe('ClientService', () => {
       result = reservations;
     });
 
-    const req = httpMock.expectOne('api/client/getReservationHistory?userId=u1');
+    const req = httpMock.expectOne((request) =>
+      request.url === 'api/client/getReservationHistory'
+      && request.params.get('userId') === 'u1'
+    );
     expect(req.request.method).toBe('GET');
     req.flush([{ reservationId: 'r1' }]);
 
