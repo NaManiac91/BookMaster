@@ -91,10 +91,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     return !!this.provider;
   }
 
-  get roleLabelKey(): string {
-    return this.isProviderUser ? 'home.role.provider' : 'home.role.customer';
-  }
-
   get providerCurrentMonthLabel(): string {
     return this.providerCalendarMonth.toLocaleDateString(this.currentLocale, { month: 'long', year: 'numeric' });
   }

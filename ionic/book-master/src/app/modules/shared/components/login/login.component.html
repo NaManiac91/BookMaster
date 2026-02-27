@@ -5,7 +5,7 @@
     </ion-card-header>
 
     <div *ngIf="!showUserCreate">
-      <ion-list class="form">
+      <ion-list class="form" *ngIf="!forcePasswordChange">
         <ion-list>
           <ion-item>
             <ion-input [label]="'auth.username' | t"
@@ -21,15 +21,51 @@
           </ion-item>
         </ion-list>
       </ion-list>
-      <ion-button color="light" class="margin-20" (click)="signup()">{{ 'auth.signUp' | t }}</ion-button>
-      <ion-button class="login-button margin-20" color="secondary" (click)="login()">{{ 'auth.login' | t }}</ion-button>
+      <div *ngIf="!forcePasswordChange">
+        <ion-button color="light" class="margin-20" (click)="signup()">{{ 'auth.signUp' | t }}</ion-button>
+        <ion-button class="login-button margin-20" color="secondary" (click)="login()">{{ 'auth.login' | t }}</ion-button>
 
-      <ion-button (click)="loginWithGoogle()">
-        {{ 'auth.loginWithGoogle' | t }}
-      </ion-button>
+        <ion-button (click)="loginWithGoogle()">
+          {{ 'auth.loginWithGoogle' | t }}
+        </ion-button>
+      </div>
+
+      <div *ngIf="forcePasswordChange">
+        <ion-item lines="none">
+          <ion-label>
+            {{ 'auth.forcePasswordChangeMessage' | t }}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            [label]="'auth.newPassword' | t"
+            [placeholder]="'auth.enterNewPassword' | t"
+            type="password"
+            [(ngModel)]="newPassword"
+            name="newPassword"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            [label]="'auth.confirmNewPassword' | t"
+            [placeholder]="'auth.confirmNewPassword' | t"
+            type="password"
+            [(ngModel)]="confirmNewPassword"
+            name="confirmNewPassword"></ion-input>
+        </ion-item>
+        <ion-button class="login-button margin-20" color="secondary" (click)="changePassword()" [disabled]="!canSubmitPasswordChange">
+          {{ 'auth.updatePassword' | t }}
+        </ion-button>
+      </div>
     </div>
 
     <form *ngIf="showUserCreate" #signupForm="ngForm">
+      <ion-item>
+        <ion-input [label]="'auth.password' | t"
+                   [placeholder]="'auth.enterPassword' | t"
+                   type="password"
+                   [(ngModel)]="signupPassword"
+                   name="signupPassword"></ion-input>
+      </ion-item>
       <app-object-profile [view]="view" [object]="user"></app-object-profile>
       <ion-button color="light" class="margin-20" (click)="createUser()" [disabled]="signupForm.invalid || !canCreateUser">{{ 'common.save' | t }}</ion-button>
     </form>

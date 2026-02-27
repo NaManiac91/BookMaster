@@ -137,6 +137,11 @@ public class TranslationService {
 				new TranslationSeed("auth.login", "Login", "Accedi", "Connexion"),
 				new TranslationSeed("auth.loginWithGoogle", "Login with Google", "Accedi con Google", "Connexion avec Google"),
 				new TranslationSeed("auth.completingLogin", "Completing login...", "Completamento accesso...", "Connexion en cours..."),
+				new TranslationSeed("auth.forcePasswordChangeMessage", "For security, you must change the default password before continuing.", "Per sicurezza devi cambiare la password di default prima di continuare.", "Pour des raisons de securite, vous devez changer le mot de passe par defaut avant de continuer."),
+				new TranslationSeed("auth.newPassword", "New password", "Nuova password", "Nouveau mot de passe"),
+				new TranslationSeed("auth.enterNewPassword", "Enter new password", "Inserisci nuova password", "Entrez un nouveau mot de passe"),
+				new TranslationSeed("auth.confirmNewPassword", "Confirm new password", "Conferma nuova password", "Confirmez le nouveau mot de passe"),
+				new TranslationSeed("auth.updatePassword", "Update password", "Aggiorna password", "Mettre a jour le mot de passe"),
 
 				new TranslationSeed("home.welcome", "Welcome {{username}}", "Benvenuto {{username}}", "Bienvenue {{username}}"),
 				new TranslationSeed("home.findProviderOrService", "Find Provider or Service", "Trova Provider o Servizio", "Trouver un prestataire ou un service"),

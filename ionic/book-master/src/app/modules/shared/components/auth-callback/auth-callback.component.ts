@@ -24,11 +24,7 @@ export class AuthCallbackComponent implements OnInit {
       next: (status) => {
         if (status.authenticated) {
           if (status.user) {
-            const user = new User();
-            user.username = status.user.name;
-            user.email = status.user.email;
-            user.language = 'en';
-            // Map other fields if necessary
+            const user = status.user as User;
             this.authService.loggedUser = user;
             this.translationService.applyUserLanguage(user).subscribe();
           }

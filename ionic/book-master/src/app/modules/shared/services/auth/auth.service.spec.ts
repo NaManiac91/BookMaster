@@ -53,7 +53,7 @@ describe('AuthService', () => {
   it('calls current user endpoint with credentials', () => {
     service.getCurrentUser().subscribe();
 
-    const req = httpMock.expectOne('/api/user');
+    const req = httpMock.expectOne('/api/auth/me');
     expect(req.request.method).toBe('GET');
     expect(req.request.withCredentials).toBeTrue();
     req.flush({ userId: 'u1' });
@@ -62,17 +62,54 @@ describe('AuthService', () => {
   it('calls logout endpoint with credentials', () => {
     service.logout().subscribe();
 
-    const req = httpMock.expectOne('/logout');
+    const req = httpMock.expectOne('/api/auth/logout');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({});
     expect(req.request.withCredentials).toBeTrue();
     req.flush({ ok: true });
   });
 
+  it('calls login endpoint with credentials payload', () => {
+    service.login('mario', 'strongpass').subscribe();
+
+    const req = httpMock.expectOne('/api/auth/login');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ identifier: 'mario', password: 'strongpass' });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ authenticated: true, user: { userId: 'u1' } });
+  });
+
+  it('calls register endpoint with credentials payload', () => {
+    service.register({ username: 'mario', email: 'mario@bookmaster.test', password: 'strongpass' }).subscribe();
+
+    const req = httpMock.expectOne('/api/auth/register');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      username: 'mario',
+      email: 'mario@bookmaster.test',
+      password: 'strongpass'
+    });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ authenticated: true, user: { userId: 'u1' } });
+  });
+
+  it('calls change password endpoint with credentials payload', () => {
+    service.changePassword('oldPass123', 'newPass123').subscribe();
+
+    const req = httpMock.expectOne('/api/auth/changePassword');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      currentPassword: 'oldPass123',
+      newPassword: 'newPass123'
+    });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ authenticated: true, user: { userId: 'u1' } });
+  });
+
   it('opens OAuth login URL in same tab', () => {
     const openSpy = spyOn(window, 'open');
 
-    service.login();
+    service.loginWithGoogle();
 
     expect(openSpy).toHaveBeenCalledWith('/oauth2/authorization/google', '_self');
   });

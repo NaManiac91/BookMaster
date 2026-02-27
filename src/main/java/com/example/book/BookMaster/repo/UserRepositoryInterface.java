@@ -10,6 +10,9 @@ import com.example.book.BookMaster.models.User;
 public interface UserRepositoryInterface extends CrudRepository<User, UUID> {
 	@RestResource(exported = false)
 	User findByUsername(String name);
+
+	@RestResource(exported = false)
+	User findByEmail(String email);
 	
 	@RestResource(exported = false)
 	User findByProviderProviderId(UUID providerId);

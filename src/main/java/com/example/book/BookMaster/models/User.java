@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
@@ -39,6 +40,10 @@ public class User implements Serializable, IModel {
 	@Column(nullable = false)
 	@NonNull()
 	private String email;
+
+	@JsonIgnore
+	@Column
+	private String passwordHash;
 
 	@Column(length = 5)
 	@Enumerated(EnumType.STRING)
@@ -127,6 +132,14 @@ public class User implements Serializable, IModel {
 
 	public void setLanguage(Language language) {
 		this.language = language != null ? language : Language.EN;
+	}
+
+	public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 	
 	public Set<Reservation> getReservations() {

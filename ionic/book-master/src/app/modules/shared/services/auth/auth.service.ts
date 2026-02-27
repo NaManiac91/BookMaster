@@ -3,6 +3,23 @@ import { Provider, User } from '../../rest-api-client';
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 
+export interface AuthPayload {
+  authenticated: boolean;
+  user: User;
+  requiresPasswordChange?: boolean;
+  message?: string;
+}
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  language?: string;
+  provider?: Provider;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -53,18 +70,43 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<any> {
-    return this.httpClient.get(`${this.api}/user`, {
+    return this.httpClient.get(`${this.api}/auth/me`, {
       withCredentials: true
     });
   }
 
-  login() {
+  loginWithGoogle() {
     // Use same-origin path so Docker/nginx proxy and local proxy both work.
     window.open('/oauth2/authorization/google', '_self');
   }
 
+  login(identifier: string, password: string): Observable<AuthPayload> {
+    return this.httpClient.post<AuthPayload>(`${this.api}/auth/login`, {
+      identifier,
+      password
+    }, {
+      withCredentials: true
+    });
+  }
+
+  register(payload: RegisterPayload): Observable<AuthPayload> {
+    return this.httpClient.post<AuthPayload>(`${this.api}/auth/register`, payload, {
+      withCredentials: true
+    });
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<AuthPayload> {
+    return this.httpClient.post<AuthPayload>(`${this.api}/auth/changePassword`, {
+      currentPassword,
+      newPassword
+    }, {
+      withCredentials: true
+    });
+  }
+
   logout(): Observable<any> {
-    return this.httpClient.post('/logout', {}, {
+    this.loggedUser = null as any;
+    return this.httpClient.post(`${this.api}/auth/logout`, {}, {
       withCredentials: true
     });
   }
